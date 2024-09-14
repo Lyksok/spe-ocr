@@ -1,96 +1,36 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <gtk/gtk.h>
-#include <opencv2/opencv.hpp> // Assuming OpenCV is used for image processing
 
-// Structure for the crossword solver application
-typedef struct {
-	char *image_path;
-	cv::Mat original_image;
-	cv::Mat grayscale_image;
-	GtkWidget *window;
-	GtkWidget *image_widget;
-} CrosswordSolver;
+static void
+activate (GtkApplication* app,
+      gpointer        user_data)
+{
+  GtkWidget *window;
+  GtkWidget *label;
 
-// Function prototypes
-void loadImage(CrosswordSolver *solver, const char *path);
-void convertToGrayscale(CrosswordSolver *solver);
-void createGUI(CrosswordSolver *solver);
-void onOpenImage(GtkWidget *widget, gpointer data);
+  window = gtk_application_window_new (app);
+  gtk_window_set_title (GTK_WINDOW (window), "Window");
+  gtk_window_set_default_size (GTK_WINDOW (window), 200, 200);
 
-int main(int argc, char *argv[]) {
-	CrosswordSolver solver = {0};
+  // Create a label widget
+  label = gtk_label_new ("Hello, World!");
 
-	// Initialize GTK
-	gtk_init(&argc, &argv);
+  // Add the label to the window
+  gtk_container_add (GTK_CONTAINER (window), label);
 
-	// Create GUI
-	createGUI(&solver);
-
-	// Start GTK main loop
-	gtk_main();
-
-	return 0;
+  gtk_widget_show_all (window);
 }
 
-// Function to load an image
-void loadImage(CrosswordSolver *solver, const char *path) {
-	solver->original_image = cv::imread(path, cv::IMREAD_COLOR);
-	if (solver->original_image.empty()) {
-		fprintf(stderr, "Error loading image\n");
-		return;
-	}
-	solver->image_path = strdup(path);
-}
+int
+main (int    argc,
+    char **argv)
+{
+  GtkApplication *app;
+  int status;
 
-// Function to convert image to grayscale
-void convertToGrayscale(CrosswordSolver *solver) {
-	cv::cvtColor(solver->original_image, solver->grayscale_image, cv::COLOR_BGR2GRAY);
-}
+  app = gtk_application_new ("org.gtk.example", G_APPLICATION_FLAGS_NONE);
+  g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
+  status = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
 
-// Function to create the GUI
-void createGUI(CrosswordSolver *solver) {
-	solver->window = gtk_window_new();
-	gtk_window_set_title(GTK_WINDOW(solver->window), "Crossword Solver");
-	gtk_window_set_default_size(GTK_WINDOW(solver->window), 800, 600);
-
-	GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-	gtk_window_set_child(GTK_WINDOW(solver->window), vbox);
-
-	GtkWidget *open_button = gtk_button_new_with_label("Open Image");
-	g_signal_connect(open_button, "clicked", G_CALLBACK(onOpenImage), solver);
-	gtk_box_append(GTK_BOX(vbox), open_button);
-
-	solver->image_widget = gtk_image_new();
-	gtk_box_append(GTK_BOX(vbox), solver->image_widget);
-
-	g_signal_connect(solver->window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-
-	gtk_widget_show(solver->window);
-}
-
-// Callback function for opening an image
-void onOpenImage(GtkWidget *widget, gpointer data) {
-	CrosswordSolver *solver = (CrosswordSolver *)data;
-
-	GtkWidget *dialog = gtk_file_chooser_dialog_new("Open Image",
-													GTK_WINDOW(solver->window),
-													GTK_FILE_CHOOSER_ACTION_OPEN,
-													"_Cancel", GTK_RESPONSE_CANCEL,
-													"_Open", GTK_RESPONSE_ACCEPT,
-													NULL);
-
-	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
-		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-		loadImage(solver, filename);
-		convertToGrayscale(solver);
-
-		// Display the image in the GUI
-		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
-		gtk_image_set_from_pixbuf(GTK_IMAGE(solver->image_widget), pixbuf);
-		g_object_unref(pixbuf);
-		g_free(filename);
-	}
-
-	gtk_window_destroy(GTK_WINDOW(dialog));
+  return status;
 }
