@@ -6,7 +6,7 @@ ocr_word_search_solver_fr-1.pdf
 *.o
 *.obj
 *.out
-
+compile_commands.json
 .idea/
 *~
 *.DotSettings.user
