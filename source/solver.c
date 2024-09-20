@@ -13,12 +13,12 @@ int Length(char word[]) {
 
 int Max(int a, int b) {
 	// returns the max between a and b
-	a > b ? a : b;
+	return a > b ? a : b;
 }
 
 int Min(int a, int b) {
 	//returns the min between a and b
-	a < b ? a : b;
+	return a < b ? a : b;
 }
 
 int Search(int row, int col, char mat[row][col], char word[], int r, int c, int len) {
