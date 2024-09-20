@@ -57,13 +57,9 @@ int Search(int row, int col, char mat[row][col], char word[], int r, int c, int 
 				ci += y[dir];
 			}
 		}
-		if (noStop) {
-			// we found our word
-			found = 0;
-		}
-		else {
-			dir++;
-		}
+
+		found = noStop;
+		dir++;
 	}
 
 
@@ -97,7 +93,7 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
 
 		while (r < row && !found) {
 			while ( c < col && !found) {
-				if (mat[r][c]==word[i]) {
+				if (mat[r][c] == word[i]) {
 					// call function ?
 					// have to check the rest of the matrice
 					found = Search(row, col, mat, word, r, c, len);
@@ -112,33 +108,65 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
 }
 
 int main() {
-        //char word[] = "Hello";
-	//char mat[][2] =  { {'a', 'b'}, {'c', 'd'} };
-	//printf("can %s be in our matrice ?\n", word);
-	//int result = Solver(2, 2, mat, word);
-	//if (!result) printf("it can\n");
-	//else printf("it cant\n");
-	//result = Solver(2, 2, mat, "Hi");
-	//if (!result) printf("it can\n");
-	//else printf("it cant\n");
-	//char mat23[][3] =  { {'a', 'b', 'c'}, {'d', 'e', 'f'} };
-	//result = Solver(2, 3, mat23, word);
-	//if (!result) printf("it can\n");
-	//else printf("it cant\n");
+
+//	char word[] = "Hello";
+//	char mat[][2] =  { {'a', 'b'}, {'c', 'd'} };
+//	
+//	printf("can %s be in our matrice ?\n", word);
+//	int result = Solver(2, 2, mat, word);
+//	if (!result) printf("it can\n");
+//	else printf("it cant\n");
+//	
+//	result = Solver(2, 2, mat, "Hi");
+//	if (!result) printf("it can\n");
+//	else printf("it cant\n");
+//
+//	char mat23[][3] =  { {'a', 'b', 'c'}, {'d', 'e', 'f'} };
+//	result = Solver(2, 3, mat23, word);
+//	if (!result) printf("it can\n");
+//	else printf("it cant\n");
 
 	char word[] = "Hi";
 	char mat[][2] =  { {'a', 'b'}, {'c', 'd'} };
 	int result = Solver(2, 2, mat, word);
 
-	printf("can %s be in our matrice ?\n", word);
-	if (!result) printf("it can\n");
+	printf("can %s be in our matrice mat ?\n", word);
+	if (result) printf("it can\n");
         else printf("it cant\n");
 
-	char mat2[][2] = { {'H', 'i'}, {'c', 'd'} };
-	result = Solver(2, 2, mat2, word);
-	if (!result) printf("it can\n");
+//	char mat2[][2] = { {'H', 'i'}, {'c', 'd'} };
+//	result = Solver(2, 2, mat2, word);
+//	if (result) printf("it can\n");
+//	else printf("it cant\n");
+
+//	char mat3[][2] = { {'H', 'o'}, {'i', 'd'} };
+//	result = Solver(2, 2, mat3, word);
+//	if (result) printf("it can\n");
+//	else printf("it cant\n");
+
+//	char mat4[][2] = { {'o', 'i'}, {'H', 'd'} };
+//	result = Solver(2, 2, mat4, word);
+//	if (result) printf("it can\n");
+//	else printf("it cant\n");
+
+//	char mat5[][2] = { {'H', 'o'}, {'p', 'i'} };
+//	result = Solver(2, 2, mat5, word);
+//	if (result) printf("it can\n");
+//	else printf("it cant\n");
+
+	printf("can %s be in our matrice rect ?\n", word);
+
+	char rect[][1] = { {'H'}, {'i'} };
+	result = Solver(2, 1, rect, word);
+        if (result) printf("it can\n");
         else printf("it cant\n");
 
+	char w[] = "Hello";
+	result = Solver(2, 1, rect, w);
+	
+	printf("can %s be in our matrice rect ?\n", w);
+        if (result) printf("it can\n");
+        else printf("it cant\n");
 
         // printf("the length of the word is %i\n", Length("Hello"));
         return 0;
