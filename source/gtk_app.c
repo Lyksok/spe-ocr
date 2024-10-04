@@ -34,7 +34,6 @@ GtkImage *load_image_from_file(GtkWidget *widget, gpointer data)
     g_free(filename); // frees the memory occupied by filename, bcs we don't need it anymore
   }
 
-  gtk_widget_destroy(dialog);
   return image;
 }
 /**
@@ -54,18 +53,18 @@ void create_menu_bar(GtkWidget *window)
   GtkWidget *save_menu_item;
 
   // Create a menu bar
-  menu_bar = gtk_menu_bar_new();
+  menu = gtk_menu_bar_new();
 
   // Create a file menu and add it to the menu bar
-  file_menu = gtk_menu_new();
-  file_menu_item = gtk_menu_item_new_with_label("File");
-  gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item), file_menu);
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file_menu_item);
+  menu = gtk_menu_new();
+  menu_file = gtk_menu_item_new_with_label("File");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_file), menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), menu_file);
 
   // Create load menu item in file_menu
   load_menu_item = gtk_menu_item_new_with_label("Open Image");
   g_signal_connect(load_menu_item, "activate", G_CALLBACK(load_image_from_file), window);
-  gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), load_menu_item);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), load_menu_item);
 
   // Create save menu item in file_menu
   save_menu_item = gtk_menu_item_new_with_label("Save Image as");
@@ -94,7 +93,9 @@ GtkImage* create_image(GtkWidget *widget, gpointer data){
   return image;
 }
 // ***** CREATE IMAGE MANIPULATION BUTTONS *****
-GtkWidget *rotation_buttons(){}
+GtkWidget *rotation_buttons(){
+    
+}
 
 
 /**
@@ -108,7 +109,7 @@ static void activate(GtkApplication *app)
   GtkWidget *label;
 
   window = gtk_application_window_new(app);
-  gtk_window_set_title(GTK_WINDOW(window), "OCR App for crosswords by Fanette Saury, Jans Guillopé and Lise Suzanne");
+  gtk_window_set_title(GTK_WINDOW(window), "OCR App for crosswords by Caroline Deliere, Fanette Saury, Jans Guillopé and Lise Suzanne");
   gtk_window_set_default_size(GTK_WINDOW(window), 200, 200);
 
   // Create a label widget
