@@ -32,23 +32,25 @@ int Search(int row, int col, char mat[row][col], char word[], int r, int c, int 
 	int i;
 	int ri;		// current row in our direction
 	int ci;		// current column in our direction
-	int found = 1;
-	int noStop = 0;	// use to check if we encounter a stopping case
+	int found = 0;
+	int noStop;	// use to check if we encounter a stopping case
 
 	while (dir < 8 && !found) {
 		ri = r + x[dir];
 		ci = c + y[dir];
 
 		i = 1;	// we already checked the first character before entering the function
+		noStop = 1;
 		
 		while (i < len && noStop) {
 			if (ri >= row || ri < 0 || ci >= col || ci < 0) {
+
 				// out of bounds
-				noStop = 1;
+				noStop = 0;
 			}
 			else if (mat[ri][ci] != word[i]) {
 				// no match
-				noStop = 1;
+				noStop = 0;
 			}
 			else {
 				// we have a match, we continue in our directions
@@ -63,7 +65,7 @@ int Search(int row, int col, char mat[row][col], char word[], int r, int c, int 
 	}
 
 
-	return found;
+	return !found;
 
 }
 
@@ -80,16 +82,22 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
         // The maximum number of characters a word can have in this grid
 
         if (len > max) {
-                return 1; // FALSE
+                return 1; // we have an error, convention is to return 1 
+			  // 1 == TRUE
         }
         else {
 		// it can be in term of size
-                // return 0; // TRUE
-		int r = 0;
-		int c = 0;
-		int i = 0;
+		// return 0 is used by convention to end a function normally 
+		// 1 == TRUE 
+		// 0 == FALSE 
 
-		char found = 1;
+
+		int r = 0;	// iterate over rows
+		int c = 0;	// iterate over columns
+		int i = 0;	// iterate over the word 
+
+		char found = 0;	// set to FALSE
+				// used to check if found or not
 
 		while (r < row && !found) {
 			while ( c < col && !found) {
@@ -103,7 +111,7 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
 			r++;
 		}
 
-		return found;
+		return !found;
         }
 }
 
@@ -131,7 +139,7 @@ int main() {
 	int result = Solver(2, 2, mat, word);
 
 	printf("can %s be in our matrice mat ?\n", word);
-	if (result) printf("it can\n");
+	if (result==0) printf("it can\n");
         else printf("it cant\n");
 
 //	char mat2[][2] = { {'H', 'i'}, {'c', 'd'} };
@@ -158,14 +166,14 @@ int main() {
 
 	char rect[][1] = { {'H'}, {'i'} };
 	result = Solver(2, 1, rect, word);
-        if (result) printf("it can\n");
+        if (result==0) printf("it can\n");
         else printf("it cant\n");
 
 	char w[] = "Hello";
 	result = Solver(2, 1, rect, w);
 	
 	printf("can %s be in our matrice rect ?\n", w);
-        if (result) printf("it can\n");
+        if (result==0) printf("it can\n");
         else printf("it cant\n");
 
         // printf("the length of the word is %i\n", Length("Hello"));
