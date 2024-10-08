@@ -43,11 +43,25 @@ void Hiv4(char * word) {
 	canIt(2, 2, mat, word);
 }
 
+void Mat(char * word) {
+        char mat[][4] =  { 
+		{'t', 'h', 'i', 's'}, 
+		{'i', 's', ' ', 'a'},
+       		{'t', 'e', 's', 't'}	};
+        canIt(3, 4, mat, word);
+}
+
 // int main(int argc, char *argv[]) 
 int main () {	
-	abcd("nothing");
-	Hiv0("Hi");
-	Hiv1("Hi");
-	Hiv0("Hello");
+//	abcd("nothing");
+//	Hiv0("Hi");
+//	Hiv1("Hi");
+//	Hiv0("Hello");
+	Mat("test");
+	Mat("is");
+	Mat("hi");
+	Mat("she");
+	Mat("st");
+	Mat("at");
         return 0;
 }

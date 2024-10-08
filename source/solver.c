@@ -45,11 +45,11 @@ int Search(int row, int col, char mat[row][col], char word[], int r, int c, int 
 		
 		while (i < len && noStop) {
 			if (ri >= row || ri < 0 || ci >= col || ci < 0) {
-				// out of bounds
+				// out of bounds, set to FALSE
 				noStop = 0;
 			}
 			else if (mat[ri][ci] != word[i]) {
-				// no match
+				// no match, set to FALSE
 				noStop = 0;
 			}
 			else {
@@ -94,17 +94,19 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
 
 		int r = 0;	// iterate over rows
 		int c = 0;	// iterate over columns
-		int i = 0;	// iterate over the word 
 
 		char found = 0;	// set to FALSE
 				// used to check if found or not
 
 		while (r < row && !found) {
 			while ( c < col && !found) {
-				if (mat[r][c] == word[i]) {
+				if (mat[r][c] == word[0]) {
 					// call function ?
 					// have to check the rest of the matrice
 					found = !Search(row, col, mat, word, r, c, len);
+					// we want to get TRUE if the function terminated normally
+					// the convention is to return 0 if terminated without problem
+					// but 0 means FALSE, so we !(result) in order to get the actual result
 				}
 				c++;
 			}
