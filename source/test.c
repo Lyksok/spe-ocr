@@ -3,8 +3,8 @@
 
 void canIt(int row, int col, char mat[row][col], char * word) {
         printf("Can %s be in our matrice : ", word);
-        int result = Solver(row, col, mat, word);
-        if (!result) printf("Yes !\n");
+        int result = !Solver(row, col, mat, word);
+        if (result) printf("Yes !\n");
         else printf("Nope\n");
 }
 
@@ -43,8 +43,11 @@ void Hiv4(char * word) {
 	canIt(2, 2, mat, word);
 }
 
-int main(int argc, char *argv[]) {
-	
-	
+// int main(int argc, char *argv[]) 
+int main () {	
+	abcd("nothing");
+	Hiv0("Hi");
+	Hiv1("Hi");
+	Hiv0("Hello");
         return 0;
 }

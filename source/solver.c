@@ -104,7 +104,7 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
 				if (mat[r][c] == word[i]) {
 					// call function ?
 					// have to check the rest of the matrice
-					found = Search(row, col, mat, word, r, c, len);
+					found = !Search(row, col, mat, word, r, c, len);
 				}
 				c++;
 			}
