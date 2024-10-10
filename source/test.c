@@ -3,7 +3,7 @@
 
 void canIt(int row, int col, char mat[row][col], char * word) {
         printf("Can %s be in our matrice : ", word);
-        int result = !Solver(row, col, mat, word);
+        int result = Solver(row, col, mat, word);
         if (result) printf("Yes !\n");
         else printf("Nope\n");
 }

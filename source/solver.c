@@ -30,7 +30,7 @@ int Search(int row, int col, char mat[row][col], char word[], int r, int c, int 
 	int y[] = { -1, 0, 1, -1, 1, -1, 0, 1 };	// columns
 	
 	int dir = 0;
-	int i;
+	int i;		// current index in our word
 	int ri;		// current row in our direction
 	int ci;		// current column in our direction
 	int found = 0;	// set to false at the beginning
@@ -65,7 +65,7 @@ int Search(int row, int col, char mat[row][col], char word[], int r, int c, int 
 	}
 
 
-	return !found;
+	return found;
 
 }
 
@@ -82,12 +82,15 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
         // The maximum number of characters a word can have in this grid
 
         if (len > max) {
-                return 1; // we have an error, convention is to return 1 
+                return 0; // we have an error, convention is to return 1 
 			  // 1 == TRUE
+			  // BUT WE DONT CARE, I'm just doing a true/false
+			  // so let's return 0 (false)
         }
         else {
 		// it can be in term of size
 		// return 0 is used by convention to end a function normally 
+		// BUT here we don't care about convention as it is a true/false 
 		// 1 == TRUE 
 		// 0 == FALSE 
 
@@ -103,7 +106,7 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
 				if (mat[r][c] == word[0]) {
 					// call function ?
 					// have to check the rest of the matrice
-					found = !Search(row, col, mat, word, r, c, len);
+					found = Search(row, col, mat, word, r, c, len);
 					// we want to get TRUE if the function terminated normally
 					// the convention is to return 0 if terminated without problem
 					// but 0 means FALSE, so we !(result) in order to get the actual result
@@ -113,7 +116,7 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
 			r++;
 		}
 
-		return !found;
+		return found;
         }
 }
 
