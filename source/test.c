@@ -2,7 +2,7 @@
 #include "solver.h"
 
 void canIt(int row, int col, char mat[row][col], char * word) {
-        printf("Can %s be in our matrice : ", word);
+        printf("Can \"%s\" be in our matrice : ", word);
         int result = Solver(row, col, mat, word);
         if (result) printf("Yes !\n");
         else printf("Nope\n");
@@ -58,10 +58,16 @@ int main () {
 //	Hiv1("Hi");
 //	Hiv0("Hello");
 	Mat("test");
-	Mat("is");
-	Mat("hi");
-	Mat("she");
-	Mat("st");
-	Mat("at");
+	Mat("s ");
+	Mat("");
+	Mat("back");
+//	Mat("is");
+//	Mat("hi");
+//	Mat("she");
+//	Mat("st");
+//	Mat("at");
+//	Mat(" t");
+//	Mat("t h");
+//	Mat("tas");
         return 0;
 }

@@ -98,9 +98,13 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
 		char found = 0;	// set to FALSE
 				// used to check if found or not
 
+		// printf("\nsearching for %s", word);
 		while (r < row && !found) {
+			c = 0;
 			while ( c < col && !found) {
+				// printf("\nThe current character is '%c'", mat[r][c]);
 				if (mat[r][c] == word[0]) {
+					// printf(" : we have a match !");
 					// we have a match with the first letter of the word
 					// thus we check the rest of the word is in the matrice
 					found = Search(row, col, mat, word, r, c, len);

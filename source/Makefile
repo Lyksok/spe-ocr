@@ -2,7 +2,7 @@ CC = gcc
 
 TARGET = test
 SOURCES = solver.c test.c
-FLAGS = -Wall -Wextra
+FLAGS = -Wall -Wextra -Werror
 
 all: $(TARGET)
 
