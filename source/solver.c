@@ -75,14 +75,14 @@ int Search(int row, int col, char mat[row][col],
 }
 
 int Solver(int row, int col, char mat[row][col], char word[]) {
-	    // Takes a matrice of characters and a word
-		// The function is case sensitive for now :
-		// it does not check for variance in capital and lower letters !
-	    // Returns (for now) if the word can be in the matrice or not
-	    // --> The only thing checked for now is if the word can be included in terms of size
+	// Takes a matrice of characters and a word
+	// The function is case sensitive for now :
+	// it does not check for variance in capital and lower letters !
+	// Returns (for now) if the word can be in the matrice or not
+	// --> The only thing checked for now is if the word can be included in terms of size
 
         int len = Length(word);
-		int max = Max(row, col);
+	int max = Max(row, col);
         // int max = row > col ? row : col;
         // The maximum number of characters a word can have in this grid
 
@@ -96,7 +96,7 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
 		int c = 0;	// iterate over columns
 
 		char found = 0;	// set to FALSE
-						// used to check if found or not
+				// used to check if found or not
 
 		while (r < row && !found) {
 			while ( c < col && !found) {
