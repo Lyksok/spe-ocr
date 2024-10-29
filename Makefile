@@ -1,15 +1,17 @@
 CC = gcc
 FLAGS = -Wall -Wextra -fsanitize=address
 
+
 # Imported packages
 PKGS = `pkg-config --cflags --libs gtk+-3.0`
 LIBS = -lSDL2 -lSDL2_image
 
 # Source files
-SRC = source/gtk_app.c
+SRC = source/gtk/gtk_app.c source/gtk/splash_screen.c
 
 # Output executable
-TARGET = source/gtk_app
+TARGET = app_launcher
+
 
 all: $(TARGET)
 
