@@ -1,9 +1,9 @@
 #include <gtk/gtk.h>
+#include <stdio.h>
 
 // Callback functions begin with "on_"
 // All function names are in snake_case
 // reminder : GTK_WIDGET is a macro that casts the pointer to a GtkWidget, just conventional
-
 
 /**
  * @brief Opens a file chooser dialog to select and load an image file
@@ -11,42 +11,59 @@
  * @param data for the parent window
  * @return return image absolute path as a string
  */
-char* open_file_dialog(GtkWidget *widget, gpointer data) {
-    GtkWidget *dialog;
-    GtkFileChooser *chooser;
-    GtkWidget *window = GTK_WIDGET(data);
-    char *filename = NULL;
 
-    // Create a file chooser dialog
-    dialog = gtk_file_chooser_dialog_new("Open Image File",
-                                         GTK_WINDOW(window),
-                                         GTK_FILE_CHOOSER_ACTION_OPEN,
-                                         "_Cancel", GTK_RESPONSE_CANCEL,
-                                         "_Open", GTK_RESPONSE_ACCEPT,
-                                         NULL);
+GdkPixbuf* image_to_pixbuf(GtkImage *image)
+{
+  GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, image->width, image->height);
+  int width = gdk_pixbuf_get_width(pixbuf);
+  int height = gdk_pixbuf_get_height(pixbuf);
+  // nchannels = 3 for RGB, 4 for RGBA
+  int n_channels = gdk_pixbuf_get_n_channels(pixbuf);
+  // rowstride = width * n_channels
+  int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+  // pixels = pointer to the pixel data
+  unsigned char *pixels = gdk_pixbuf_get_pixels(pixbuf);
 
-    // Run the dialog and check the response
-    if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
-        chooser = GTK_FILE_CHOOSER(dialog);
-        filename = gtk_file_chooser_get_filename(chooser); // Get the selected file ABSOLUTE path
-
-        // Load the image
-        GtkWidget *image = gtk_image_new_from_file(filename);
-        if (image) {
-            // Add the image to the window or a container
-            gtk_container_add(GTK_CONTAINER(window), image);
-            gtk_widget_show_all(window);
-        } else {
-            g_print("Failed to load image: %s\n", filename);
-            g_free(filename);
-            filename = NULL;
-        }
+  for (int x = 0; x < width; x++)
+  {
+    for (int y = 0; y < height;y++)
+    {
+      unsigned char *pix = pixels + x * n_channels + y * rowstride;
+            pix[0] = image->pixels[x][y].r;
+            pix[1] = image->pixels[x][y].g;
+            pix[2] = image->pixels[x][y].b;
+            pix[3] = 255;
     }
+  }
 
-    gtk_widget_destroy(dialog);
-    return filename;
+  return pixbuf;
 }
 
+char *open_file_dialog(GtkWidget *widget, gpointer data)
+{
+  GtkWidget *dialog;
+  GtkFileChooser *chooser;
+  GtkWidget *window = GTK_WIDGET(data);
+  char *filename = NULL;
+
+  // Create a file chooser dialog
+  dialog = gtk_file_chooser_dialog_new("Open Image File",
+                                       GTK_WINDOW(window),
+                                       GTK_FILE_CHOOSER_ACTION_OPEN,
+                                       "_Cancel", GTK_RESPONSE_CANCEL,
+                                       "_Open", GTK_RESPONSE_ACCEPT,
+                                       NULL);
+
+  // Treat the user's response to the file chooser dialog
+  if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT)
+  {
+    chooser = GTK_FILE_CHOOSER(dialog);
+    filename = gtk_file_chooser_get_filename(chooser); // Get the selected file ABSOLUTE path
+  }
+
+  gtk_widget_destroy(dialog);
+  return filename;
+}
 GtkImage *save_file_dialog(GtkWidget *widget, gpointer data)
 {
   // GtkWidget *dialog;
@@ -69,7 +86,7 @@ GtkImage *init_image_widget(GtkWidget *parent, const char *sample_image_path)
   GtkImage *image = GTK_IMAGE(gtk_image_new_from_file(sample_image_path));
   // gtk_widget_set_size_request(GTK_WIDGET(image), 450, 450); // Set the size of the placeholder image
 
-    return image;
+  return image;
 }
 
 /**
@@ -79,39 +96,40 @@ GtkImage *init_image_widget(GtkWidget *parent, const char *sample_image_path)
  */
 void on_load_image_from_file(GtkWidget *widget, gpointer data)
 {
-    const char *filename = (const char *)data;
+  GtkWidget *image_widget = GTK_WIDGET(data);
+  GtkWidget *parent = gtk_widget_get_parent(image_widget);
 
-    if (filename != NULL)
+  // Open file dialog to get the image path
+  char *filename = open_file_dialog(widget, parent);
+  printf("path : %s\n", filename); // TODO DEBUG comment
+
+  if (filename != NULL)
+  {
+    // Load the new image
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
+    if (pixbuf != NULL)
     {
-        GtkWidget *parent = gtk_widget_get_parent(GTK_WIDGET(widget));
-        if (GTK_IS_WIDGET(parent))
-        {
-            // Load the new image
-            GtkWidget *new_image = gtk_image_new_from_file(filename);
-            if (new_image != NULL)
-            {
-                // Remove the old image
-                gtk_widget_destroy(GTK_WIDGET(widget));
+      // Remove the old image
+      gtk_container_remove(GTK_CONTAINER(parent), image_widget);
 
-                // Add the new image to the parent container
-                gtk_box_pack_start(GTK_BOX(parent), new_image, TRUE, TRUE, 0);
-                gtk_widget_show_all(new_image);
-            }
-    // DEBUG : Warnings
-            else
-            {
-                g_warning("Failed to load image: %s", filename);
-            }
-        }
-        else
-        {
-            g_warning("Parent widget is not valid.");
-        }
+      // Create a new image widget from the pixbuf
+      GtkWidget *new_image = gtk_image_new_from_pixbuf(pixbuf);
+      g_object_unref(pixbuf); // Free the pixbuf
+
+      // Add the new image to the parent container
+      gtk_box_pack_start(GTK_BOX(parent), new_image, TRUE, TRUE, 0);
+      gtk_widget_show_all(parent);
     }
     else
     {
-        g_warning("Filename is NULL.");
+      g_warning("Failed to load image: %s", filename);
     }
+    g_free(filename);
+  }
+  else
+  {
+    g_warning("No file selected.");
+  }
 }
 /**
  * @brief Creates a button widget.
@@ -137,7 +155,7 @@ GtkWidget *init_button(const char *label, GCallback callback, gpointer data)
  * GTK window. It adds the menu items to load and save image from a file explorer.
  * @param window A pointer to the GTK window where the menu bar will be added.
  */
-GtkWidget *init_menu_bar(GtkWidget *window)
+GtkWidget *init_menu_bar(GtkWidget *window, GtkWidget *image_widget)
 {
   GtkWidget *menu_bar, *file_menu, *file_menu_item, *load_menu_item, *save_menu_item;
 
@@ -152,23 +170,23 @@ GtkWidget *init_menu_bar(GtkWidget *window)
 
   // Creates load menu item => file_menu
   load_menu_item = gtk_menu_item_new_with_label("Load Image");
-  g_signal_connect(load_menu_item, "activate", G_CALLBACK(on_load_image_from_file), window);
+  g_signal_connect(load_menu_item, "activate", G_CALLBACK(on_load_image_from_file), image_widget);
   gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), load_menu_item);
 
   // Creates save menu item => file_menu
   save_menu_item = gtk_menu_item_new_with_label("Save Image");
   g_signal_connect(save_menu_item, "activate", G_CALLBACK(save_file_dialog), window);
   gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save_menu_item);
-  // Add menu_bar => window
+
   return menu_bar;
 }
 /**
  * @brief Activates the app. Precisely, it lays out the widgets and connects the signals.
  * @param app A pointer to the GtkApplication instance.
  */
-static void activate(GtkApplication *app)
-{
-    GtkWidget *window, *image, *button, *menu_bar, *vbox, *hbox, *vbox_buttons, *empty_box;
+static void activate(GtkApplication *app) {
+    GtkWidget *window, *image, *button, *menu_bar, *vbox, *hbox, *vbox_buttons;
+
     // declare pointers on the objects to be initialised
     // ORDER OF WIDGETS DECLARATION IS DETEMINANT FOR THE ORDER OF DISPLAY !!!
     window = gtk_application_window_new(app);
@@ -180,14 +198,14 @@ static void activate(GtkApplication *app)
     gtk_container_set_border_width(GTK_CONTAINER(vbox), 10);
     gtk_container_add(GTK_CONTAINER(window), vbox);
 
-    menu_bar = init_menu_bar(window);
+    // Initialize the image widget with a sample image
+    image = gtk_image_new_from_file("images/abstract_background.jpg");
+
+    menu_bar = init_menu_bar(window, image);
     gtk_box_pack_start(GTK_BOX(vbox), menu_bar, FALSE, FALSE, 0);
 
     hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
-
-    // Initialize the image widget with a sample image
-    image = GTK_WIDGET(init_image_widget(hbox, "images/abstract_background.jpg"));
 
     gtk_widget_set_halign(image, GTK_ALIGN_CENTER);
     gtk_widget_set_valign(image, GTK_ALIGN_CENTER);
@@ -198,14 +216,12 @@ static void activate(GtkApplication *app)
 
     // Handy loop to add multiple buttons to the right column
     const char *button_labels[] = {"Grayscale", "Binarize", "Rotate"};
-    for (int i = 0; i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
-    {
+    for (int i = 0; i < sizeof(button_labels) / sizeof(button_labels[0]); i++) {
         button = init_button(button_labels[i], NULL, NULL);
-        // gtk_widget_set_size_request(button, 100, 50);
         gtk_box_pack_start(GTK_BOX(vbox_buttons), button, FALSE, FALSE, 0);
     }
 
-     // Proportional parameters to resize the widgets if the window is resized
+    // Proportional parameters to resize the widgets if the window is resized
     gtk_widget_set_hexpand(image, TRUE);
     gtk_widget_set_vexpand(image, TRUE);
     gtk_widget_set_hexpand(vbox_buttons, TRUE);
@@ -213,7 +229,6 @@ static void activate(GtkApplication *app)
 
     gtk_widget_show_all(window);
 }
-
 
 /**
  * @brief Main function to run the GTK application.
@@ -234,7 +249,7 @@ int main(int argc, char **argv)
   // "activate" signal connection
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL); // connects the "activate" signal to the "activate" function
 
- /*  Run event loop  */
+  /*  Run event loop  */
   status = g_application_run(G_APPLICATION(app), argc, argv);
   g_object_unref(app);
 
