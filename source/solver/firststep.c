@@ -10,6 +10,48 @@ void FreeMat(char **mat, int n)
 	free(mat);
 }
 
+char* Readline(FILE *file) {
+	/*
+	 * capacity : initial buffer size
+	 * length : index of the length of the line
+	 * line : an array that will hold the line
+	 * c : return value of fgetc()
+	 */
+	int capacity = 10;
+	int length = 0;
+	char *line = malloc(capacity * sizeof(char));
+	int c;
+
+	if (!line) {
+		printf("Memory allocation failed\n");
+		return NULL;
+	}
+
+	while ((c = fgetc(file)) != EOF && c != '\n') {
+		// Resize the buffer if it's full
+		if (length + 1 >= capacity) {
+			capacity *= 2; // Double the buffer size
+			char *new_line = realloc(line, capacity * sizeof(char));
+			if (!new_line) {
+				free(line);
+				printf("Memory allocation failed\n");
+				return NULL;
+			}
+		    line = new_line;
+		}
+		line[length++] = c;  // Append the character to the line
+	}
+
+	// If EOF is reached without any characters read, return NULL
+	if (length == 0 && c == EOF) {
+		free(line);
+		return NULL;
+	}
+
+	line[length] = '\0'; // Null-terminate the line
+	return line;
+}
+
 int First(char *filename, char word[])
 {
         ToUpper(word);
