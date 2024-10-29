@@ -309,7 +309,7 @@ GtkWidget *init_menu_bar(GtkWidget *window, GtkWidget *image_widget)
 
   // Creates save menu item => file_menu
   save_menu_item = gtk_menu_item_new_with_label("Save Image");
-  g_signal_connect(save_menu_item, "activate", G_CALLBACK(on_save_image), window);
+  g_signal_connect(save_menu_item, "activate", G_CALLBACK(on_save_image), image_widget);
   gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save_menu_item);
 
   return menu_bar;
