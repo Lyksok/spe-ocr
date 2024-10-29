@@ -199,4 +199,3 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
 		return found;
         }
 }
-
