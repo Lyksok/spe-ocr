@@ -27,12 +27,18 @@ GdkPixbuf* image_to_pixbuf(GtkImage *image)
     guchar *pixels = gdk_pixbuf_get_pixels(original_pixbuf);
 
     pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
+    if (pixbuf == NULL)
+    {
+      g_warning("New pixbuf creation failed");
+      return NULL;
+    }
     guchar *new_pixels = gdk_pixbuf_get_pixels(pixbuf);
 
     for (int y = 0; y < height; y++)
     {
       for (int x = 0; x < width; x++)
       {
+        // Copy all of the pixel data from the original pixbuf to the new pixbuf
         guchar *src_pixel = pixels + y * rowstride + x * n_channels;
         guchar *dest_pixel = new_pixels + y * gdk_pixbuf_get_rowstride(pixbuf) + x * 4;
 
@@ -118,7 +124,8 @@ void on_change_image(GtkWidget *widget, gpointer data)
   if (filename != NULL)
   {
     // Load the new image
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
+    GtkWidget *new_image_widget = gtk_image_new_from_file(filename);
+    GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(new_image_widget));
     if (pixbuf != NULL)
     {
       // Convert the image to pixbuf
