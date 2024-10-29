@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+
 #include "solver.h"
 
 // 1 == TRUE 
@@ -51,11 +53,12 @@ void ToUpper(char word[])
  * We only enter this function when we found a match for the first letter
  * mat : a matrice of characters
  * word : the word to search for
- * len : the length of the word
+ * n : the length of the word
  * Returns True or False if the word is found
  */
 int Search(int row, int col, char mat[row][col], 
-	char word[], int r, int c, int len) 
+	char word[], int r, int c, int n,
+	int *er, int *ec)
 {
 	/*
 	 * will give us the direction in which to search
@@ -94,8 +97,10 @@ int Search(int row, int col, char mat[row][col],
 		// set to True
 		noStop = 1;
 		
-		while (i < len && noStop)
+		while (i < n && noStop)
 		{
+			*er = ri;
+			*ec = ci;
 			if (ri >= row || ri < 0 || ci >= col || ci < 0)
 			{
 				// out of bounds :
@@ -122,9 +127,7 @@ int Search(int row, int col, char mat[row][col],
 		dir++;
 	}
 
-
 	return found;
-
 }
 
 /*
@@ -143,17 +146,28 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
 	// if the word is bigger than what is possible :
 	// return False
         if (len > max)
+	{
+		printf("Not Found\n");
                 return 0;
+	}
         else
 	{
 		/*
 		 * r : to iterate over rows
 		 * c : to iterate over columns
 		 * found : boolean, have we found it, set to False
+		 * mr : last row if match
+		 * mc : last column if match
+		 * er : ending row if it exists
+		 * ec : ending column if it exists
 		 */
 		int r = 0;
 		int c = 0;
 		char found = 0;
+		int mr = 0;
+		int mc = 0;
+		int *er = calloc(1, sizeof(int));
+		int *ec = calloc(1, sizeof(int));
 
 		while (r < row && !found)
 		{
@@ -164,13 +178,24 @@ int Solver(int row, int col, char mat[row][col], char word[]) {
 				{
 					// the first letter of the word match
 					// we check for the rest
-					found = Search(row, col, mat, word, r, c, len);
+					mr = r;
+					mc = c;
+					found = Search(row, col, mat,
+							word, mr, mc, len,
+							er, ec);
 				}
 				c++;
 			}
 			r++;
 		}
 
+		if (found)
+			printf("(%i,%i)(%i,%i)\n", mr, mc, *er, *ec);
+		else
+			printf("Not Found\n");
+
+		free(er);
+		free(ec);
 		return found;
         }
 }

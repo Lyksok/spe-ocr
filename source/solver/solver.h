@@ -5,7 +5,11 @@ int Length(char word[]);
 int Max(int a, int b);
 int Min(int a, int b);
 void ToUpper(char word[]);
-int Search(int row, int col, char mat[row][col], char word[], int r, int c, int len);
+int Search(
+	int row, int col, char mat[row][col],
+	char word[], int r, int c, int n,
+	int *er, int *ec
+	);
 int Solver(int row, int col, char mat[row][col], char word[]);
 
 #endif
