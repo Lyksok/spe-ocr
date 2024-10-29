@@ -1,39 +1,51 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 
+// TODO refactoring of function names !
 // Callback functions begin with "on_"
 // All function names are in snake_case
 // reminder : GTK_WIDGET is a macro that casts the pointer to a GtkWidget, just conventional
 
+#pragma region "Image Management"
+
 /**
- * @brief Opens a file chooser dialog to select and load an image file
- * @param widget The widget that triggered the function
- * @param data for the parent window
- * @return return image absolute path as a string
+ * @brief Structure to represent a pixel in an image.
+ * @return Pixbuf from image provided
  */
 
 GdkPixbuf* image_to_pixbuf(GtkImage *image)
 {
-  GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, image->width, image->height);
-  int width = gdk_pixbuf_get_width(pixbuf);
-  int height = gdk_pixbuf_get_height(pixbuf);
-  // nchannels = 3 for RGB, 4 for RGBA
-  int n_channels = gdk_pixbuf_get_n_channels(pixbuf);
-  // rowstride = width * n_channels
-  int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
-  // pixels = pointer to the pixel data
-  unsigned char *pixels = gdk_pixbuf_get_pixels(pixbuf);
+  GdkPixbuf *pixbuf = NULL;
+  GdkPixbuf *original_pixbuf = gtk_image_get_pixbuf(image);
 
-  for (int x = 0; x < width; x++)
+  if (original_pixbuf != NULL)
   {
-    for (int y = 0; y < height;y++)
+    int width = gdk_pixbuf_get_width(original_pixbuf);
+    int height = gdk_pixbuf_get_height(original_pixbuf);
+    int n_channels = gdk_pixbuf_get_n_channels(original_pixbuf);
+    int rowstride = gdk_pixbuf_get_rowstride(original_pixbuf);
+    guchar *pixels = gdk_pixbuf_get_pixels(original_pixbuf);
+
+    pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
+    guchar *new_pixels = gdk_pixbuf_get_pixels(pixbuf);
+
+    for (int y = 0; y < height; y++)
     {
-      unsigned char *pix = pixels + x * n_channels + y * rowstride;
-            pix[0] = image->pixels[x][y].r;
-            pix[1] = image->pixels[x][y].g;
-            pix[2] = image->pixels[x][y].b;
-            pix[3] = 255;
+      for (int x = 0; x < width; x++)
+      {
+        guchar *src_pixel = pixels + y * rowstride + x * n_channels;
+        guchar *dest_pixel = new_pixels + y * gdk_pixbuf_get_rowstride(pixbuf) + x * 4;
+
+        dest_pixel[0] = src_pixel[0]; // Red
+        dest_pixel[1] = src_pixel[1]; // Green
+        dest_pixel[2] = src_pixel[2]; // Blue
+        dest_pixel[3] = (n_channels == 4) ? src_pixel[3] : 255; // Alpha
+      }
     }
+  }
+  else
+  {
+    g_warning("image_to_pixbuf: Invalid image");
   }
 
   return pixbuf;
@@ -76,7 +88,7 @@ GtkImage *save_file_dialog(GtkWidget *widget, gpointer data)
 
 /**
  * @brief Creates a GtkImage widget.
- * Initializes and returns a new GtkImage widget.
+ * Initializes and returns a new GtkImage widget with sample image.
  * @param widget The triggering GtkWidget.
  * @param data Additional data for image creation.
  * @return A pointer to the new GtkImage.
@@ -90,11 +102,11 @@ GtkImage *init_image_widget(GtkWidget *parent, const char *sample_image_path)
 }
 
 /**
- * @brief Callback function to load an image and update the image widget
+ * @brief Callback function to change the current image with a new image and pass it to image_to_pixbuf
  * @param widget The widget that triggered the function
  * @param data Pointer to the image widget to be updated
  */
-void on_load_image_from_file(GtkWidget *widget, gpointer data)
+void on_change_image(GtkWidget *widget, gpointer data)
 {
   GtkWidget *image_widget = GTK_WIDGET(data);
   GtkWidget *parent = gtk_widget_get_parent(image_widget);
@@ -109,16 +121,26 @@ void on_load_image_from_file(GtkWidget *widget, gpointer data)
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
     if (pixbuf != NULL)
     {
-      // Remove the old image
-      gtk_container_remove(GTK_CONTAINER(parent), image_widget);
+      // Convert the image to pixbuf
+      GdkPixbuf *new_pixbuf = image_to_pixbuf(GTK_IMAGE(image_widget));
+      if (new_pixbuf != NULL)
+      {
+        // Remove the old image
+        gtk_container_remove(GTK_CONTAINER(parent), image_widget);
 
-      // Create a new image widget from the pixbuf
-      GtkWidget *new_image = gtk_image_new_from_pixbuf(pixbuf);
-      g_object_unref(pixbuf); // Free the pixbuf
+        // Create a new image widget from the new pixbuf
+        GtkWidget *new_image = gtk_image_new_from_pixbuf(new_pixbuf);
+        g_object_unref(new_pixbuf); // Free the new pixbuf
 
-      // Add the new image to the parent container
-      gtk_box_pack_start(GTK_BOX(parent), new_image, TRUE, TRUE, 0);
-      gtk_widget_show_all(parent);
+        // Add the new image to the parent container
+        gtk_box_pack_start(GTK_BOX(parent), new_image, TRUE, TRUE, 0);
+        gtk_widget_show_all(parent);
+      }
+      else
+      {
+        g_warning("Failed to convert image to pixbuf.");
+      }
+      g_object_unref(pixbuf); // Free the original pixbuf
     }
     else
     {
@@ -131,6 +153,9 @@ void on_load_image_from_file(GtkWidget *widget, gpointer data)
     g_warning("No file selected.");
   }
 }
+
+#pragma endregion "Image Management"
+#pragma region "GUI Management"
 /**
  * @brief Creates a button widget.
  *
@@ -170,7 +195,7 @@ GtkWidget *init_menu_bar(GtkWidget *window, GtkWidget *image_widget)
 
   // Creates load menu item => file_menu
   load_menu_item = gtk_menu_item_new_with_label("Load Image");
-  g_signal_connect(load_menu_item, "activate", G_CALLBACK(on_load_image_from_file), image_widget);
+  g_signal_connect(load_menu_item, "activate", G_CALLBACK(on_change_image), image_widget);
   gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), load_menu_item);
 
   // Creates save menu item => file_menu
@@ -180,6 +205,8 @@ GtkWidget *init_menu_bar(GtkWidget *window, GtkWidget *image_widget)
 
   return menu_bar;
 }
+#pragma endregion "GUI Management"
+#pragma region "App activation"
 /**
  * @brief Activates the app. Precisely, it lays out the widgets and connects the signals.
  * @param app A pointer to the GtkApplication instance.
@@ -255,3 +282,4 @@ int main(int argc, char **argv)
 
   return status;
 }
+#pragma endregion "App activation"
