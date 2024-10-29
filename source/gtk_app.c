@@ -75,13 +75,44 @@ GdkPixbuf *image_to_pixbuf(GtkImage *image)
  * @param widget The widget that triggers the dialog.
  * @param data User data passed to the function.
  * @return GtkImage* The image selected in the dialog.
- * @note Nothing is freed
+ * @note Only the filename is freed // TODO rework
  */
-GtkImage *save_file_dialog(GtkWidget *widget, gpointer data)
+void *on_save_image(GtkWidget *widget, gpointer data)
 {
-  GtkWidget *image = NULL;
-  // TODO
-  return GTK_IMAGE(image);
+  /**
+   * TODO add gtk_file_chooser_get_create_folders, gets whether file choser will offer to create new folders. See gtk_file_chooser_set_create_folders().
+
+since: 2.18 */
+  GtkWidget *dialog;
+  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+  gint res;
+  // TODO understand gtk_widget_get_toplevel
+  dialog = gtk_file_chooser_dialog_new("Save File",
+                                       GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+                                       action,
+                                       "_Cancel", GTK_RESPONSE_CANCEL,
+                                       "_Save", GTK_RESPONSE_ACCEPT,
+                                       NULL);
+  res = gtk_dialog_run(GTK_DIALOG(dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+  {
+    char *filename;
+    GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
+    filename = gtk_file_chooser_get_filename(chooser);
+    // Save the image
+    GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+    if (pixbuf != NULL)
+    {
+      /**TODO there must be an elegant way
+      Ensure the filename has a .png extension*/
+      const char *extension = ".png";
+      char *filename_with_extension = g_strconcat(filename, extension, NULL);
+      gdk_pixbuf_save(pixbuf, filename_with_extension, "png", NULL, NULL);
+      g_free(filename_with_extension);
+    }
+    gtk_widget_destroy(dialog);
+    g_free(filename);
+  }
 }
 
 /**
@@ -118,17 +149,6 @@ GdkPixbuf *load_pixbuf(const char *file_path)
 void display_pixbuf(GtkWidget *image_widget, GdkPixbuf *pixbuf)
 {
   gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), pixbuf);
-}
-
-/**
- * @brief Saves a pixbuf to a file.
- * @param pixbuf The pixbuf to save.
- * @param file_path The path to save the file to as a png. The png format was chosen to preserve transparency!
- * @note The pixbuf is not freed
- */
-void save_pixbuf(GdkPixbuf *pixbuf, const char *file_path)
-{
-  gdk_pixbuf_save(pixbuf, file_path, "png", NULL, NULL);
 }
 
 /**
@@ -277,7 +297,7 @@ GtkWidget *init_menu_bar(GtkWidget *window, GtkWidget *image_widget)
 
   // Creates a menu bar
   menu_bar = gtk_menu_bar_new();
-
+  // TODO remove possible legacy code
   // Creates a file menu => menu bar
   file_menu = gtk_menu_new();
   file_menu_item = gtk_menu_item_new_with_label("File");
@@ -291,7 +311,7 @@ GtkWidget *init_menu_bar(GtkWidget *window, GtkWidget *image_widget)
 
   // Creates save menu item => file_menu
   save_menu_item = gtk_menu_item_new_with_label("Save Image");
-  g_signal_connect(save_menu_item, "activate", G_CALLBACK(save_file_dialog), window);
+  g_signal_connect(save_menu_item, "activate", G_CALLBACK(on_save_image), window);
   gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save_menu_item);
 
   return menu_bar;
