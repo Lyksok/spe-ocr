@@ -1,13 +1,9 @@
-#include <gtk/gtk.h>
-#include <stdio.h>
+#include "gtk_app.h"
+#include "splash_screen.h"
 
 // TODO refactoring of function names !
 // Callback functions begin with "on_"
 // All function names are in snake_case
-
-#define IMAGE_WIDTH 600
-#define IMAGE_HEIGHT 600
-#define SAMPLE_IMAGE_PATH "images/abstract_background.jpg"
 
 #pragma region "Image Management"
 
@@ -322,15 +318,27 @@ GtkWidget *init_menu_bar(GtkWidget *window, GtkWidget *image_widget)
  */
 static void activate(GtkApplication *app)
 {
+
+  // Show the splash screen defined in splash_screen.c
+  show_splash_screen(app);
+
   GtkWidget *window, *image, *button, *menu_bar, *grid, *vbox_buttons;
   GdkPixbuf *pixbuf, *resized_pixbuf, *final_pixbuf;
-
-  const int image_width = IMAGE_WIDTH;
-  const int image_height = IMAGE_HEIGHT;
 
   // Create the main application window
   window = gtk_application_window_new(app);
   gtk_window_set_title(GTK_WINDOW(window), "OCR App for Crosswords");
+  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+
+  /**  Get screen size preperties  */
+  GdkDisplay *display = gdk_display_get_default();
+  GdkMonitor *current_monitor = gdk_display_get_primary_monitor(display);
+  GdkRectangle monitor_geometry;
+  gdk_monitor_get_geometry(current_monitor, &monitor_geometry);
+  int screen_height = monitor_geometry.height;
+  int screen_width = monitor_geometry.width;
+
+  gtk_window_set_default_size(GTK_WINDOW(window), screen_width, screen_height);
 
   // Create a grid container
   grid = gtk_grid_new();
@@ -338,14 +346,14 @@ static void activate(GtkApplication *app)
   gtk_container_add(GTK_CONTAINER(window), grid);
 
   // Create a white pixbuf of the specified size
-  pixbuf = create_alpha_pixbuf(image_width, image_height);
+  pixbuf = create_alpha_pixbuf(IMAGE_WIDTH, IMAGE_HEIGHT);
 
   // Load and resize the image
   GdkPixbuf *loaded_pixbuf = load_pixbuf(SAMPLE_IMAGE_PATH);
-  resized_pixbuf = resize_pixbuf(loaded_pixbuf, image_width, image_height);
+  resized_pixbuf = resize_pixbuf(loaded_pixbuf, IMAGE_WIDTH, IMAGE_HEIGHT);
 
   // Add white borders if necessary
-  final_pixbuf = calculate_white_borders(resized_pixbuf, image_width, image_height);
+  final_pixbuf = calculate_white_borders(resized_pixbuf, IMAGE_WIDTH, IMAGE_HEIGHT);
   image = gtk_image_new_from_pixbuf(final_pixbuf);
 
   // Initialize the menu bar

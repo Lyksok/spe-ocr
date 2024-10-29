@@ -6,7 +6,7 @@
 // CONSTANTS
 #define IMAGE_WIDTH 600
 #define IMAGE_HEIGHT 600
-#define SAMPLE_IMAGE_PATH "images/abstract_background.jpg
+#define SAMPLE_IMAGE_PATH "images/abstract_background.jpg"
 
 // FUNCTION DECLARATIONS
 
@@ -26,7 +26,7 @@ GtkWidget *init_button(const char *label, GCallback callback, gpointer data);
 GtkWidget *init_menu_bar(GtkWidget *window, GtkWidget *image_widget);
 
 // App activation
-void activate(GtkApplication *app);
+static void activate(GtkApplication *app);
 int main(int argc, char **argv);
 
-#endif // GTK_APP_H
+#endif
