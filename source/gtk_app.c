@@ -150,44 +150,46 @@ GtkWidget *init_menu_bar(GtkWidget *window)
  */
 static void activate(GtkApplication *app)
 {
-  GtkWidget *window, *image, *button, *menu_bar, *vbox, *hbox, *vbox_buttons, *empty_box;
-  // declare pointers on the objects to be initialised
-  // ORDER OF WIDGETS DECLARATION IS DETEMINANT FOR THE ORDER OF DISPLAY !!!
-  window = gtk_application_window_new(app);
-  gtk_window_set_title(GTK_WINDOW(window), "OCR App for Crosswords");
-  gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
-  gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
+    GtkWidget *window, *image, *button, *menu_bar, *vbox, *hbox, *vbox_buttons, *empty_box;
+    // declare pointers on the objects to be initialised
+    // ORDER OF WIDGETS DECLARATION IS DETEMINANT FOR THE ORDER OF DISPLAY !!!
+    window = gtk_application_window_new(app);
+    gtk_window_set_title(GTK_WINDOW(window), "OCR App for Crosswords");
+    gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
+    gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 
-  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-  gtk_container_add(GTK_CONTAINER(window), vbox);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_container_set_border_width(GTK_CONTAINER(vbox), 10);
+    gtk_container_add(GTK_CONTAINER(window), vbox);
 
-  image = GTK_WIDGET(init_image_widget(hbox, "images/abstract_background.jpg"));
+    menu_bar = init_menu_bar(window);
+    gtk_box_pack_start(GTK_BOX(vbox), menu_bar, FALSE, FALSE, 0);
 
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
 
-  menu_bar = init_menu_bar(window);
-  gtk_box_pack_start(GTK_BOX(vbox), menu_bar, FALSE, FALSE, 0);
+    // Initialize the image widget with a sample image
+    image = GTK_WIDGET(init_image_widget(hbox, "images/abstract_background.jpg"));
 
-  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-  gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
+    gtk_widget_set_halign(image, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(image, GTK_ALIGN_CENTER);
+    gtk_box_pack_start(GTK_BOX(hbox), image, TRUE, TRUE, 0);
 
-  gtk_widget_set_halign(image, GTK_ALIGN_CENTER);
-  gtk_widget_set_valign(image, GTK_ALIGN_CENTER);
-  gtk_box_pack_start(GTK_BOX(hbox), image, TRUE, TRUE, 0);
+    vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_box_pack_start(GTK_BOX(hbox), vbox_buttons, FALSE, FALSE, 0);
 
-  vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-  gtk_box_pack_start(GTK_BOX(hbox), vbox_buttons, FALSE, FALSE, 0);
+    // Add multiple buttons to the right column
+    const char *button_labels[] = {"Grayscale", "Binarize", "Rotate", "Crop", "Resize"};
+    for (int i = 0; i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
+    {
+        button = init_button(button_labels[i], NULL, NULL);
+        gtk_widget_set_size_request(button, 100, 50);
+        gtk_box_pack_start(GTK_BOX(vbox_buttons), button, FALSE, FALSE, 0);
+    }
 
-  empty_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); // helper for layout
-
-  // empty_boxes + button = vbox
-  gtk_box_pack_start(GTK_BOX(vbox_buttons), empty_box, TRUE, TRUE, 0);
-  button = init_button("Grayscale", NULL, NULL);
-  gtk_widget_set_size_request(button, 100, 50);
-  gtk_box_pack_start(GTK_BOX(vbox_buttons), button, FALSE, FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(vbox_buttons), empty_box, TRUE, TRUE, 0);
-
-  gtk_widget_show_all(window);
+    gtk_widget_show_all(window);
 }
+
 
 /**
  * @brief Main function to run the GTK application.
