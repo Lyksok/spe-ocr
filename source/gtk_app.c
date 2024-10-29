@@ -172,13 +172,13 @@ GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int width, int height)
 }
 
 /**
- * @brief Creates a white pixbuf of the specified dimensions.
+ * @brief Creates a alpha-background pixbuf of the specified dimensions.
  * @param width The width of the pixbuf.
  * @param height The height of the pixbuf.
  * @return A pointer to the new white pixbuf.
  * @note The pixbuf is not freed. You should call it with the sizes as macros for consistency.
  */
-GdkPixbuf *create_white_pixbuf(int width, int height)
+GdkPixbuf *create_alpha_pixbuf(int width, int height)
 {
   GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
   guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
@@ -189,10 +189,10 @@ GdkPixbuf *create_white_pixbuf(int width, int height)
     for (int x = 0; x < width; x++)
     {
       guchar *pixel = pixels + y * rowstride + x * 4;
-      pixel[0] = 255; // Red
-      pixel[1] = 255; // Green
-      pixel[2] = 255; // Blue
-      pixel[3] = 255; // Alpha
+      pixel[0] = 0; // Red
+      pixel[1] = 0; // Green
+      pixel[2] = 0; // Blue
+      pixel[3] = 0; // Alpha
     }
   }
 
@@ -205,7 +205,7 @@ GdkPixbuf *calculate_white_borders(GdkPixbuf *pixbuf, int width, int height)
   int original_width = gdk_pixbuf_get_width(pixbuf);
   int original_height = gdk_pixbuf_get_height(pixbuf);
 
-  GdkPixbuf *white_pixbuf = create_white_pixbuf(width, height);
+  GdkPixbuf *white_pixbuf = create_alpha_pixbuf(width, height);
   int offset_x = (width - original_width) / 2;
   int offset_y = (height - original_height) / 2;
 
@@ -338,7 +338,7 @@ static void activate(GtkApplication *app)
   gtk_container_add(GTK_CONTAINER(window), grid);
 
   // Create a white pixbuf of the specified size
-  pixbuf = create_white_pixbuf(image_width, image_height);
+  pixbuf = create_alpha_pixbuf(image_width, image_height);
 
   // Load and resize the image
   GdkPixbuf *loaded_pixbuf = load_pixbuf(SAMPLE_IMAGE_PATH);
