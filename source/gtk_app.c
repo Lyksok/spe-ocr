@@ -4,15 +4,17 @@
 // TODO refactoring of function names !
 // Callback functions begin with "on_"
 // All function names are in snake_case
-// reminder : GTK_WIDGET is a macro that casts the pointer to a GtkWidget, just conventional
+
 #define IMAGE_WIDTH 600
 #define IMAGE_HEIGHT 600
+#define SAMPLE_IMAGE_PATH "images/abstract_background.jpg"
+
 #pragma region "Image Management"
 
 /**
  * @brief Converts a GtkImage to a GdkPixbuf.
  * Copies pixel data from a GtkImage to a new GdkPixbuf.
- * If the original pixbuf is NULL, creates a new 1x1 black pixbuf.
+ * If the original pixbuf is NULL, uses the sample image.
  * @param image Pointer to the GtkImage.
  * @return New GdkPixbuf or NULL if creation failed.
  */
@@ -51,22 +53,28 @@ GdkPixbuf *image_to_pixbuf(GtkImage *image)
       }
     }
   }
-  else // If the original pixbuf is NULL, create a new empty pixbuf
+  else // If the original pixbuf is NULL, use sample image
   {
-    pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 1, 1);
-    if (pixbuf == NULL)
+    pixbuf = gdk_pixbuf_new_from_file(SAMPLE_IMAGE_PATH, NULL);
+
+    GtkImage *sample_image = GTK_IMAGE(gtk_image_new_from_pixbuf(pixbuf));
+    if (sample_image == NULL)
     {
-      g_warning("New pixbuf creation failed");
+      g_warning("Failed to load sample image from path: %s", SAMPLE_IMAGE_PATH);
       return NULL;
     }
-    guchar *new_pixels = gdk_pixbuf_get_pixels(pixbuf);
-    // else create new black pixbuf
-    new_pixels[0] = 0;   // Red
-    new_pixels[1] = 0;   // Green
-    new_pixels[2] = 0;   // Blue
-    new_pixels[3] = 255; // Alpha
   }
   return pixbuf;
+}
+/**
+ * @brief Loads a pixbuf from a file.
+ * @param file_path The path to the file.
+ * @return A pointer to the loaded pixbuf.
+ * @note The pixbuf is not freed
+ */
+GdkPixbuf *load_pixbuf(const char *file_path)
+{
+  return gdk_pixbuf_new_from_file(file_path, NULL);
 }
 
 /**
@@ -128,16 +136,6 @@ GtkImage *init_image_widget(GtkWidget *parent, const char *sample_image_path)
   GtkImage *image = GTK_IMAGE(gtk_image_new_from_file(sample_image_path));
 
   return image;
-}
-/**
- * @brief Loads a pixbuf from a file.
- * @param file_path The path to the file.
- * @return A pointer to the loaded pixbuf.
- * @note The pixbuf is not freed
- */
-GdkPixbuf *load_pixbuf(const char *file_path)
-{
-  return gdk_pixbuf_new_from_file(file_path, NULL);
 }
 
 /**
@@ -343,7 +341,7 @@ static void activate(GtkApplication *app)
   pixbuf = create_white_pixbuf(image_width, image_height);
 
   // Load and resize the image
-  GdkPixbuf *loaded_pixbuf = load_pixbuf("images/abstract_background.jpg");
+  GdkPixbuf *loaded_pixbuf = load_pixbuf(SAMPLE_IMAGE_PATH);
   resized_pixbuf = resize_pixbuf(loaded_pixbuf, image_width, image_height);
 
   // Add white borders if necessary
