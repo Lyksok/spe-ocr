@@ -327,7 +327,7 @@ static void activate(GtkApplication *app)
 
   // Create the main application window
   window = gtk_application_window_new(app);
-  gtk_window_set_title(GTK_WINDOW(window), "OCR App for Crosswords");
+  gtk_window_set_title(GTK_WINDOW(window), "Organized Chaotic Results software");
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
   /**  Get screen size preperties  */
