@@ -5,14 +5,17 @@
 // Callback functions begin with "on_"
 // All function names are in snake_case
 // reminder : GTK_WIDGET is a macro that casts the pointer to a GtkWidget, just conventional
-
+#define IMAGE_WIDTH 600
+#define IMAGE_HEIGHT 600
 #pragma region "Image Management"
 
 /**
- * @brief Structure to represent a pixel in an image.
- * @return Pixbuf from image provided
+ * @brief Converts a GtkImage to a GdkPixbuf.
+ * Copies pixel data from a GtkImage to a new GdkPixbuf.
+ * If the original pixbuf is NULL, creates a new 1x1 black pixbuf.
+ * @param image Pointer to the GtkImage.
+ * @return New GdkPixbuf or NULL if creation failed.
  */
-
 GdkPixbuf *image_to_pixbuf(GtkImage *image)
 {
   GdkPixbuf *pixbuf = NULL;
@@ -58,6 +61,7 @@ GdkPixbuf *image_to_pixbuf(GtkImage *image)
       return NULL;
     }
     guchar *new_pixels = gdk_pixbuf_get_pixels(pixbuf);
+    // else create new black pixbuf
     new_pixels[0] = 0;   // Red
     new_pixels[1] = 0;   // Green
     new_pixels[2] = 0;   // Blue
@@ -66,31 +70,6 @@ GdkPixbuf *image_to_pixbuf(GtkImage *image)
   return pixbuf;
 }
 
-char *open_file_dialog(GtkWidget *widget, gpointer data)
-{
-  GtkWidget *dialog;
-  GtkFileChooser *chooser;
-  GtkWidget *window = GTK_WIDGET(data);
-  char *filename = NULL;
-
-  // Create a file chooser dialog
-  dialog = gtk_file_chooser_dialog_new("Open Image File",
-                                       GTK_WINDOW(window),
-                                       GTK_FILE_CHOOSER_ACTION_OPEN,
-                                       "_Cancel", GTK_RESPONSE_CANCEL,
-                                       "_Open", GTK_RESPONSE_ACCEPT,
-                                       NULL);
-
-  // Treat the user's response to the file chooser dialog
-  if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT)
-  {
-    chooser = GTK_FILE_CHOOSER(dialog);
-    filename = gtk_file_chooser_get_filename(chooser); // Get the selected file ABSOLUTE path
-  }
-
-  gtk_widget_destroy(dialog);
-  return filename;
-}
 GtkImage *save_file_dialog(GtkWidget *widget, gpointer data)
 {
   // GtkWidget *dialog;
@@ -146,6 +125,43 @@ GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int width, int height)
 
   return gdk_pixbuf_scale_simple(pixbuf, new_width, new_height, GDK_INTERP_BILINEAR);
 }
+// Function to create a white pixbuf of the specified size
+GdkPixbuf *create_white_pixbuf(int width, int height)
+{
+  GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
+  guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
+  int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+
+  for (int y = 0; y < height; y++)
+  {
+    for (int x = 0; x < width; x++)
+    {
+      guchar *pixel = pixels + y * rowstride + x * 4;
+      pixel[0] = 255; // Red
+      pixel[1] = 255; // Green
+      pixel[2] = 255; // Blue
+      pixel[3] = 255; // Alpha
+    }
+  }
+
+  return pixbuf;
+}
+
+// Function to add white borders to a pixbuf to fit within the specified dimensions
+GdkPixbuf *calculate_white_borders(GdkPixbuf *pixbuf, int width, int height)
+{
+  int original_width = gdk_pixbuf_get_width(pixbuf);
+  int original_height = gdk_pixbuf_get_height(pixbuf);
+
+  GdkPixbuf *white_pixbuf = create_white_pixbuf(width, height);
+  int offset_x = (width - original_width) / 2;
+  int offset_y = (height - original_height) / 2;
+
+  gdk_pixbuf_copy_area(pixbuf, 0, 0, original_width, original_height, white_pixbuf, offset_x, offset_y);
+
+  return white_pixbuf;
+}
+
 /**
  * @brief Callback function to change the current image with a new image and pass it to image_to_pixbuf
  * @param widget The widget that triggered the function
@@ -171,14 +187,25 @@ void on_change_image(GtkWidget *widget, gpointer data)
     char *filename;
     GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
     filename = gtk_file_chooser_get_filename(chooser);
-    GdkPixbuf *pixbuf = load_pixbuf(filename);
-    // Resize the pixbuf to fit within the layout dimensions (e.g., 800x600)
-    GdkPixbuf *resized_pixbuf = resize_pixbuf(pixbuf, 800, 600);
-    display_pixbuf(image_widget, resized_pixbuf);
 
-    display_pixbuf(image_widget, pixbuf);
-    g_object_unref(pixbuf);
+    // Load the selected image
+    GdkPixbuf *loaded_pixbuf = load_pixbuf(filename);
     g_free(filename);
+
+    // Resize the image if necessary
+
+    GdkPixbuf *resized_pixbuf = resize_pixbuf(loaded_pixbuf, IMAGE_WIDTH, IMAGE_HEIGHT);
+
+    // Apply white borders to the resized image
+    GdkPixbuf *final_pixbuf = calculate_white_borders(resized_pixbuf, IMAGE_WIDTH, IMAGE_HEIGHT);
+
+    // Display the final image with white borders
+    gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), final_pixbuf);
+
+    // Free the pixbufs
+    g_object_unref(loaded_pixbuf);
+    g_object_unref(resized_pixbuf);
+    g_object_unref(final_pixbuf);
   }
 
   gtk_widget_destroy(dialog);
@@ -244,20 +271,30 @@ GtkWidget *init_menu_bar(GtkWidget *window, GtkWidget *image_widget)
 static void activate(GtkApplication *app)
 {
   GtkWidget *window, *image, *button, *menu_bar, *grid, *vbox_buttons;
+  GdkPixbuf *pixbuf, *resized_pixbuf, *final_pixbuf;
+
+  const int image_width = IMAGE_WIDTH;
+  const int image_height = IMAGE_HEIGHT;
 
   // Create the main application window
   window = gtk_application_window_new(app);
   gtk_window_set_title(GTK_WINDOW(window), "OCR App for Crosswords");
-  gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
-  gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 
   // Create a grid container
   grid = gtk_grid_new();
   gtk_container_set_border_width(GTK_CONTAINER(grid), 10);
   gtk_container_add(GTK_CONTAINER(window), grid);
 
-  // Initialize the image widget with a sample image
-  image = gtk_image_new_from_file("images/abstract_background.jpg");
+  // Create a white pixbuf of the specified size
+  pixbuf = create_white_pixbuf(image_width, image_height);
+
+  // Load and resize the image
+  GdkPixbuf *loaded_pixbuf = load_pixbuf("images/abstract_background.jpg");
+  resized_pixbuf = resize_pixbuf(loaded_pixbuf, image_width, image_height);
+
+  // Add white borders if necessary
+  final_pixbuf = calculate_white_borders(resized_pixbuf, image_width, image_height);
+  image = gtk_image_new_from_pixbuf(final_pixbuf);
 
   // Initialize the menu bar
   menu_bar = init_menu_bar(window, image);
@@ -288,8 +325,13 @@ static void activate(GtkApplication *app)
 
   // Show all widgets
   gtk_widget_show_all(window);
-}
 
+  // Free the pixbufs
+  g_object_unref(pixbuf);
+  g_object_unref(resized_pixbuf);
+  g_object_unref(final_pixbuf);
+  g_object_unref(loaded_pixbuf);
+}
 /**
  * @brief Main function to run the GTK application.
  * @param argc Argument count.
