@@ -13,7 +13,7 @@
  * @return Pixbuf from image provided
  */
 
-GdkPixbuf* image_to_pixbuf(GtkImage *image)
+GdkPixbuf *image_to_pixbuf(GtkImage *image)
 {
   GdkPixbuf *pixbuf = NULL;
   GdkPixbuf *original_pixbuf = gtk_image_get_pixbuf(image);
@@ -42,18 +42,27 @@ GdkPixbuf* image_to_pixbuf(GtkImage *image)
         guchar *src_pixel = pixels + y * rowstride + x * n_channels;
         guchar *dest_pixel = new_pixels + y * gdk_pixbuf_get_rowstride(pixbuf) + x * 4;
 
-        dest_pixel[0] = src_pixel[0]; // Red
-        dest_pixel[1] = src_pixel[1]; // Green
-        dest_pixel[2] = src_pixel[2]; // Blue
-        dest_pixel[3] = (n_channels == 4) ? src_pixel[3] : 255; // Alpha
+        dest_pixel[0] = src_pixel[0];                           // Red
+        dest_pixel[1] = src_pixel[1];                           // Green
+        dest_pixel[2] = src_pixel[2];                           // Blue
+        dest_pixel[3] = (n_channels == 4) ? src_pixel[3] : 255; // Alpha is opaque if 255
       }
     }
   }
-  else
+  else // If the original pixbuf is NULL, create a new empty pixbuf
   {
-    g_warning("image_to_pixbuf: Invalid image");
+    pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 1, 1);
+    if (pixbuf == NULL)
+    {
+      g_warning("New pixbuf creation failed");
+      return NULL;
+    }
+    guchar *new_pixels = gdk_pixbuf_get_pixels(pixbuf);
+    new_pixels[0] = 0;   // Red
+    new_pixels[1] = 0;   // Green
+    new_pixels[2] = 0;   // Blue
+    new_pixels[3] = 255; // Alpha
   }
-
   return pixbuf;
 }
 
@@ -106,7 +115,37 @@ GtkImage *init_image_widget(GtkWidget *parent, const char *sample_image_path)
 
   return image;
 }
+// Function to load an image from a file and return a GdkPixbuf
+GdkPixbuf *load_pixbuf(const char *file_path)
+{
+  return gdk_pixbuf_new_from_file(file_path, NULL);
+}
 
+// Function to display the loaded pixbuf in the GTK application
+void display_pixbuf(GtkWidget *image_widget, GdkPixbuf *pixbuf)
+{
+  gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), pixbuf);
+}
+
+// Function to save the displayed pixbuf to a file
+void save_pixbuf(GdkPixbuf *pixbuf, const char *file_path)
+{
+  gdk_pixbuf_save(pixbuf, file_path, "png", NULL, NULL);
+}
+// Function to resize a GdkPixbuf to fit within the specified dimensions
+GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int width, int height)
+{ // TODOOOOOO FIX !
+  int original_width = gdk_pixbuf_get_width(pixbuf);
+  int original_height = gdk_pixbuf_get_height(pixbuf);
+
+  // Calculate the scaling factor to maintain the aspect ratio
+  double scale = MIN((double)width / original_width, (double)height / original_height);
+
+  int new_width = (int)(original_width * scale);
+  int new_height = (int)(original_height * scale);
+
+  return gdk_pixbuf_scale_simple(pixbuf, new_width, new_height, GDK_INTERP_BILINEAR);
+}
 /**
  * @brief Callback function to change the current image with a new image and pass it to image_to_pixbuf
  * @param widget The widget that triggered the function
@@ -115,50 +154,34 @@ GtkImage *init_image_widget(GtkWidget *parent, const char *sample_image_path)
 void on_change_image(GtkWidget *widget, gpointer data)
 {
   GtkWidget *image_widget = GTK_WIDGET(data);
-  GtkWidget *parent = gtk_widget_get_parent(image_widget);
+  GtkWidget *dialog;
+  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
+  gint res;
 
-  // Open file dialog to get the image path
-  char *filename = open_file_dialog(widget, parent);
-  printf("path : %s\n", filename); // TODO DEBUG comment
+  dialog = gtk_file_chooser_dialog_new("Open File",
+                                       GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+                                       action,
+                                       "_Cancel", GTK_RESPONSE_CANCEL,
+                                       "_Open", GTK_RESPONSE_ACCEPT,
+                                       NULL);
 
-  if (filename != NULL)
+  res = gtk_dialog_run(GTK_DIALOG(dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
   {
-    // Load the new image
-    GtkWidget *new_image_widget = gtk_image_new_from_file(filename);
-    GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(new_image_widget));
-    if (pixbuf != NULL)
-    {
-      // Convert the image to pixbuf
-      GdkPixbuf *new_pixbuf = image_to_pixbuf(GTK_IMAGE(image_widget));
-      if (new_pixbuf != NULL)
-      {
-        // Remove the old image
-        gtk_container_remove(GTK_CONTAINER(parent), image_widget);
+    char *filename;
+    GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
+    filename = gtk_file_chooser_get_filename(chooser);
+    GdkPixbuf *pixbuf = load_pixbuf(filename);
+    // Resize the pixbuf to fit within the layout dimensions (e.g., 800x600)
+    GdkPixbuf *resized_pixbuf = resize_pixbuf(pixbuf, 800, 600);
+    display_pixbuf(image_widget, resized_pixbuf);
 
-        // Create a new image widget from the new pixbuf
-        GtkWidget *new_image = gtk_image_new_from_pixbuf(new_pixbuf);
-        g_object_unref(new_pixbuf); // Free the new pixbuf
-
-        // Add the new image to the parent container
-        gtk_box_pack_start(GTK_BOX(parent), new_image, TRUE, TRUE, 0);
-        gtk_widget_show_all(parent);
-      }
-      else
-      {
-        g_warning("Failed to convert image to pixbuf.");
-      }
-      g_object_unref(pixbuf); // Free the original pixbuf
-    }
-    else
-    {
-      g_warning("Failed to load image: %s", filename);
-    }
+    display_pixbuf(image_widget, pixbuf);
+    g_object_unref(pixbuf);
     g_free(filename);
   }
-  else
-  {
-    g_warning("No file selected.");
-  }
+
+  gtk_widget_destroy(dialog);
 }
 
 #pragma endregion "Image Management"
@@ -218,50 +241,53 @@ GtkWidget *init_menu_bar(GtkWidget *window, GtkWidget *image_widget)
  * @brief Activates the app. Precisely, it lays out the widgets and connects the signals.
  * @param app A pointer to the GtkApplication instance.
  */
-static void activate(GtkApplication *app) {
-    GtkWidget *window, *image, *button, *menu_bar, *vbox, *hbox, *vbox_buttons;
+static void activate(GtkApplication *app)
+{
+  GtkWidget *window, *image, *button, *menu_bar, *grid, *vbox_buttons;
 
-    // declare pointers on the objects to be initialised
-    // ORDER OF WIDGETS DECLARATION IS DETEMINANT FOR THE ORDER OF DISPLAY !!!
-    window = gtk_application_window_new(app);
-    gtk_window_set_title(GTK_WINDOW(window), "OCR App for Crosswords");
-    gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
-    gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
+  // Create the main application window
+  window = gtk_application_window_new(app);
+  gtk_window_set_title(GTK_WINDOW(window), "OCR App for Crosswords");
+  gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
+  gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 
-    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-    gtk_container_set_border_width(GTK_CONTAINER(vbox), 10);
-    gtk_container_add(GTK_CONTAINER(window), vbox);
+  // Create a grid container
+  grid = gtk_grid_new();
+  gtk_container_set_border_width(GTK_CONTAINER(grid), 10);
+  gtk_container_add(GTK_CONTAINER(window), grid);
 
-    // Initialize the image widget with a sample image
-    image = gtk_image_new_from_file("images/abstract_background.jpg");
+  // Initialize the image widget with a sample image
+  image = gtk_image_new_from_file("images/abstract_background.jpg");
 
-    menu_bar = init_menu_bar(window, image);
-    gtk_box_pack_start(GTK_BOX(vbox), menu_bar, FALSE, FALSE, 0);
+  // Initialize the menu bar
+  menu_bar = init_menu_bar(window, image);
+  gtk_grid_attach(GTK_GRID(grid), menu_bar, 0, 0, 2, 1);
 
-    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-    gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
+  // Center the image in the grid
+  gtk_widget_set_halign(image, GTK_ALIGN_CENTER);
+  gtk_widget_set_valign(image, GTK_ALIGN_CENTER);
+  gtk_grid_attach(GTK_GRID(grid), image, 0, 1, 1, 1);
 
-    gtk_widget_set_halign(image, GTK_ALIGN_CENTER);
-    gtk_widget_set_valign(image, GTK_ALIGN_CENTER);
-    gtk_box_pack_start(GTK_BOX(hbox), image, TRUE, TRUE, 0);
+  // Create a vertical box for buttons
+  vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+  gtk_grid_attach(GTK_GRID(grid), vbox_buttons, 1, 1, 1, 1);
 
-    vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-    gtk_box_pack_start(GTK_BOX(hbox), vbox_buttons, FALSE, FALSE, 0);
+  // Add buttons to the vertical box
+  const char *button_labels[] = {"Grayscale", "Binarize", "Rotate"};
+  for (int i = 0; i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
+  {
+    button = init_button(button_labels[i], NULL, NULL);
+    gtk_box_pack_start(GTK_BOX(vbox_buttons), button, FALSE, FALSE, 0);
+  }
 
-    // Handy loop to add multiple buttons to the right column
-    const char *button_labels[] = {"Grayscale", "Binarize", "Rotate"};
-    for (int i = 0; i < sizeof(button_labels) / sizeof(button_labels[0]); i++) {
-        button = init_button(button_labels[i], NULL, NULL);
-        gtk_box_pack_start(GTK_BOX(vbox_buttons), button, FALSE, FALSE, 0);
-    }
+  // Proportional parameters to resize the widgets if the window is resized
+  gtk_widget_set_hexpand(image, TRUE);
+  gtk_widget_set_vexpand(image, TRUE);
+  gtk_widget_set_hexpand(vbox_buttons, TRUE);
+  gtk_widget_set_vexpand(vbox_buttons, TRUE);
 
-    // Proportional parameters to resize the widgets if the window is resized
-    gtk_widget_set_hexpand(image, TRUE);
-    gtk_widget_set_vexpand(image, TRUE);
-    gtk_widget_set_hexpand(vbox_buttons, TRUE);
-    gtk_widget_set_vexpand(vbox_buttons, TRUE);
-
-    gtk_widget_show_all(window);
+  // Show all widgets
+  gtk_widget_show_all(window);
 }
 
 /**
