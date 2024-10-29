@@ -35,8 +35,7 @@ GdkPixbuf *image_to_pixbuf(GtkImage *image)
       g_warning("New pixbuf creation failed");
       return NULL;
     }
-    guchar *new_pixels = gdk_pixbuf_get_pixels(pixbuf);
-
+    guchar *new_pixels = gdk_pixbuf_get_pixels(pixbuf); // guchar ~= unsigned char
     for (int y = 0; y < height; y++)
     {
       for (int x = 0; x < width; x++)
@@ -70,11 +69,16 @@ GdkPixbuf *image_to_pixbuf(GtkImage *image)
   return pixbuf;
 }
 
+/**
+ * @brief Opens a file saving dialog and returns a GtkImage.
+ *
+ * @param widget The widget that triggers the dialog.
+ * @param data User data passed to the function.
+ * @return GtkImage* The image selected in the dialog.
+ * @note Nothing is freed
+ */
 GtkImage *save_file_dialog(GtkWidget *widget, gpointer data)
 {
-  // GtkWidget *dialog;
-  // GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE; // "action" type performed by fc
-  // int res;
   GtkWidget *image = NULL;
   // TODO
   return GTK_IMAGE(image);
@@ -86,32 +90,55 @@ GtkImage *save_file_dialog(GtkWidget *widget, gpointer data)
  * @param widget The triggering GtkWidget.
  * @param data Additional data for image creation.
  * @return A pointer to the new GtkImage.
+ * @note Nothing is freed
  */
 GtkImage *init_image_widget(GtkWidget *parent, const char *sample_image_path)
 {
   GtkImage *image = GTK_IMAGE(gtk_image_new_from_file(sample_image_path));
-  // gtk_widget_set_size_request(GTK_WIDGET(image), 450, 450); // Set the size of the placeholder image
 
   return image;
 }
-// Function to load an image from a file and return a GdkPixbuf
+/**
+ * @brief Loads a pixbuf from a file.
+ * @param file_path The path to the file.
+ * @return A pointer to the loaded pixbuf.
+ * @note The pixbuf is not freed
+ */
 GdkPixbuf *load_pixbuf(const char *file_path)
 {
   return gdk_pixbuf_new_from_file(file_path, NULL);
 }
 
-// Function to display the loaded pixbuf in the GTK application
+/**
+ * @brief Displays a pixbuf in an image widget.
+ * @param image_widget The image widget to display the pixbuf in (implicit cast to GtkImage)
+ * @param pixbuf The pixbuf to display.
+ * @note The pixbuf is not freed
+ */
 void display_pixbuf(GtkWidget *image_widget, GdkPixbuf *pixbuf)
 {
   gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), pixbuf);
 }
 
-// Function to save the displayed pixbuf to a file
+/**
+ * @brief Saves a pixbuf to a file.
+ * @param pixbuf The pixbuf to save.
+ * @param file_path The path to save the file to as a png. The png format was chosen to preserve transparency!
+ * @note The pixbuf is not freed
+ */
 void save_pixbuf(GdkPixbuf *pixbuf, const char *file_path)
 {
   gdk_pixbuf_save(pixbuf, file_path, "png", NULL, NULL);
 }
-// Function to resize a GdkPixbuf to fit within the specified dimensions
+
+/**
+ * @brief Resizes a pixbuf to fit within the specified dimensions.
+ * @param pixbuf The pixbuf to resize.
+ * @param width The maximum width of the resized pixbuf.
+ * @param height The maximum height of the resized pixbuf.
+ * @return A pointer to the resized pixbuf with the adequate aspect ratio and borders.
+ * @note The pixbuf is not freed
+ */
 GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int width, int height)
 { // TODOOOOOO FIX !
   int original_width = gdk_pixbuf_get_width(pixbuf);
@@ -125,7 +152,14 @@ GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int width, int height)
 
   return gdk_pixbuf_scale_simple(pixbuf, new_width, new_height, GDK_INTERP_BILINEAR);
 }
-// Function to create a white pixbuf of the specified size
+
+/**
+ * @brief Creates a white pixbuf of the specified dimensions.
+ * @param width The width of the pixbuf.
+ * @param height The height of the pixbuf.
+ * @return A pointer to the new white pixbuf.
+ * @note The pixbuf is not freed. You should call it with the sizes as macros for consistency.
+ */
 GdkPixbuf *create_white_pixbuf(int width, int height)
 {
   GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
