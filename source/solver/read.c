@@ -27,8 +27,8 @@ char* ReadLine(FILE *file, int *n) {
 	char *line = malloc(capacity * sizeof(char));
 	int c;
 
-	if (!line) {
-		printf("Memory allocation failed\n");
+	if (line == NULL) {
+		printf("Memory allocation failed (line1)\n");
 		return NULL;
 	}
 
@@ -39,9 +39,9 @@ char* ReadLine(FILE *file, int *n) {
 			// we add to the capacity
 			capacity += 10;
 			line = realloc(line, capacity * sizeof(char));
-			if (line) {
+			if (line == NULL) {
 				free(line);
-				printf("Memory allocation failed\n");
+				printf("Memory allocation failed (line2)\n");
 				return NULL;
 			}
 		}

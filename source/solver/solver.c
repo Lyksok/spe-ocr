@@ -194,7 +194,7 @@ int Solver(int row, int col, char **mat, char word[]) {
 		}
 
 		if (found)
-			printf("(%i,%i)(%i,%i)\n", mr, mc, *er, *ec);
+			printf("(%i,%i)(%i,%i)\n", mc, mr, *ec, *er);
 		else
 			printf("Not Found\n");
 
