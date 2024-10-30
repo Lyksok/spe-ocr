@@ -9,7 +9,7 @@
 #define SAMPLE_IMAGE_PATH "images/abstract_background.jpg"
 
 // FUNCTION DECLARATIONS
-
+// TODO 30/10 update the function list !
 // Image Management
 GdkPixbuf *image_to_pixbuf(GtkImage *image);
 GdkPixbuf *load_pixbuf(const char *file_path);
