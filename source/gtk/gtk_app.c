@@ -115,22 +115,25 @@ since: 2.18 */
     gtk_widget_destroy(dialog);
     g_free(filename);
   }
+  return NULL;
 }
 
 /**
+ * LEGACY CODE
  * @brief Creates a GtkImage widget.
  * Initializes and returns a new GtkImage widget with sample image.
  * @param widget The triggering GtkWidget.
  * @param data Additional data for image creation.
  * @return A pointer to the new GtkImage.
  * @note Nothing is freed
- */
+
 GtkImage *init_image_widget(GtkWidget *parent, const char *sample_image_path)
 {
   GtkImage *image = GTK_IMAGE(gtk_image_new_from_file(sample_image_path));
 
   return image;
 }
+*/
 
 /**
  * @brief Displays a pixbuf in an image widget.
@@ -279,9 +282,9 @@ GtkWidget *init_button(const char *label, GCallback callback, gpointer data)
  * @brief Creates the menu bar for the given GTK window.
  * This function initializes menu bar for the specified
  * GTK window. It adds the menu items to load and save image from a file explorer.
- * @param window A pointer to the GTK window where the menu bar will be added.
+ * @param image_widget The image widget to be updated when clicking on the submenus.
  */
-GtkWidget *init_menu_bar(GtkWidget *window, GtkWidget *image_widget)
+GtkWidget *init_menu_bar(GtkWidget *image_widget)
 {
   GtkWidget *menu_bar, *file_menu, *file_menu_item, *load_menu_item, *save_menu_item;
 
@@ -352,7 +355,7 @@ static void activate(GtkApplication *app)
   image = gtk_image_new_from_pixbuf(final_pixbuf);
 
   // Initialize the menu bar
-  menu_bar = init_menu_bar(window, image);
+  menu_bar = init_menu_bar(image);
   gtk_grid_attach(GTK_GRID(grid), menu_bar, 0, 0, 2, 1);
 
   // Center the image in the grid
@@ -366,7 +369,7 @@ static void activate(GtkApplication *app)
 
   // Add buttons to the vertical box
   const char *button_labels[] = {"Grayscale", "Binarize", "Rotate"};
-  for (int i = 0; i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
+  for (long unsigned int i = 0; i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
   {
     button = init_button(button_labels[i], NULL, NULL);
     gtk_box_pack_start(GTK_BOX(vbox_buttons), button, FALSE, FALSE, 0);

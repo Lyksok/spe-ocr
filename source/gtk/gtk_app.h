@@ -14,7 +14,7 @@
 GdkPixbuf *image_to_pixbuf(GtkImage *image);
 GdkPixbuf *load_pixbuf(const char *file_path);
 void *on_save_image(GtkWidget *widget, gpointer data);
-GtkImage *init_image_widget(GtkWidget *parent, const char *sample_image_path);
+
 void display_pixbuf(GtkWidget *image_widget, GdkPixbuf *pixbuf);
 GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int width, int height);
 GdkPixbuf *create_alpha_pixbuf(int width, int height);
@@ -23,7 +23,7 @@ void on_change_image(GtkWidget *widget, gpointer data);
 
 // GUI Management
 GtkWidget *init_button(const char *label, GCallback callback, gpointer data);
-GtkWidget *init_menu_bar(GtkWidget *window, GtkWidget *image_widget);
+GtkWidget *init_menu_bar(GtkWidget *image_widget);
 
 // App activation
 static void activate(GtkApplication *app);
