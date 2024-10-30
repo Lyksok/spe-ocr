@@ -13,24 +13,26 @@ int main(int argc, char** argv)
     if(SDL_Init(SDL_INIT_VIDEO)!=0)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    SDL_Window* window = SDL_CreateWindow("Surface_to_no_green", 0, 0, 0, 0,SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("Surface_to_no_green", 0, 0, 0, 0,
+        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if(window == NULL)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1,
+        SDL_RENDERER_ACCELERATED);
     if (renderer == NULL)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_Surface* t = IMG_Load(argv[1]);
     if (t == NULL)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
-    SDL_Surface *surface = SDL_ConvertSurfaceFormat(t, SDL_PIXELFORMAT_RGB888, 0);
+    SDL_Surface *surface = SDL_ConvertSurfaceFormat(t,
+        SDL_PIXELFORMAT_RGB888, 0);
     SDL_FreeSurface(t);
     if (surface == NULL)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_SetWindowSize(window,  surface->w, surface->h);
-
 
 	// ITS HERE GUYS
     if(strcmp(argv[2],"global")==0)
@@ -44,7 +46,6 @@ int main(int argc, char** argv)
         convert_to_binarized_local(surface);
     }
 	// ITS ENDING HERE GUYS
-
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 
@@ -76,4 +77,3 @@ int main(int argc, char** argv)
     }
     return EXIT_SUCCESS;
 }
-

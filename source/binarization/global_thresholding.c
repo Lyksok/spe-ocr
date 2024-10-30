@@ -24,7 +24,7 @@ void get_probability_distribution(SDL_Surface* surface, double** histogram)
     free(histo);
 }
 
-typedef struct weights 
+typedef struct weights
 {
     double weight1;
     double weight2;
@@ -36,7 +36,7 @@ typedef struct means
     double mean2;
 } means;
 
-void get_weight(size_t threshold, weights* w, double** p_histogram, 
+void get_weight(size_t threshold, weights* w, double** p_histogram,
 	double (*opt)(size_t))
 {
     w->weight1 = 0;
@@ -63,7 +63,7 @@ double return_t(size_t t)
     return t;
 }
 
-void get_weight_and_mean(size_t threshold, weights* w, means* m, 
+void get_weight_and_mean(size_t threshold, weights* w, means* m,
 	double** p_histogram)
 {
     w->weight1 = 0;
@@ -74,7 +74,7 @@ void get_weight_and_mean(size_t threshold, weights* w, means* m,
     get_weight(threshold, w, p_histogram, return_one);
     weights mean_weight = {0,0};
     get_weight(threshold, &mean_weight, p_histogram, return_t);
-    
+
 	if(w->weight1 == 0 || w->weight2 == 0)
 	{
 		m->mean1 = 0;
@@ -91,8 +91,8 @@ double get_variance(weights* w, means* m)
 
 //void __print_wm_struct(weights* w, means* m)
 //{
-//	printf("Weights:(%lf,%lf)\nMeans:(%lf,%lf)\n", 
-//			w->weight1, 
+//	printf("Weights:(%lf,%lf)\nMeans:(%lf,%lf)\n",
+//			w->weight1,
 //			w->weight2,
 //			m->mean1,
 //			m->mean2);
@@ -122,7 +122,7 @@ size_t get_optimal_threshold(SDL_Surface* surface)
 			max_variance = var;
 		}
 	}
-    
+
     free(histo);
 	return max_threshold;
 }

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "printer.h"
 
-
 void print_list_int(int** list, size_t size)
 {
 	int* lst = *list;

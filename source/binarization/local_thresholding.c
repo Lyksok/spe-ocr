@@ -14,7 +14,7 @@ double get_weighted_mean(size_t x, size_t y, double sigma)
 {
     double xf = (double)x;
     double yf = (double)y;
-    return exp(-(xf*xf + yf*yf) / (2 * sigma*sigma)) / (2 * M_PI * sigma*sigma);
+    return exp(-(xf*xf+yf*yf) / (2 * sigma*sigma)) / (2 * M_PI * sigma*sigma);
 }
 
 typedef struct kernel
@@ -44,14 +44,14 @@ void get_kernel(SDL_Surface* surface, size_t x, size_t y, kernel* ker)
 {
     size_t len = KERNEL_SIZE*KERNEL_SIZE;
     Uint8* pixels = calloc(len, sizeof(Uint8));
-    
+
     // Compute kernel limits
     size_t pad = KERNEL_SIZE/2;
     size_t xi = x-pad;
     size_t xf = x+pad+1;
     size_t yi = y-pad;
     size_t yf = y+pad+1;
-    
+
     // Get kernel pixel values
     for (size_t j=yi; j<yf; j++)
     {
@@ -64,7 +64,7 @@ void get_kernel(SDL_Surface* surface, size_t x, size_t y, kernel* ker)
                 pixels[(j-yi)*KERNEL_SIZE+(i-xi)]=255;
         }
     }
-    
+
     // Get kernel Gaussian values
     double* gaussian = calloc(len, sizeof(double));
     double sum = 0.0;
@@ -72,9 +72,9 @@ void get_kernel(SDL_Surface* surface, size_t x, size_t y, kernel* ker)
     double sigma = 10.0;
 
     // Generate Gaussian kernel
-    for (size_t j=0; j<KERNEL_SIZE; j++) 
+    for (size_t j=0; j<KERNEL_SIZE; j++)
     {
-        for (size_t i=0; i<KERNEL_SIZE; i++) 
+        for (size_t i=0; i<KERNEL_SIZE; i++)
         {
             double value = get_weighted_mean(i-center, j-center, sigma);
             gaussian[j*KERNEL_SIZE+i] = value;
@@ -139,6 +139,3 @@ void get_all_thresholds(SDL_Surface* surface, int** histogram)
 {
     create_histogram_of_surface(surface, histogram, map_thresholds);
 }
-
-
-

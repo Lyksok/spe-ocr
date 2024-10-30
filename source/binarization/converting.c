@@ -3,7 +3,7 @@
 /* Convert an image using an external function to reassign
  * each pixel with a different value based on the function
  */
-void convert_image(SDL_Surface* surface, 
+void convert_image(SDL_Surface* surface,
 	Uint32 (*func)(SDL_PixelFormat*, Uint32))
 {
     for(int j=0; j<surface->h; j++)
@@ -25,7 +25,7 @@ void convert_image(SDL_Surface* surface,
  * each pixel with a different value based on the function
  * Add a threshold in parameters
  */
-void convert_image_with_threshold(SDL_Surface* surface, size_t threshold, 
+void convert_image_with_threshold(SDL_Surface* surface, size_t threshold,
 	Uint32 (*func)(SDL_PixelFormat*, Uint32, size_t))
 {
     for(int j=0; j<surface->h; j++)
@@ -45,7 +45,7 @@ void convert_image_with_threshold(SDL_Surface* surface, size_t threshold,
 
 /* Convert a single pixel of an image using a threshold and an index
 */
-void convert_pixel_with_threshold(SDL_Surface* surface, int threshold, 
+void convert_pixel_with_threshold(SDL_Surface* surface, int threshold,
 	size_t i)
 {
 	SDL_LockSurface(surface);
@@ -61,7 +61,6 @@ void convert_pixel_with_threshold(SDL_Surface* surface, int threshold,
 	((Uint32*)surface->pixels)[i] = pixel;
 	SDL_UnlockSurface(surface);
 }
-
 
 /* Map a pixel to its grayscale format
  */

@@ -57,14 +57,14 @@ int get_gtk_image(GdkPixbuf* pixbuf)
 
 		// Create a GdkPixbuf from the SDL_Surface pixel data
 		GdkPixbuf* pixbuf = gdk_pixbuf_new_from_data(
-			(guchar*)image->pixels, 
+			(guchar*)image->pixels,
 			has_alpha ? GDK_COLORSPACE_RGB : GDK_COLORSPACE_RGB,
-			has_alpha,             
-			8,                     
-			width,                 
-			height,                
-			stride,                
-			NULL, NULL             
+			has_alpha,
+			8,
+			width,
+			height,
+			stride,
+			NULL, NULL
 		);
 
 		return 0;

@@ -5,7 +5,7 @@
  * as parameters
  * Takes in parameter the result histogram and the image surface
  */
-void create_histogram_of_pixel(SDL_Surface* surface, int** histogram, 
+void create_histogram_of_pixel(SDL_Surface* surface, int** histogram,
     void (*func)(int**, Uint32, SDL_Surface*))
 {
     for(int j=0; j<surface->h; j++)
