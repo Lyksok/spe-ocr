@@ -56,7 +56,9 @@ void ToUpper(char word[])
  * n : the length of the word
  * Returns True or False if the word is found
  */
-int Search(int row, int col, char mat[row][col], 
+//int Search(int row, int col, char mat[row][col], 
+//int Search(int row, int col, char *mat[col], 
+int Search(int row, int col, char **mat, 
 	char word[], int r, int c, int n,
 	int *er, int *ec)
 {
@@ -135,7 +137,9 @@ int Search(int row, int col, char mat[row][col],
  * word : the word to search for
  * Returns True or False if the word is found
  */
-int Solver(int row, int col, char mat[row][col], char word[]) {
+//int Solver(int row, int col, char mat[row][col], char word[]) {
+//int Solver(int row, int col, char *mat[col], char word[]) {
+int Solver(int row, int col, char **mat, char word[]) {
 	/*
 	 * len : the length of the word
 	 * max : the max between the numbers of rows and columns

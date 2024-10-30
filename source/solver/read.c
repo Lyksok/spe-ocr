@@ -91,6 +91,7 @@ char **ReadFile(char *filename, int *row, int *col)
         	free(line);
     	}
         char **mat = malloc(r * sizeof(char*));
+	*row = r;
 
 //	we go back to the beginning of the file
 	rewind(file);

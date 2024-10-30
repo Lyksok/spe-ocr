@@ -2,6 +2,7 @@
 #include "solver.h"
 
 void Print(int row, int col, char mat[row][col])
+//void Print(int row, int col, char *mat[col])
 {
 	for (int r = 0; r < row; r++)
 	{
@@ -12,6 +13,7 @@ void Print(int row, int col, char mat[row][col])
 }
 
 void canIt(int row, int col, char mat[row][col], char * word)
+//void canIt(int row, int col, char *mat[col], char * word)
 {
 	Print(row, col, mat);
         printf("Coordinates of \"%s\" be in our matrice : ", word);
