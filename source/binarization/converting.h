@@ -9,5 +9,7 @@ void convert_image(SDL_Surface* surface,
 	Uint32 (*func)(SDL_PixelFormat*, Uint32));
 void convert_image_with_threshold(SDL_Surface* surface, size_t threshold, 
 	Uint32 (*func)(SDL_PixelFormat*, Uint32, size_t));
+void convert_pixel_with_threshold(SDL_Surface* surface, int threshold, 
+	size_t i);
 
 #endif /* CONVERTING_H */

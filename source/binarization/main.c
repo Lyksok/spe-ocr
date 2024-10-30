@@ -1,13 +1,13 @@
 #include <err.h>
 #include <SDL2/SDL_image.h>
+#include <stdio.h>
+#include <string.h>
 
-#include "converting.h"
-#include "global_thresholding.h"
-// #include "../other/printer.h"
+#include "binarizing.h"
 
 int main(int argc, char** argv)
 {
-    if (argc != 2)
+    if (argc != 3)
         errx(EXIT_FAILURE, "Usage: image-file");
 
     if(SDL_Init(SDL_INIT_VIDEO)!=0)
@@ -33,10 +33,16 @@ int main(int argc, char** argv)
 
 
 	// ITS HERE GUYS
-	image_to_grayscale(surface);
-	size_t threshold = get_optimal_threshold(surface);
-	printf("%zu\n", threshold);
-	image_to_binarized(surface, threshold);
+    if(strcmp(argv[2],"global")==0)
+    {
+        printf("GLOBAL:\n");
+        convert_to_binarized_global(surface);
+    }
+    else
+    {
+        printf("LOCAL:\n");
+        convert_to_binarized_local(surface);
+    }
 	// ITS ENDING HERE GUYS
 
 

@@ -23,15 +23,14 @@ void create_histogram_of_pixel(SDL_Surface* surface, int** histogram,
  * as parameters
  * Takes in parameter the result histogram and the image surface
  */
-void create_histogram_of_surface(SDL_Surface* surface, void** histogram,
-    void (*func)(void**, Uint32, SDL_Surface*))
+void create_histogram_of_surface(SDL_Surface* surface, int** histogram,
+    void (*func)(int**, size_t, size_t, SDL_Surface*))
 {
     for(int j=0; j<surface->h; j++)
 	{
 		for(int i=0; i<surface->w; i++)
 		{
-			Uint32 pixel = ((Uint32*)surface->pixels)[j*surface->w+i];
-            func(histogram, pixel, surface);
+            func(histogram, i, j, surface);
 		}
 	}
 }

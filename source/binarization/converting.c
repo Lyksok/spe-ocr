@@ -43,6 +43,25 @@ void convert_image_with_threshold(SDL_Surface* surface, size_t threshold,
 	}
 }
 
+/* Convert a single pixel of an image using a threshold and an index
+*/
+void convert_pixel_with_threshold(SDL_Surface* surface, int threshold, 
+	size_t i)
+{
+	SDL_LockSurface(surface);
+	Uint32 pixel = ((Uint32*)surface->pixels)[i];
+	Uint8 r;
+	Uint8 g;
+	Uint8 b;
+	SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+	if(r<threshold)
+		pixel = SDL_MapRGB(surface->format, 0, 0, 0);
+	else
+		pixel = SDL_MapRGB(surface->format, 255, 255, 255);
+	((Uint32*)surface->pixels)[i] = pixel;
+	SDL_UnlockSurface(surface);
+}
+
 
 /* Map a pixel to its grayscale format
  */
