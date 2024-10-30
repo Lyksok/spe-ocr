@@ -1,8 +1,11 @@
+#include <stdlib.h>
+
 #include <stdio.h>
 #include "solver.h"
 
-void Print(int row, int col, char mat[row][col])
+//void Print(int row, int col, char mat[row][col])
 //void Print(int row, int col, char *mat[col])
+void Print(int row, int col, char **mat)
 {
 	for (int r = 0; r < row; r++)
 	{
@@ -12,69 +15,59 @@ void Print(int row, int col, char mat[row][col])
 	}
 }
 
-void canIt(int row, int col, char mat[row][col], char * word)
+//void canIt(int row, int col, char mat[row][col], char * word)
 //void canIt(int row, int col, char *mat[col], char * word)
+void canIt(int row, int col, char **mat, char *word)
 {
 	Print(row, col, mat);
+//	printf("Wow a change !\n");
         printf("Coordinates of \"%s\" be in our matrice : ", word);
         Solver(row, col, mat, word);
 }
 
-void abcd(char * word)
-{
-	char mat[][2] =  { {'a', 'b'}, {'c', 'd'} };
-	canIt(2, 2, mat, word);
-}
-
-void abcdef(char * word)
-{
-	char mat[][3] =  { {'a', 'b', 'c'}, {'d', 'e', 'f'} };
-	canIt(2, 3, mat, word);
-}
-
 void Hiv0(char * word)
 {
-	char mat[][1] = { {'H'}, {'i'} };
+//	char mat[][1] = { {'H'}, {'i'} };
+	char **mat = malloc(2 * sizeof(char*));
+	mat[0] = "H";
+	mat[1] = "i";
 	canIt(2, 1, mat, word);
+	free(mat);
 }
 
 void Hiv1(char * word)
 {
-	char mat[][2] =  { {'H', 'i'}, {'c', 'd'} };
+//	char mat[][2] =  { {'H', 'i'}, {'c', 'd'} };
+	char **mat = malloc(2 * sizeof(char*));
+//	char arr[2] = {'H', 'i'};
+//	*mat[0] = arr;
+//	arr = {'c', 'd'};
+//	*mat[1] = arr;
+	mat[0] = "Hi";
+	mat[1] = "cd";
 	canIt(2, 2, mat, word);
-}
-
-void Hiv2(char * word)
-{
-        char mat[][2] =  { {'H', 'o'}, {'i', 'd'} };
-	canIt(2, 2, mat, word);
-}
-
-void Hiv3(char * word)
-{
-        char mat[][2] =  { {'o', 'i'}, {'H', 'd'} };
-	canIt(2, 2, mat, word);
-}
-
-void Hiv4(char * word)
-{
-        char mat[][2] =  { {'H', 'o'}, {'c', 'i'} };
-	canIt(2, 2, mat, word);
+	free(mat);
 }
 
 void Mat(char * word)
 {
-        char mat[][4] =  { 
+/*
+	char mat[][4] =  { 
 		{'t', 'h', 'i', 's'}, 
 		{'i', 's', ' ', 'a'},
-       		{'t', 'e', 's', 't'}	};
+		{'t', 'e', 's', 't'}	};
+*/
+	char **mat = malloc(2 * sizeof(char*));
+	mat[0] = "this";
+	mat[1] = "is a";
+	mat[2] = "test";
         canIt(3, 4, mat, word);
+	free(mat);
 }
 
 // int main(int argc, char *argv[]) 
 int main ()
 {
-//	abcd("nothing");
 //	Hiv0("Hi");
 //	Hiv1("Hi");
 //	Hiv0("Hello");
