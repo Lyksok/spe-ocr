@@ -202,8 +202,8 @@ GdkPixbuf *create_alpha_pixbuf(int width, int height)
   return pixbuf;
 }
 
-// Function to add white borders to a pixbuf to fit within the specified dimensions
-GdkPixbuf *calculate_white_borders(GdkPixbuf *pixbuf, int width, int height)
+// Function to add  borders to a pixbuf to fit within the specified dimensions
+GdkPixbuf *calculate_borders(GdkPixbuf *pixbuf, int width, int height)
 {
   int original_width = gdk_pixbuf_get_width(pixbuf);
   int original_height = gdk_pixbuf_get_height(pixbuf);
@@ -257,7 +257,7 @@ void on_change_image(GtkWidget *widget, gpointer data)
     GdkPixbuf *resized_pixbuf = resize_pixbuf(loaded_pixbuf, IMAGE_WIDTH, IMAGE_HEIGHT);
 
     // Apply white borders to the resized image
-    GdkPixbuf *final_pixbuf = calculate_white_borders(resized_pixbuf, IMAGE_WIDTH, IMAGE_HEIGHT);
+    GdkPixbuf *final_pixbuf = calculate_borders(resized_pixbuf, IMAGE_WIDTH, IMAGE_HEIGHT);
 
     // Display the final image with white borders
     gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), final_pixbuf);
@@ -363,6 +363,7 @@ void on_binarize_clicked(GtkWidget *widget, gpointer data)
   // Free
   g_object_unref(pixbuf);
 }
+
 /**
 void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
 {
@@ -468,7 +469,7 @@ static void activate(GtkApplication *app)
   resized_pixbuf = resize_pixbuf(loaded_pixbuf, IMAGE_WIDTH, IMAGE_HEIGHT);
 
   // Add white borders if necessary
-  final_pixbuf = calculate_white_borders(resized_pixbuf, IMAGE_WIDTH, IMAGE_HEIGHT);
+  final_pixbuf = calculate_borders(resized_pixbuf, IMAGE_WIDTH, IMAGE_HEIGHT);
   image = gtk_image_new_from_pixbuf(final_pixbuf);
 
   // Initialize the menu bar
