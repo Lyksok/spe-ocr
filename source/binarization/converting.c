@@ -56,11 +56,12 @@ void convert_pixel_with_threshold(SDL_Surface* surface, int threshold,
 	Uint8 r;
 	Uint8 g;
 	Uint8 b;
-	SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+	Uint8 a;
+	SDL_GetRGBA(pixel, surface->format, &r, &g, &b, &a);
 	if(r<threshold)
-		pixel = SDL_MapRGB(surface->format, 0, 0, 0);
+		pixel = SDL_MapRGBA(surface->format, 0, 0, 0, a);
 	else
-		pixel = SDL_MapRGB(surface->format, 255, 255, 255);
+		pixel = SDL_MapRGBA(surface->format, 255, 255, 255, a);
 	((Uint32*)surface->pixels)[i] = pixel;
 	SDL_UnlockSurface(surface);
 }
@@ -72,7 +73,8 @@ Uint32 to_grayscale(SDL_PixelFormat* format, Uint32 pixel)
     Uint8 r;
     Uint8 g;
     Uint8 b;
-    SDL_GetRGB(pixel, format, &r, &g, &b);
+	Uint8 a;
+    SDL_GetRGBA(pixel, format, &r, &g, &b, &a);
     Uint8 max = r;
     if(g>max)
 	max = g;
@@ -91,7 +93,7 @@ Uint32 to_grayscale(SDL_PixelFormat* format, Uint32 pixel)
     }
     // Uint8 grayscale = 0.299*r+0.587*g+0.114*b;
     Uint8 grayscale = (min+max)/2; 
-    return SDL_MapRGB(format, grayscale, grayscale, grayscale);
+    return SDL_MapRGBA(format, grayscale, grayscale, grayscale, a);
 }
 
 /* Convert in place an image using its surface to a grayscale image
@@ -109,11 +111,12 @@ Uint32 to_binarized(SDL_PixelFormat* format, Uint32 pixel, size_t threshold)
 	Uint8 r;
 	Uint8 g;
 	Uint8 b;
-	SDL_GetRGB(pixel, format, &r, &g, &b);
+	Uint8 a;
+	SDL_GetRGBA(pixel, format, &r, &g, &b, &a);
 	if(r<threshold)
-		return SDL_MapRGB(format, 0, 0, 0);
+		return SDL_MapRGBA(format, 0, 0, 0, a);
 	else
-		return SDL_MapRGB(format, 255, 255, 255);
+		return SDL_MapRGBA(format, 255, 255, 255, a);
 }
 
 /* Convert in place an image using its surface to a grayscale image
@@ -171,14 +174,15 @@ void invert_binarized_colors(SDL_Surface* surface)
 				Uint8 h_index;
 				Uint8 tmp1;
 				Uint8 tmp2;
-				SDL_GetRGB(pixel, surface->format, &h_index, &tmp1, &tmp2);
+				Uint8 a;
+				SDL_GetRGBA(pixel, surface->format, &h_index, &tmp1, &tmp2, &a);
 				if(h_index==0)
 				{
-					pixel = SDL_MapRGB(surface->format, 255, 255, 255);
+					pixel = SDL_MapRGBA(surface->format, 255, 255, 255, a);
 				}
 				else
 				{
-					pixel = SDL_MapRGB(surface->format, 0, 0, 0);
+					pixel = SDL_MapRGBA(surface->format, 0, 0, 0, a);
 				}
 				
 				((Uint32*)surface->pixels)[j*surface->w+i] = pixel;
