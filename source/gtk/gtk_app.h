@@ -8,8 +8,8 @@
 
 // CONSTANTS
 #define PI 3.1415926535897932
-#define ROTATE_LEFT_ANGLE -5.0
-#define ROTATE_RIGHT_ANGLE 5.0
+#define DEFAULT_LEFT_ANGLE -5.0 // Default left rotation angle
+#define DEFAULT_RIGHT_ANGLE 5.0 // Default right rotation angle
 #define IMAGE_WIDTH 1000
 #define IMAGE_HEIGHT 1000
 #define SAMPLE_IMAGE_PATH "images/abstract_background.jpg"
@@ -33,6 +33,8 @@ void on_binarize_clicked(GtkWidget *widget, gpointer data);
 GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle);
 void on_rotate_left_clicked(GtkWidget *widget, gpointer data);
 void on_rotate_right_clicked(GtkWidget *widget, gpointer data);
+void on_rotate_clicked(GtkWidget *widget, gpointer data);
+void on_angle_entry_activate(GtkEntry *entry, gpointer data);
 
 GtkWidget *init_button(const char *label, GCallback callback, gpointer data);
 GtkWidget *init_menu_bar(GtkWidget *image_widget);

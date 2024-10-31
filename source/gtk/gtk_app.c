@@ -359,6 +359,21 @@ void on_binarize_clicked(GtkWidget *widget, gpointer data)
   SDL_FreeSurface(surface); // Free the surface
 }
 
+// global variables to store the changing angle values
+double left_angle = DEFAULT_LEFT_ANGLE;
+double right_angle = DEFAULT_RIGHT_ANGLE;
+
+/**
+ * @brief Callback function to handle the "activate" signal of the GtkEntry widgets. This is a lot of code for a simple function!
+ * @param entry The GtkEntry widget.
+ * @param data Pointer to the rotation angle macro to update.
+ */
+void on_angle_entry_activate(GtkEntry *entry, gpointer data)
+{
+  double *angle = (double *)data;
+  const char *angle_text = gtk_entry_get_text(entry);
+  *angle = g_ascii_strtod(angle_text, NULL); // convert string to double
+}
 /**
  * @brief Rotates a GdkPixbuf by a specified number of degrees using the macros of height and width allocated to the pixbuf.
  * @param pixbuf The pixbuf to rotate.
@@ -470,9 +485,12 @@ GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle)
  */
 void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
 {
-  (void)widget;        // Remove unused parameter warning
-  double angle = -5.0; // Rotate left by 5 degrees
-  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  (void)data; // Unused parameter
+  GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget");
+  GtkWidget *angle_entry = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "angle-entry");
+  const char *angle_text = gtk_entry_get_text(GTK_ENTRY(angle_entry));
+  double angle = g_ascii_strtod(angle_text, NULL);
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(image)); // Convert GtkImage to GdkPixbuf
   if (!pixbuf)
   {
     return; // Handle error if pixbuf is NULL
@@ -480,21 +498,25 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
   GdkPixbuf *final_pixbuf = rotate_pixbuf(pixbuf, angle); // Rotate the pixbuf by the specified angle
   if (final_pixbuf)
   {
-    display_pixbuf(data, final_pixbuf);
-    g_object_unref(final_pixbuf);
+    display_pixbuf(image, final_pixbuf); // Display the rotated pixbuf in the image widget
+    g_object_unref(final_pixbuf);        // Free the rotated pixbuf
   }
-  g_object_unref(pixbuf);
+  g_object_unref(pixbuf); // Free the original pixbuf
 }
 
 /**
- * @brief Callback function to rotate the image to the right by 5 degrees.
+ * @brief Callback function to rotate the image to the right by the specified angle.
  * @param widget The widget that triggered the function.
- * @param data Pointer to the image widget to be updated.
+ * @param data User data passed to the function.
  */
 void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
 {
-  (void)widget; // Remove unused parameter warning
-  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  (void)data; // Unused parameter
+  GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget");
+  GtkWidget *angle_entry = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "angle-entry");
+  const char *angle_text = gtk_entry_get_text(GTK_ENTRY(angle_entry));
+  double angle = g_ascii_strtod(angle_text, NULL);
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(image)); // Convert GtkImage to GdkPixbuf
   if (!pixbuf)
   {
     return; // Handle error if pixbuf is NULL
@@ -502,10 +524,10 @@ void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
   GdkPixbuf *final_pixbuf = rotate_pixbuf(pixbuf, angle); // Rotate the pixbuf by the specified angle
   if (final_pixbuf)
   {
-    display_pixbuf(data, final_pixbuf);
-    g_object_unref(final_pixbuf);
+    display_pixbuf(image, final_pixbuf); // Display the rotated pixbuf in the image widget
+    g_object_unref(final_pixbuf);        // Free the rotated pixbuf
   }
-  g_object_unref(pixbuf);
+  g_object_unref(pixbuf); // Free the original pixbuf
 }
 
 /**
@@ -620,8 +642,20 @@ static void activate(GtkApplication *app)
   vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
   gtk_grid_attach(GTK_GRID(grid), vbox_buttons, 1, 1, 1, 1);
 
+  // Manage entry buttons for the rotation
+  GtkWidget *left_angle_entry = gtk_entry_new();
+  GtkWidget *right_angle_entry = gtk_entry_new();
+  gtk_entry_set_text(GTK_ENTRY(left_angle_entry), g_strdup_printf("%.2f", DEFAULT_LEFT_ANGLE));
+  gtk_entry_set_text(GTK_ENTRY(right_angle_entry), g_strdup_printf("%.2f", DEFAULT_RIGHT_ANGLE));     //  pass the address of the angle to update
+  g_signal_connect(left_angle_entry, "activate", G_CALLBACK(on_angle_entry_activate), &left_angle);   // updates when the user presses enter
+  g_signal_connect(right_angle_entry, "activate", G_CALLBACK(on_angle_entry_activate), &right_angle); // updates when the user presses enter
+  gtk_box_pack_start(GTK_BOX(vbox_buttons), gtk_label_new("Left Angle:"), FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox_buttons), left_angle_entry, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox_buttons), gtk_label_new("Right Angle:"), FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox_buttons), right_angle_entry, FALSE, FALSE, 0);
+
   // Add buttons to the vertical box
-  const char *button_labels[] = {"⚪ Grayscale", "🤖 Binarize", "↪️ Rotate 5° left", "↩️ Rotate 5° right"};
+  const char *button_labels[] = {"⚪ Grayscale", "🤖 Binarize", "↪️ Rotate left", "↩️ Rotate right"};
   for (long unsigned int i = 0; i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
   {
     button = init_button(button_labels[i], NULL, NULL);
@@ -638,14 +672,14 @@ static void activate(GtkApplication *app)
     else if (strcmp(button_labels[i], "↪️ Rotate 5° left") == 0)
     {
       double *angle = g_new(double, 1);
-      *angle = ROTATE_LEFT_ANGLE;
+      *angle = DEFAULT_LEFT_ANGLE;
       g_object_set_data(G_OBJECT(button), "image-widget", image); // it
       g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_left_clicked), angle);
     }
     else if (strcmp(button_labels[i], "↩️ Rotate 5° right") == 0)
     {
       double *angle = g_new(double, 1);
-      *angle = ROTATE_RIGHT_ANGLE;
+      *angle = DEFAULT_RIGHT_ANGLE;
       g_object_set_data(G_OBJECT(button), "image-widget", image);
       g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_right_clicked), angle);
     }
