@@ -371,10 +371,6 @@ void on_binarize_clicked(GtkWidget *widget, gpointer data)
  */
 GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle)
 {
-  int width = gdk_pixbuf_get_width(pixbuf);
-  int height = gdk_pixbuf_get_height(pixbuf);
-  int width = gdk_pixbuf_get_width(pixbuf);
-  int height = gdk_pixbuf_get_height(pixbuf);
   GdkPixbuf *rotated_pixbuf = gdk_pixbuf_rotate_simple(pixbuf, angle);
 
   return rotated_pixbuf;
@@ -392,6 +388,7 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data, double angle)
   GdkPixbuf *rotated_pixbuf = rotate_pixbuf(pixbuf, angle);
   display_pixbuf(data, rotated_pixbuf);
   g_object_unref(rotated_pixbuf);
+  g_object_unref(pixbuf); // Free the original pixbuf
 }
 
 /**
@@ -406,6 +403,7 @@ void on_rotate_right_clicked(GtkWidget *widget, gpointer data, double angle)
   GdkPixbuf *rotated_pixbuf = rotate_pixbuf(pixbuf, -angle);
   display_pixbuf(data, rotated_pixbuf);
   g_object_unref(rotated_pixbuf);
+  g_object_unref(pixbuf); // Free the original pixbuf
 }
 
 /**
@@ -424,6 +422,11 @@ GtkWidget *init_button(const char *label, GCallback callback, gpointer data)
   if (callback != NULL)
     // connects the "clicked" signal to the callback function
     g_signal_connect(button, "clicked", callback, data);
+
+  // Align the text to the left
+  GtkWidget *txt_widget = gtk_bin_get_child(GTK_BIN(button));
+  gtk_widget_set_halign(txt_widget, GTK_ALIGN_START);
+
   return button;
 }
 /**
@@ -441,7 +444,7 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
   // TODO remove possible legacy code
   // Creates a file menu => menu bar
   file_menu = gtk_menu_new();
-  file_menu_item = gtk_menu_item_new_with_label("File");
+  file_menu_item = gtk_menu_item_new_with_label("📁 File");
   gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item), file_menu);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file_menu_item);
 
@@ -516,25 +519,25 @@ static void activate(GtkApplication *app)
   gtk_grid_attach(GTK_GRID(grid), vbox_buttons, 1, 1, 1, 1);
 
   // Add buttons to the vertical box
-  const char *button_labels[] = {"Grayscale", "Binarize", "Rotate 5° left", "Rotate 5° right"};
+  const char *button_labels[] = {"⚪ Grayscale", "🤖 Binarize", "↪️ Rotate 5° left", "↩️ Rotate 5° right"};
   for (long unsigned int i = 0; i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
   {
     button = init_button(button_labels[i], NULL, NULL);
     gtk_box_pack_start(GTK_BOX(vbox_buttons), button, FALSE, FALSE, 0);
     // Connect the buttons to their respective effects
-    if (strcmp(button_labels[i], "Grayscale") == 0)
+    if (strcmp(button_labels[i], "⚪ Grayscale") == 0)
     {
       g_signal_connect(button, "clicked", G_CALLBACK(on_grayscale_clicked), image);
     }
-    else if (strcmp(button_labels[i], "Binarize") == 0)
+    else if (strcmp(button_labels[i], "🤖 Binarize") == 0)
     {
       g_signal_connect(button, "clicked", G_CALLBACK(on_binarize_clicked), image);
     }
-    else if (strcmp(button_labels[i], "Rotate 5° left") == 0)
+    else if (strcmp(button_labels[i], "↪️ Rotate 5° left") == 0)
     {
       g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_left_clicked), image);
     }
-    else if (strcmp(button_labels[i], "Rotate 5° right") == 0)
+    else if (strcmp(button_labels[i], "↩️ Rotate 5° right") == 0)
     {
       g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_right_clicked), image);
     }
