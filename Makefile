@@ -17,7 +17,7 @@ TARGET = app_launcher
 all: $(TARGET)
 
 $(TARGET): $(SRC)
-	$(CC) $(SRC_APP)  -o $(TARGET) $(PKGS) $(LIBS) $(FLAGS)
+	$(CC) $(SRC_APP) $(SRC_BIN) -o $(TARGET) $(PKGS) $(LIBS) $(FLAGS)
 
 clean:
 	rm -f $(TARGET)
