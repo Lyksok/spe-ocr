@@ -1,10 +1,4 @@
 #include "gtk_app.h"
-#include "splash_screen.h"
-#include "../binarization/binarizing.h"
-
-// TODO refactoring of function names !
-// Callback functions begin with "on_"
-// All function names are in snake_case
 
 /**
  * @brief Converts a GtkImage to a GdkPixbuf.
@@ -371,24 +365,113 @@ void on_binarize_clicked(GtkWidget *widget, gpointer data)
  */
 GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle)
 {
-  GdkPixbuf *rotated_pixbuf = gdk_pixbuf_rotate_simple(pixbuf, angle);
+  // just in case the values changes from the initial macros
+  int width = gdk_pixbuf_get_width(pixbuf);
+  int height = gdk_pixbuf_get_height(pixbuf);
 
-  return rotated_pixbuf;
+  double angle_rad = angle * PI / 180;
+  // Calculate dimensions and angles of the soon-to-be rotated image
+  double sin_angle = fabs(sin(angle_rad));
+  double cos_angle = fabs(cos(angle_rad));
+
+  /**
+   * Pytagorean theorem to calculate the new size of the image
+   * Goal is to keep the image in the same dimensions after n rotations
+   */
+  int new_size = (int)(sqrt(width * width + height * height));
+
+  int width_2 = (int)(IMAGE_WIDTH * cos_angle + IMAGE_HEIGHT * sin_angle);
+  int height_2 = (int)(IMAGE_WIDTH * sin_angle + IMAGE_HEIGHT * cos_angle);
+
+  // Create rotated pixbuf (copied process from to sdl_surface_to_gdk_pixbuf)
+  GdkPixbuf *pixbuf_rotated = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width_2, height_2);
+
+  // These are documented in the sdl_surface_to_gdk_pixbuf function if needed
+  guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
+  guchar *pixels_rotated = gdk_pixbuf_get_pixels(pixbuf_rotated);
+
+  // Constrain the rowstride to keep the dimensions
+  int rowstride = gdk_pixbuf_get_rowstride(pixbuf); // size of a row of pixels
+  int rowstride_2 = gdk_pixbuf_get_rowstride(pixbuf_rotated);
+
+  int channels = gdk_pixbuf_get_n_channels(pixbuf); // RGB or RGBA
+  // Calculate the center of the image bcs rotation happens on the center
+  // /!\ width_2 = height_2 for a square image
+  int O_x = width / 2;
+  int O_y = height / 2;
+  int O_x2 = width_2 / 2;
+  int O_y2 = height_2 / 2;
+
+  // Init dest pixbuf ie the rotated pixbuf
+  create_alpha_pixbuf(width_2, height_2);
+  /** Process
+   * Rotation formula explanation at : https://homepages.inf.ed.ac.uk/rbf/HIPR2/rotate.htm
+   *
+   * ************ BILINEAR INTERPOLATION ************
+   * This technique is used to resize the image after n rotations.
+   * The B. I. of a pixel combines of the values of the four nearest pixels, weighted by their distances to the pixel.
+   * Visual representation : https://en.wikipedia.org/wiki/Bilinear_interpolation#/media/File:Bilinear_interpolation_visualisation.svg
+   * The process is as follows :
+   * 1. Find coordinates of the 4 nearest pixels in the original image.
+   * 2. Calculate the fractional parts of x and y.
+   * 3. Calculate the weights of the 4 pixels.
+   * 4. Multiply the pixel values by the weights.
+   * 5. Sum the results.
+   * ************************************************
+   */
+  for (int x2 = 0; x2 < new_size; x2++)
+  {
+    for (int y2 = 0; y2 < new_size; y2++)
+    {
+      // Calculate the corresponding source coordinates
+      double x = (x2 - O_x2) * cos(angle_rad) + (y2 - O_y2) * sin(angle_rad) + O_x;
+      double y = -(x2 - O_x2) * sin(angle_rad) + (y2 - O_y2) * cos(angle_rad) + O_y;
+
+      if (x >= 0 && x < width - 1 && y >= 0 && y < height - 1)
+      {
+
+        int x1 = (int)x; // Nearest pixel to the left
+        int y1 = (int)y; // Nearest pixel to the top
+
+        /**Interpolation weights : fractional parts of the original coordinates x and y.
+         * ==> dx : "how far are we from the nearest pixel to the left ?"
+         * ==> dy : "how far are we from the nearest pixel to the top ?"
+         */
+        double dx = x - x1;
+        double dy = y - y1;
+
+        for (int c = 0; c < channels; c++)
+        {
+          double top_left = (1 - dx) * (1 - dy) * pixels[(y1 * rowstride + x1 * channels) + c];
+          double top_right = dx * (1 - dy) * pixels[(y1 * rowstride + (x1 + 1) * channels) + c];
+          double bottom_left = (1 - dx) * dy * pixels[((y1 + 1) * rowstride + x1 * channels) + c];
+          double bottom_right = dx * dy * pixels[((y1 + 1) * rowstride + (x1 + 1) * channels) + c];
+          double value = top_left + top_right + bottom_left + bottom_right;
+
+          pixels_rotated[(y2 * rowstride_2 + x2 * channels) + c] = (unsigned char)value; // eq. to guchar
+        }
+      }
+    }
+  }
+
+  return pixbuf_rotated;
 }
 
 /**
  * @brief Callback function to rotate the image to the left by 5 degrees.
  * @param widget The widget that triggered the function.
  * @param data Pointer to the image widget to be updated.
+ * @note We want to use a custom angle which is not in the enum of GdkPixbufRotation. Thus here we use a custom function to rotate. 31/10/24
  */
-void on_rotate_left_clicked(GtkWidget *widget, gpointer data, double angle)
+void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
 {
-  (void)widget; // Remove unused parameter warning
+  (void)widget;       // Remove unused parameter warning
+  double angle = 5.0; // Rotate left by 5 degrees
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
-  GdkPixbuf *rotated_pixbuf = rotate_pixbuf(pixbuf, angle);
-  display_pixbuf(data, rotated_pixbuf);
-  g_object_unref(rotated_pixbuf);
-  g_object_unref(pixbuf); // Free the original pixbuf
+  GdkPixbuf *pixbuf_rotated = rotate_pixbuf(pixbuf, angle);
+  display_pixbuf(data, pixbuf_rotated);
+  g_object_unref(pixbuf_rotated);
+  g_object_unref(pixbuf); // Free the og pixbuf
 }
 
 /**
@@ -396,14 +479,15 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data, double angle)
  * @param widget The widget that triggered the function.
  * @param data Pointer to the image widget to be updated.
  */
-void on_rotate_right_clicked(GtkWidget *widget, gpointer data, double angle)
+void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
 {
-  (void)widget; // Remove unused parameter warning
+  (void)widget;        // Remove unused parameter warning
+  double angle = -5.0; // Rotate right by 5 degrees
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
-  GdkPixbuf *rotated_pixbuf = rotate_pixbuf(pixbuf, -angle);
-  display_pixbuf(data, rotated_pixbuf);
-  g_object_unref(rotated_pixbuf);
-  g_object_unref(pixbuf); // Free the original pixbuf
+  GdkPixbuf *pixbuf_rotated = rotate_pixbuf(pixbuf, angle);
+  display_pixbuf(data, pixbuf_rotated);
+  g_object_unref(pixbuf_rotated);
+  g_object_unref(pixbuf); // Free the og pixbuf
 }
 
 /**
@@ -467,10 +551,10 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
  */
 static void activate(GtkApplication *app)
 {
-
   // Show the splash screen defined in splash_screen.c
   show_splash_screen(app);
 
+  /* Objects declaration */
   GtkWidget *window, *image, *button, *menu_bar, *grid, *vbox_buttons;
   GdkPixbuf *pixbuf, *resized_pixbuf, *final_pixbuf;
 
