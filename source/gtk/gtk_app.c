@@ -468,7 +468,7 @@ GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle)
  * @param data Pointer to the image widget to be updated.
  * @note We want to use a custom angle which is not in the enum of GdkPixbufRotation. Thus here we use a custom function to rotate. 31/10/24
  */
-void on_rotate_left_clicked(GtkWidget *widget, gpointer data, double angle)
+void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
 {
   (void)widget;        // Remove unused parameter warning
   double angle = -5.0; // Rotate left by 5 degrees
@@ -491,7 +491,7 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data, double angle)
  * @param widget The widget that triggered the function.
  * @param data Pointer to the image widget to be updated.
  */
-void on_rotate_right_clicked(GtkWidget *widget, gpointer data, double angle)
+void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
 {
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
@@ -639,7 +639,7 @@ static void activate(GtkApplication *app)
     {
       double *angle = g_new(double, 1);
       *angle = ROTATE_LEFT_ANGLE;
-      g_object_set_data(G_OBJECT(button), "image-widget", image);
+      g_object_set_data(G_OBJECT(button), "image-widget", image); // it
       g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_left_clicked), angle);
     }
     else if (strcmp(button_labels[i], "↩️ Rotate 5° right") == 0)
