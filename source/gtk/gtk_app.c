@@ -202,7 +202,7 @@ GdkPixbuf *create_alpha_pixbuf(int width, int height)
   return pixbuf;
 }
 
-// Function to add  borders to a pixbuf to fit within the specified dimensions
+// Function to add borders to a pixbuf to fit within the specified dimensions
 GdkPixbuf *calculate_borders(GdkPixbuf *pixbuf, int width, int height)
 {
   int original_width = gdk_pixbuf_get_width(pixbuf);
@@ -328,40 +328,39 @@ SDL_Surface *gdk_pixbuf_to_sdl_surface(GdkPixbuf *pixbuf)
 
   return surface;
 }
-
+/**
+ * @brief Callback function to convert the image to grayscaled.
+ *  @param widget The widget that triggered the function
+ * @param data Pointer to the image widget to be updated
+ * @note The surface is freed but the pixbuf is NOT
+ */
 void on_grayscale_clicked(GtkWidget *widget, gpointer data)
 {
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
   convert_to_grayscale(surface);
-  g_object_unref(pixbuf); // Free the initial pixbuf
+  GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  display_pixbuf(data, new_pixbuf);
 
-  pixbuf = sdl_surface_to_gdk_pixbuf(surface);
-  display_pixbuf(data, pixbuf);
-  SDL_FreeSurface(surface);
-
-  // Trigger the on_change_image callback to display the modified image
-  on_change_image(GTK_WIDGET(data), pixbuf);
-
-  g_object_unref(pixbuf); // Free the final pixbuf
+  SDL_FreeSurface(surface); // Free the surface
 }
+/**
+ * @brief Callback function to convert the image to binarized.
+ *  @param widget The widget that triggered the function
+ * @param data Pointer to the image widget to be updated
+ * @note The surface is freed but the pixbuf is NOT
+ */
 void on_binarize_clicked(GtkWidget *widget, gpointer data)
 {
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  // Free
-  g_object_unref(pixbuf);
+  convert_to_grayscale(surface);
+  GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  display_pixbuf(data, new_pixbuf);
 
-  convert_to_binarized_global(surface);
-  pixbuf = sdl_surface_to_gdk_pixbuf(surface);
-  display_pixbuf(data, pixbuf);
-  SDL_FreeSurface(surface);
-
-  on_change_image(GTK_WIDGET(data), pixbuf);
-  // Free
-  g_object_unref(pixbuf);
+  SDL_FreeSurface(surface); // Free the surface
 }
 
 /**
@@ -491,6 +490,15 @@ static void activate(GtkApplication *app)
   {
     button = init_button(button_labels[i], NULL, NULL);
     gtk_box_pack_start(GTK_BOX(vbox_buttons), button, FALSE, FALSE, 0);
+    // Connect the buttons to their respective effects
+    if (strcmp(button_labels[i], "Grayscale") == 0)
+    {
+      g_signal_connect(button, "clicked", G_CALLBACK(on_grayscale_clicked), image);
+    }
+    else if (strcmp(button_labels[i], "Binarize") == 0)
+    {
+      g_signal_connect(button, "clicked", G_CALLBACK(on_binarize_clicked), image);
+    }
   }
 
   // Proportional parameters to resize the widgets if the window is resized
