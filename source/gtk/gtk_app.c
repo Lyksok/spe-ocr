@@ -637,11 +637,17 @@ static void activate(GtkApplication *app)
     }
     else if (strcmp(button_labels[i], "↪️ Rotate 5° left") == 0)
     {
-      g_signal_connect_data(button, "clicked", G_CALLBACK(on_rotate_clicked), image, (GClosureNotify)ROTATE_LEFT_ANGLE, 0); // GClosureNotify to free the resources after the callback, here the angle
+      double *angle = g_new(double, 1);
+      *angle = ROTATE_LEFT_ANGLE;
+      g_object_set_data(G_OBJECT(button), "image-widget", image);
+      g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_left_clicked), angle);
     }
     else if (strcmp(button_labels[i], "↩️ Rotate 5° right") == 0)
     {
-      g_signal_connect_data(button, "clicked", G_CALLBACK(on_rotate_clicked), image, (GClosureNotify)ROTATE_RIGHT_ANGLE, 0);
+      double *angle = g_new(double, 1);
+      *angle = ROTATE_RIGHT_ANGLE;
+      g_object_set_data(G_OBJECT(button), "image-widget", image);
+      g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_right_clicked), angle);
     }
   }
 
