@@ -70,7 +70,24 @@ Uint32 to_grayscale(SDL_PixelFormat* format, Uint32 pixel)
     Uint8 g;
     Uint8 b;
     SDL_GetRGB(pixel, format, &r, &g, &b);
-    Uint8 grayscale = 0.299*r+0.587*g+0.114*b;
+    Uint8 max = r;
+    if(g>max)
+	max = g;
+    else
+    {
+	if(b>max)
+	    max = b;
+    }
+    Uint8 min = r;
+    if(g<max)
+	min = g;
+    else
+    {
+	if(b<min)
+	    min = b;
+    }
+    // Uint8 grayscale = 0.299*r+0.587*g+0.114*b;
+    Uint8 grayscale = (min+max)/2; 
     return SDL_MapRGB(format, grayscale, grayscale, grayscale);
 }
 
