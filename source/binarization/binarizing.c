@@ -11,6 +11,15 @@ void convert_to_grayscale(SDL_Surface* surface)
 }
 
 /* Convert an image to its binarized representation
+ * using 127 as a threshold
+*/
+void convert_to_binarized_average(SDL_Surface* surface)
+{
+    image_to_grayscale(surface);
+    image_to_binarized(surface, 127);
+}
+
+/* Convert an image to its binarized representation
  * This function uses the global thresholding method
 */
 void convert_to_binarized_global(SDL_Surface* surface)
