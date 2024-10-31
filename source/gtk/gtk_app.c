@@ -318,7 +318,7 @@ static void activate(GtkApplication *app)
 {
 
   // Show the splash screen defined in splash_screen.c
-  show_splash_screen(app);
+  // TODO fix show_splash_screen(app);
 
   GtkWidget *window, *image, *button, *menu_bar, *grid, *vbox_buttons;
   GdkPixbuf *pixbuf, *resized_pixbuf, *final_pixbuf;
@@ -384,7 +384,8 @@ static void activate(GtkApplication *app)
   // Show all widgets
   gtk_widget_show_all(window);
 
-  // Free the pixbufs
+  // Free the objects
+
   g_object_unref(pixbuf);
   g_object_unref(resized_pixbuf);
   g_object_unref(final_pixbuf);
