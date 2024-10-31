@@ -335,18 +335,33 @@ void on_grayscale_clicked(GtkWidget *widget, gpointer data)
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
   convert_to_grayscale(surface);
+  g_object_unref(pixbuf); // Free the initial pixbuf
+
   pixbuf = sdl_surface_to_gdk_pixbuf(surface);
   display_pixbuf(data, pixbuf);
   SDL_FreeSurface(surface);
+
+  // Trigger the on_change_image callback to display the modified image
+  on_change_image(GTK_WIDGET(data), pixbuf);
+
+  g_object_unref(pixbuf); // Free the final pixbuf
 }
 void on_binarize_clicked(GtkWidget *widget, gpointer data)
 {
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  convert_to_binarized_global(surface); // TODO Here Otsu used for first demo
-  display_pixbuf(data, sdl_surface_to_gdk_pixbuf(surface));
+  // Free
+  g_object_unref(pixbuf);
+
+  convert_to_binarized_global(surface);
+  pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  display_pixbuf(data, pixbuf);
   SDL_FreeSurface(surface);
+
+  on_change_image(GTK_WIDGET(data), pixbuf);
+  // Free
+  g_object_unref(pixbuf);
 }
 /**
 void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
@@ -360,7 +375,7 @@ void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
 GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
 rotate_image(pixbuf, -5);
 display_pixbuf(data, pixbuf);
-
+*/
 
 /**
  * @brief Creates a button widget.
