@@ -1,5 +1,6 @@
 #include "gtk_app.h"
 #include "splash_screen.h"
+#include "../binarization/binarizing.h"
 
 // TODO refactoring of function names !
 // Callback functions begin with "on_"
@@ -269,6 +270,97 @@ void on_change_image(GtkWidget *widget, gpointer data)
 
   gtk_widget_destroy(dialog);
 }
+
+/**
+ * @brief EXPLICIT CONVERSION METHOD! => Converts a GdkPixbuf to an SDL_Surface.
+ * GdkPixbuf is used in GTK for image handling whereas SDL_Surface is used in SDL for rendering surfaces. Necessary to call preprocessing functions in the app.
+ * @param surface The surface to convert to a GdkPixbuf.
+ * @return A pointer to the new GdkPixbuf.
+ */
+GdkPixbuf *sdl_surface_to_gdk_pixbuf(SDL_Surface *surface)
+{
+  // Retrieve the surface data about its pixels
+  int width = surface->w;
+  int height = surface->h;
+  int rowstride = surface->pitch;
+  guchar *pixels = (guchar *)surface->pixels;
+
+  // Call gdk_pixbuf_new_from_data to create a new GdkPixbuf from the data retrieved
+  GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data(
+      pixels,                                // data = pixels
+      GDK_COLORSPACE_RGB,                    // colorspace = RGB
+      surface->format->Amask ? TRUE : FALSE, // has_alpha ? Yes if Amask != 0
+      8,                                     // Currently only RGB images with 8 bits per sample are supported
+      width,
+      height,
+      rowstride, // nb bytes of a row's size
+      NULL,      // no supported destroy
+      NULL);     // no supported destroy
+
+  return pixbuf;
+}
+/**
+ * @brief EXPLICIT CONVERSION METHOD! => Converts an SDL_Surface to a GdkPixbuf.
+ * GdkPixbuf is used in GTK for image handling whereas SDL_Surface is used in SDL for rendering surfaces. Necessary to call preprocessing functions in the app.
+ * @param pixbuf The pixbuf to convert to an SDL_Surface.
+ * @return A pointer to the new SDL_Surface.
+ */
+SDL_Surface *gdk_pixbuf_to_sdl_surface(GdkPixbuf *pixbuf)
+{
+  // Retrieve the pixbuf data about its pixels
+  int width = gdk_pixbuf_get_width(pixbuf);
+  int height = gdk_pixbuf_get_height(pixbuf);
+  int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+  int n_channels = gdk_pixbuf_get_n_channels(pixbuf);
+  guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
+
+  // Call SDL_CreateRGBSurfaceFrom to create a new SDL_Surface from the data retrieved
+  SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(
+      pixels,
+      width,
+      height,
+      8 * n_channels,                    // 8 bits per pixel * number of channels
+      rowstride,                         // nb bytes of a row's size
+      0x000000FF,                        // Red mask as hexa
+      0x0000FF00,                        // Green mask as hexa
+      0x00FF0000,                        // Blue mask as hexa
+      n_channels == 4 ? 0xFF000000 : 0); // Alpha mask if 4  (as hexa) channels (= RGBA) else 0 (= RGB)
+
+  return surface;
+}
+
+void on_grayscale_clicked(GtkWidget *widget, gpointer data)
+{
+  (void)widget; // Remove unused parameter warning
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
+  convert_to_grayscale(surface);
+  pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  display_pixbuf(data, pixbuf);
+  SDL_FreeSurface(surface);
+}
+void on_binarize_clicked(GtkWidget *widget, gpointer data)
+{
+  (void)widget; // Remove unused parameter warning
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
+  convert_to_binarized_global(surface); // TODO Here Otsu used for first demo
+  display_pixbuf(data, sdl_surface_to_gdk_pixbuf(surface));
+  SDL_FreeSurface(surface);
+}
+/**
+void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
+{
+GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+rotate_image(pixbuf, 5);
+display_pixbuf(data, pixbuf);
+}
+void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
+{
+GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+rotate_image(pixbuf, -5);
+display_pixbuf(data, pixbuf);
+
 
 /**
  * @brief Creates a button widget.
