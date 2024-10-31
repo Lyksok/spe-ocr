@@ -3,18 +3,18 @@
 /* Convert an image using an external function to reassign
  * each pixel with a different value based on the function
  */
-void convert_image(SDL_Surface* surface,
-	Uint32 (*func)(SDL_PixelFormat*, Uint32))
+void convert_image(SDL_Surface *surface,
+				   Uint32 (*func)(SDL_PixelFormat *, Uint32))
 {
-    for(int j=0; j<surface->h; j++)
+	for (int j = 0; j < surface->h; j++)
 	{
-		for(int i=0; i<surface->w; i++)
+		for (int i = 0; i < surface->w; i++)
 		{
 			SDL_LockSurface(surface);
-			Uint32 pixel = ((Uint32*)surface->pixels)[j*surface->w+i];
+			Uint32 pixel = ((Uint32 *)surface->pixels)[j * surface->w + i];
 
 			pixel = func(surface->format, pixel);
-			((Uint32*)surface->pixels)[j*surface->w+i] = pixel;
+			((Uint32 *)surface->pixels)[j * surface->w + i] = pixel;
 
 			SDL_UnlockSurface(surface);
 		}
@@ -25,18 +25,18 @@ void convert_image(SDL_Surface* surface,
  * each pixel with a different value based on the function
  * Add a threshold in parameters
  */
-void convert_image_with_threshold(SDL_Surface* surface, size_t threshold,
-	Uint32 (*func)(SDL_PixelFormat*, Uint32, size_t))
+void convert_image_with_threshold(SDL_Surface *surface, size_t threshold,
+								  Uint32 (*func)(SDL_PixelFormat *, Uint32, size_t))
 {
-    for(int j=0; j<surface->h; j++)
+	for (int j = 0; j < surface->h; j++)
 	{
-		for(int i=0; i<surface->w; i++)
+		for (int i = 0; i < surface->w; i++)
 		{
 			SDL_LockSurface(surface);
-			Uint32 pixel = ((Uint32*)surface->pixels)[j*surface->w+i];
+			Uint32 pixel = ((Uint32 *)surface->pixels)[j * surface->w + i];
 
 			pixel = func(surface->format, pixel, threshold);
-			((Uint32*)surface->pixels)[j*surface->w+i] = pixel;
+			((Uint32 *)surface->pixels)[j * surface->w + i] = pixel;
 
 			SDL_UnlockSurface(surface);
 		}
@@ -44,39 +44,39 @@ void convert_image_with_threshold(SDL_Surface* surface, size_t threshold,
 }
 
 /* Convert a single pixel of an image using a threshold and an index
-*/
-void convert_pixel_with_threshold(SDL_Surface* surface, int threshold,
-	size_t i)
+ */
+void convert_pixel_with_threshold(SDL_Surface *surface, int threshold,
+								  size_t i)
 {
 	SDL_LockSurface(surface);
-	Uint32 pixel = ((Uint32*)surface->pixels)[i];
+	Uint32 pixel = ((Uint32 *)surface->pixels)[i];
 	Uint8 r;
 	Uint8 g;
 	Uint8 b;
 	SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-	if(r<threshold)
+	if (r < threshold)
 		pixel = SDL_MapRGB(surface->format, 0, 0, 0);
 	else
 		pixel = SDL_MapRGB(surface->format, 255, 255, 255);
-	((Uint32*)surface->pixels)[i] = pixel;
+	((Uint32 *)surface->pixels)[i] = pixel;
 	SDL_UnlockSurface(surface);
 }
 
 /* Map a pixel to its grayscale format
  */
-Uint32 to_grayscale(SDL_PixelFormat* format, Uint32 pixel)
+Uint32 to_grayscale(SDL_PixelFormat *format, Uint32 pixel)
 {
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-    SDL_GetRGB(pixel, format, &r, &g, &b);
-    Uint8 grayscale = 0.299*r+0.587*g+0.114*b;
-    return SDL_MapRGB(format, grayscale, grayscale, grayscale);
+	Uint8 r;
+	Uint8 g;
+	Uint8 b;
+	SDL_GetRGB(pixel, format, &r, &g, &b);
+	Uint8 grayscale = 0.299 * r + 0.587 * g + 0.114 * b;
+	return SDL_MapRGB(format, grayscale, grayscale, grayscale);
 }
 
 /* Convert in place an image using its surface to a grayscale image
  */
-void image_to_grayscale(SDL_Surface* surface)
+void image_to_grayscale(SDL_Surface *surface)
 {
 	convert_image(surface, to_grayscale);
 }
@@ -84,13 +84,13 @@ void image_to_grayscale(SDL_Surface* surface)
 /* Map a grayscale pixel to its binarized format based
 	on a threshold
  */
-Uint32 to_binarized(SDL_PixelFormat* format, Uint32 pixel, size_t threshold)
+Uint32 to_binarized(SDL_PixelFormat *format, Uint32 pixel, size_t threshold)
 {
 	Uint8 r;
 	Uint8 g;
 	Uint8 b;
 	SDL_GetRGB(pixel, format, &r, &g, &b);
-	if(r<threshold)
+	if (r < threshold)
 		return SDL_MapRGB(format, 0, 0, 0);
 	else
 		return SDL_MapRGB(format, 255, 255, 255);
@@ -98,7 +98,7 @@ Uint32 to_binarized(SDL_PixelFormat* format, Uint32 pixel, size_t threshold)
 
 /* Convert in place an image using its surface to a grayscale image
  */
-void image_to_binarized(SDL_Surface* surface, size_t threshold)
+void image_to_binarized(SDL_Surface *surface, size_t threshold)
 {
 	convert_image_with_threshold(surface, threshold, to_binarized);
 }

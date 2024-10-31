@@ -8,8 +8,10 @@
 
 // CONSTANTS
 #define PI 3.1415926535897932
-#define IMAGE_WIDTH 600
-#define IMAGE_HEIGHT 600
+#define ROTATE_LEFT_ANGLE -5.0
+#define ROTATE_RIGHT_ANGLE 5.0
+#define IMAGE_WIDTH 1000
+#define IMAGE_HEIGHT 1000
 #define SAMPLE_IMAGE_PATH "images/abstract_background.jpg"
 
 // FUNCTION DECLARATIONS
