@@ -2,6 +2,8 @@
 #define LOCAL_THRESHOLDING_H
 
 #include <SDL2/SDL.h>
+#include <math.h>
+#include "histograms.h"
 
 void get_all_thresholds(SDL_Surface* surface, int** histogram);
 
