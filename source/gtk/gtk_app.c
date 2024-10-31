@@ -96,6 +96,11 @@ since: 2.18 */
                                        "_Save", GTK_RESPONSE_ACCEPT,
                                        NULL);
   res = gtk_dialog_run(GTK_DIALOG(dialog));
+  if (res == GTK_RESPONSE_CANCEL)
+  {
+    gtk_widget_destroy(dialog);
+    return NULL;
+  }
   if (res == GTK_RESPONSE_ACCEPT)
   {
     char *filename;
@@ -231,6 +236,11 @@ void on_change_image(GtkWidget *widget, gpointer data)
                                        NULL);
 
   res = gtk_dialog_run(GTK_DIALOG(dialog));
+  if (res == GTK_RESPONSE_CANCEL)
+  {
+    gtk_widget_destroy(dialog);
+    return;
+  }
   if (res == GTK_RESPONSE_ACCEPT)
   {
     char *filename;
@@ -318,7 +328,7 @@ static void activate(GtkApplication *app)
 {
 
   // Show the splash screen defined in splash_screen.c
-  // TODO fix show_splash_screen(app);
+  show_splash_screen(app);
 
   GtkWidget *window, *image, *button, *menu_bar, *grid, *vbox_buttons;
   GdkPixbuf *pixbuf, *resized_pixbuf, *final_pixbuf;
