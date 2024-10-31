@@ -148,18 +148,18 @@ int is_inverted(SDL_Surface* surface)
 	if(histogram[0]>histogram[1])
 	{
 		free(histogram);
-		return 1;
+		return 0;
 	}
 	else
 	{
 		free(histogram);
-	 	return 0;
+	 	return 1;
 	}
 }
 
 void invert_binarized_colors(SDL_Surface* surface)
 {
-	if(is_inverted(surface))
+	if(!is_inverted(surface))
 	{
 		for(int j=0; j<surface->h; j++)
 		{
