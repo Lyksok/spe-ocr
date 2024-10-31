@@ -356,7 +356,7 @@ void on_binarize_clicked(GtkWidget *widget, gpointer data)
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  convert_to_grayscale(surface);
+  convert_to_binarized_global(surface);
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
   display_pixbuf(data, new_pixbuf);
 
@@ -364,18 +364,49 @@ void on_binarize_clicked(GtkWidget *widget, gpointer data)
 }
 
 /**
-void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
+ * @brief Rotates a GdkPixbuf by a specified number of degrees using the macros of height and width allocated to the pixbuf.
+ * @param pixbuf The pixbuf to rotate.
+ * @param angle The angle in degrees to rotate the pixbuf.
+ * @return A new GdkPixbuf that is the rotated version of the input pixbuf.
+ */
+GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle)
 {
-GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
-rotate_image(pixbuf, 5);
-display_pixbuf(data, pixbuf);
+  int width = gdk_pixbuf_get_width(pixbuf);
+  int height = gdk_pixbuf_get_height(pixbuf);
+  int width = gdk_pixbuf_get_width(pixbuf);
+  int height = gdk_pixbuf_get_height(pixbuf);
+  GdkPixbuf *rotated_pixbuf = gdk_pixbuf_rotate_simple(pixbuf, angle);
+
+  return rotated_pixbuf;
 }
-void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
+
+/**
+ * @brief Callback function to rotate the image to the left by 5 degrees.
+ * @param widget The widget that triggered the function.
+ * @param data Pointer to the image widget to be updated.
+ */
+void on_rotate_left_clicked(GtkWidget *widget, gpointer data, double angle)
 {
-GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
-rotate_image(pixbuf, -5);
-display_pixbuf(data, pixbuf);
-*/
+  (void)widget; // Remove unused parameter warning
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  GdkPixbuf *rotated_pixbuf = rotate_pixbuf(pixbuf, angle);
+  display_pixbuf(data, rotated_pixbuf);
+  g_object_unref(rotated_pixbuf);
+}
+
+/**
+ * @brief Callback function to rotate the image to the right by 5 degrees.
+ * @param widget The widget that triggered the function.
+ * @param data Pointer to the image widget to be updated.
+ */
+void on_rotate_right_clicked(GtkWidget *widget, gpointer data, double angle)
+{
+  (void)widget; // Remove unused parameter warning
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  GdkPixbuf *rotated_pixbuf = rotate_pixbuf(pixbuf, -angle);
+  display_pixbuf(data, rotated_pixbuf);
+  g_object_unref(rotated_pixbuf);
+}
 
 /**
  * @brief Creates a button widget.
@@ -485,7 +516,7 @@ static void activate(GtkApplication *app)
   gtk_grid_attach(GTK_GRID(grid), vbox_buttons, 1, 1, 1, 1);
 
   // Add buttons to the vertical box
-  const char *button_labels[] = {"Grayscale", "Binarize", "Rotate"};
+  const char *button_labels[] = {"Grayscale", "Binarize", "Rotate 5° left", "Rotate 5° right"};
   for (long unsigned int i = 0; i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
   {
     button = init_button(button_labels[i], NULL, NULL);
@@ -498,6 +529,14 @@ static void activate(GtkApplication *app)
     else if (strcmp(button_labels[i], "Binarize") == 0)
     {
       g_signal_connect(button, "clicked", G_CALLBACK(on_binarize_clicked), image);
+    }
+    else if (strcmp(button_labels[i], "Rotate 5° left") == 0)
+    {
+      g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_left_clicked), image);
+    }
+    else if (strcmp(button_labels[i], "Rotate 5° right") == 0)
+    {
+      g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_right_clicked), image);
     }
   }
 
