@@ -40,6 +40,10 @@ int main(int argc, char** argv)
         printf("GLOBAL:\n");
         convert_to_binarized_global(surface);
     }
+    else if (strcmp(argv[2], "average")==0)
+    {
+        convert_to_binarized_average(surface);
+    }
     else
     {
         printf("LOCAL:\n");

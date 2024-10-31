@@ -15,7 +15,6 @@ void convert_to_grayscale(SDL_Surface* surface)
 */
 void convert_to_binarized_average(SDL_Surface* surface)
 {
-    image_to_grayscale(surface);
     image_to_binarized(surface, 127);
 }
 
@@ -24,7 +23,6 @@ void convert_to_binarized_average(SDL_Surface* surface)
 */
 void convert_to_binarized_global(SDL_Surface* surface)
 {
-    image_to_grayscale(surface);
     size_t threshold = get_optimal_threshold(surface);
     image_to_binarized(surface, threshold);
 }
@@ -34,7 +32,6 @@ void convert_to_binarized_global(SDL_Surface* surface)
 */
 void convert_to_binarized_local(SDL_Surface* surface)
 {
-    image_to_grayscale(surface);
     int* histo = calloc(surface->w*surface->h, sizeof(int));
     get_all_thresholds(surface, &histo);
 
@@ -43,4 +40,11 @@ void convert_to_binarized_local(SDL_Surface* surface)
         convert_pixel_with_threshold(surface, histo[i], i);
     }
     free(histo);
+}
+
+/* Invert black and white colors of a binarized image
+*/
+void invert_colors(SDL_Surface* surface)
+{
+    invert_binarized_colors(surface);
 }

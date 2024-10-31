@@ -1,4 +1,7 @@
 #include "converting.h"
+#include "histograms.h"
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_surface.h>
 
 /* Convert an image using an external function to reassign
  * each pixel with a different value based on the function
@@ -118,4 +121,70 @@ Uint32 to_binarized(SDL_PixelFormat* format, Uint32 pixel, size_t threshold)
 void image_to_binarized(SDL_Surface* surface, size_t threshold)
 {
 	convert_image_with_threshold(surface, threshold, to_binarized);
+}
+
+void binary_histogram(int** histogram, Uint32 pixel, SDL_Surface* surface)
+{
+    Uint8 h_index;
+    Uint8 tmp1;
+    Uint8 tmp2;
+    SDL_GetRGB(pixel, surface->format, &h_index, &tmp1, &tmp2);
+	if(h_index==0)
+	{
+		(*histogram)[1]+=1;
+	}
+	else
+	{
+		(*histogram)[0]+=1;
+	}
+}
+
+int is_inverted(SDL_Surface* surface)
+{
+	int* histogram = malloc(2*sizeof(int));
+	histogram[0]=0;
+	histogram[1]=0;
+	create_histogram_of_pixel(surface, &histogram, binary_histogram);
+	if(histogram[0]>histogram[1])
+	{
+		free(histogram);
+		return 1;
+	}
+	else
+	{
+		free(histogram);
+	 	return 0;
+	}
+}
+
+void invert_binarized_colors(SDL_Surface* surface)
+{
+	if(is_inverted(surface))
+	{
+		for(int j=0; j<surface->h; j++)
+		{
+			for(int i=0; i<surface->w; i++)
+			{
+				SDL_LockSurface(surface);
+				Uint32 pixel = ((Uint32*)surface->pixels)[j*surface->w+i];
+				
+				Uint8 h_index;
+				Uint8 tmp1;
+				Uint8 tmp2;
+				SDL_GetRGB(pixel, surface->format, &h_index, &tmp1, &tmp2);
+				if(h_index==0)
+				{
+					pixel = SDL_MapRGB(surface->format, 255, 255, 255);
+				}
+				else
+				{
+					pixel = SDL_MapRGB(surface->format, 0, 0, 0);
+				}
+				
+				((Uint32*)surface->pixels)[j*surface->w+i] = pixel;
+
+				SDL_UnlockSurface(surface);
+			}
+		}
+	}
 }

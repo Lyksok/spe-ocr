@@ -11,5 +11,6 @@ void convert_image_with_threshold(SDL_Surface* surface, size_t threshold,
 	Uint32 (*func)(SDL_PixelFormat*, Uint32, size_t));
 void convert_pixel_with_threshold(SDL_Surface* surface, int threshold, 
 	size_t i);
+void invert_binarized_colors(SDL_Surface* surface);
 
 #endif /* CONVERTING_H */
