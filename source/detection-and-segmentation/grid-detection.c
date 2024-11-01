@@ -50,10 +50,10 @@ void draw_lines(SDL_Renderer* renderer, Point* src, Point* dest, int len)
 }
 
 
-Point get_bounding_box_center(BoundingBox b)
+Point get_bounding_box_center(BoundingBox* b)
 {
-    int x = (b.p1.x+b.p2.x)/2;
-    int y = (b.p1.y+b.p2.y)/2;
+    int x = (b->p1.x+b->p2.x)/2;
+    int y = (b->p1.y+b->p2.y)/2;
     Point res = {x,y};
     return res;
 }
@@ -65,8 +65,8 @@ Point get_points_average(Point p1, Point p2)
 
 int ascending_bounding_box(BoundingBox* b1, BoundingBox* b2)
 {
-    Point p1 = get_bounding_box_center(*b1);
-    Point p2 = get_bounding_box_center(*b2);
+    Point p1 = get_bounding_box_center(b1);
+    Point p2 = get_bounding_box_center(b2);
 
     if(abs(p1.y - p2.y) <= tolerance)
     {
@@ -132,14 +132,14 @@ int is_already_closest_of(Point src_box, Point dest_box, Point* src, Point* dest
 
 BoundingBox* closest_bounding_boxes(BoundingBox* box, BoundingBox** boxes, int len, Point* src, Point* dest, int l)
 {
-    Point p = get_bounding_box_center(*box);
+    Point p = get_bounding_box_center(box);
     // Get the first distance
     int i=0;
     while(i<len && are_equal_box(*box, *(boxes[i])))
     {
         i++;
     }
-    Point q = get_bounding_box_center(*(boxes[i]));
+    Point q = get_bounding_box_center(boxes[i]);
     BoundingBox* closest = boxes[i];
     double min_dist = get_distance_points(p, q);
 
@@ -148,7 +148,7 @@ BoundingBox* closest_bounding_boxes(BoundingBox* box, BoundingBox** boxes, int l
     {
         if(!are_equal_box(*box, *(boxes[j])))
         {
-            q = get_bounding_box_center(*(boxes[j]));
+            q = get_bounding_box_center(boxes[j]);
             double dist = get_distance_points(p, q);
             if(dist<min_dist && l>j)
             {
@@ -165,8 +165,8 @@ void get_all_links(BoundingBox** boxes, int len, Point** src, Point** dest)
     for(int i=0; i<len; i++)
     {
         BoundingBox* closest = closest_bounding_boxes(boxes[i], boxes, len, *src, *dest, i);
-        (*src)[i] = get_bounding_box_center(*(boxes[i]));
-        (*dest)[i] = get_bounding_box_center(*closest);
+        (*src)[i] = get_bounding_box_center(boxes[i]);
+        (*dest)[i] = get_bounding_box_center(closest);
     }
 }
 
