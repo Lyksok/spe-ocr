@@ -1,4 +1,3 @@
-#include <SDL2/SDL_rect.h>
 #include <err.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -7,7 +6,6 @@
 #include <math.h>
 
 #include "bounding-box.h"
-#include "../binarization/binarizing.h"
 #include "cluster-detection.h"
 #include "structures.h"
 
@@ -172,6 +170,7 @@ void get_all_links(BoundingBox** boxes, int len, Point** src, Point** dest)
     }
 }
 
+/*
 int main(int argc, char** argv)
 {
     printf("Here");
@@ -288,3 +287,4 @@ int main(int argc, char** argv)
     free(boxes);
     return EXIT_SUCCESS;
 }
+*/
