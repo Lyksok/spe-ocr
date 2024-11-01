@@ -5,5 +5,6 @@
 
 void get_col_histogram(SDL_Surface* surface, int** histogram);
 void get_row_histogram(SDL_Surface* surface, int** histogram);
+void get_histogram_of_pixel(SDL_Surface* surface, int** histogram);
 
 #endif /* HISTOGRAMS_H */
