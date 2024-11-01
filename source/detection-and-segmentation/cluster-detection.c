@@ -35,7 +35,7 @@ int is_background(SDL_Surface* surface, Point coord)
         return 0;
 }
 
-int nb = 0;
+// int nb = 0;
 
 void flood_fill(SDL_Surface* surface, Point* p1, Point* p2, Point coord, int** visited)
 {

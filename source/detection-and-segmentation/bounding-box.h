@@ -4,12 +4,20 @@
 #include "structures.h"
 #include <SDL2/SDL.h>
 
-int add_box(BoundingBox box, BoundingBox*** boxes, int len);
+// Structure comparisons
 int are_equal_point(Point p1, Point p2);
 int are_equal_box(BoundingBox b1, BoundingBox b2);
+
+// Heap representation operations
+int add_box(BoundingBox box, BoundingBox*** boxes, int len);
 int remove_box(BoundingBox box, BoundingBox*** boxes, int len);
-int contains_box(BoundingBox box, BoundingBox** boxes, int len);
+
+// General array representation operations
 void free_boxes(BoundingBox** boxes, int len);
+int contains_box(BoundingBox box, BoundingBox** boxes, int len);
 void print_boxes(BoundingBox** boxes, int len);
+int is_minimal(BoundingBox** boxes, int len);
+int get_nb_of_boxes(BoundingBox** boxes, int len);
+BoundingBox** get_minimal(BoundingBox** boxes, int len, int* res_len);
 
 #endif /* BOUNDING_BOX_H */
