@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include <time.h>
 #include "structures.h"
 
 
@@ -93,4 +94,41 @@ void print_boxes(BoundingBox** boxes, int len)
             print_points(boxes[i]->p1, boxes[i]->p2);
         }
     }
+}
+
+int is_minimal(BoundingBox** boxes, int len)
+{
+    for(int i=0; i<len; i++)
+    {
+        if(boxes[i]==NULL)
+            return 0;
+    }
+    return 1;
+}
+
+int get_nb_of_boxes(BoundingBox** boxes, int len)
+{
+    int res = 0;
+    for(int i=0; i<len; i++)
+    {
+        if(boxes[i]!=NULL)
+            res++;
+    }
+    return res;
+}
+
+BoundingBox** get_minimal(BoundingBox** boxes, int len, int* res_len)
+{
+    *res_len = get_nb_of_boxes(boxes, len);
+    BoundingBox** res = malloc(*res_len*sizeof(BoundingBox*));
+    int c=0;
+    for(int i=0; i<len; i++)
+    {
+        if(boxes[i]!=NULL)
+        {
+            res[c]=boxes[i];
+            c++;
+        }
+    }
+    return res;
 }
