@@ -5,6 +5,9 @@
 #include "structures.h"
 #include "grid-detection.h"
 
+/* Cuts the surface into a smaller surface representing
+ * a bounding box
+*/
 SDL_Surface *Cut(SDL_Surface *surface, BoundingBox *box)
 {
 	int x_up = box -> p1.x;
@@ -30,16 +33,22 @@ SDL_Surface *Cut(SDL_Surface *surface, BoundingBox *box)
 	return new;
 }
 
+/* Saves a bounding box as an image and renames it using average coordinates
+*/
 void save_bounding_box(SDL_Surface* surface, BoundingBox* box)
 {
 	surface = Cut(surface, box);
 	Point p = get_bounding_box_center(*box);
-	char buffer[32];
-	sprintf(buffer, "%i-%i.png", p.x, p.y);
+	char buffer[128];
+	char* dir_path = "./source/detection-and-segmentation/segmentation-results/";
+	sprintf(buffer, "%s%i-%i.png",dir_path , p.x, p.y);
 	IMG_SavePNG(surface, buffer);
 	printf("Save bounding box: %s\n", buffer);
 }
 
+/* Saves all bounding boxes as images 
+ * and renames them using average coordinates
+*/
 void save_bounding_boxes(SDL_Surface* surface, BoundingBox** boxes, int len)
 {
 	for(int i=0; i<len; i++)
