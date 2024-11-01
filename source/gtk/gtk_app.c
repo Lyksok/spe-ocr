@@ -119,23 +119,6 @@ since: 2.18 */
 }
 
 /**
- * LEGACY CODE
- * @brief Creates a GtkImage widget.
- * Initializes and returns a new GtkImage widget with sample image.
- * @param widget The triggering GtkWidget.
- * @param data Additional data for image creation.
- * @return A pointer to the new GtkImage.
- * @note Nothing is freed
-
-GtkImage *init_image_widget(GtkWidget *parent, const char *sample_image_path)
-{
-  GtkImage *image = GTK_IMAGE(gtk_image_new_from_file(sample_image_path));
-
-  return image;
-}
-*/
-
-/**
  * @brief Displays a pixbuf in an image widget.
  * @param image_widget The image widget to display the pixbuf in (implicit cast to GtkImage)
  * @param pixbuf The pixbuf to display.
@@ -382,59 +365,42 @@ void on_angle_entry_activate(GtkEntry *entry, gpointer data)
  */
 GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle)
 {
-  // just in case the values changes from the initial macros
+  // Get the original dimensions of the pixbuf
   int width = gdk_pixbuf_get_width(pixbuf);
   int height = gdk_pixbuf_get_height(pixbuf);
 
-  double angle_rad = angle * PI / 180;
-  // Calculate dimensions and angles of the soon-to-be rotated image
+  double angle_rad = angle * PI / 180.0;
   double sin_angle = fabs(sin(angle_rad));
   double cos_angle = fabs(cos(angle_rad));
 
-  /**
-   * Pytagorean theorem to calculate the new size of the image
-   * Goal is to keep the image in the same dimensions after n rotations
-   */
+  // Calculate the new dimensions of the rotated image
+  int width_2 = (int)(width * cos_angle + height * sin_angle);
+  int height_2 = (int)(width * sin_angle + height * cos_angle);
 
-  int width_2 = (int)(IMAGE_WIDTH * cos_angle + IMAGE_HEIGHT * sin_angle);
-  int height_2 = (int)(IMAGE_WIDTH * sin_angle + IMAGE_HEIGHT * cos_angle);
-
-  // Create rotated pixbuf (copied process from to sdl_surface_to_gdk_pixbuf)
+  // Create a new pixbuf to hold the rotated image
   GdkPixbuf *pixbuf_rotated = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width_2, height_2);
+  if (!pixbuf_rotated)
+  {
+    return NULL; // Handle error if pixbuf creation fails
+  }
 
-  // These are documented in the sdl_surface_to_gdk_pixbuf function if needed
+  // Get the pixel data and rowstride of the original and rotated pixbufs
   guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
   guchar *pixels_rotated = gdk_pixbuf_get_pixels(pixbuf_rotated);
-
-  // Constrain the rowstride to keep the dimensions
-  int rowstride = gdk_pixbuf_get_rowstride(pixbuf); // size of a row of pixels
+  int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
   int rowstride_2 = gdk_pixbuf_get_rowstride(pixbuf_rotated);
+  int channels = gdk_pixbuf_get_n_channels(pixbuf);
 
-  int channels = gdk_pixbuf_get_n_channels(pixbuf); // RGB or RGBA
-  // Calculate the center of the image bcs rotation happens on the center
-  // /!\ width_2 = height_2 for a square image
+  // Calculate the center of the original and rotated images
   int O_x = width / 2;
   int O_y = height / 2;
   int O_x2 = width_2 / 2;
   int O_y2 = height_2 / 2;
 
-  // Init dest pixbuf ie the rotated pixbuf
+  // Initialize the rotated pixbuf with a transparent background
   memset(pixels_rotated, 0, height_2 * rowstride_2);
-  /** Process
-   * Rotation formula explanation at : https://homepages.inf.ed.ac.uk/rbf/HIPR2/rotate.htm
-   *
-   * ************ BILINEAR INTERPOLATION ************
-   * This technique is used to resize the image after n rotations.
-   * The B. I. of a pixel combines of the values of the four nearest pixels, weighted by their distances to the pixel.
-   * Visual representation : https://en.wikipedia.org/wiki/Bilinear_interpolation#/media/File:Bilinear_interpolation_visualisation.svg
-   * The process is as follows :
-   * 1. Find coordinates of the 4 nearest pixels in the original image.
-   * 2. Calculate the fractional parts of x and y.
-   * 3. Calculate the weights of the 4 pixels.
-   * 4. Multiply the pixel values by the weights.
-   * 5. Sum the results.
-   * ************************************************
-   */
+
+  // Perform the rotation using bilinear interpolation
   for (int x2 = 0; x2 < width_2; x2++)
   {
     for (int y2 = 0; y2 < height_2; y2++)
@@ -457,21 +423,32 @@ GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle)
                          (1 - dx) * dy * pixels[((y1 + 1) * rowstride + x1 * channels) + c] +
                          dx * dy * pixels[((y1 + 1) * rowstride + (x1 + 1) * channels) + c];
 
-          pixels_rotated[(y2 * rowstride_2 + x2 * channels) + c] = (unsigned char)value; // eq. to guchar
+          pixels_rotated[(y2 * rowstride_2 + x2 * channels) + c] = (unsigned char)value;
         }
       }
     }
   }
 
   // Create a new pixbuf with the original dimensions and a transparent background
-  GdkPixbuf *final_pixbuf = create_alpha_pixbuf(width, height);
+  GdkPixbuf *final_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
+  if (!final_pixbuf)
+  {
+    g_object_unref(pixbuf_rotated);
+    return NULL; // Handle error if pixbuf creation fails
+  }
 
-  // Calculate the offset to center the rotated image in the new pixbuf
+  // Calculate the offset to center the rotated image in the new pixbuf validatied
   int offset_x = (width - width_2) / 2;
   int offset_y = (height - height_2) / 2;
 
+  // Ensure the offset is valid, it is the 'décalage" of the center
+  if (offset_x < 0)
+    offset_x = 0;
+  if (offset_y < 0)
+    offset_y = 0;
+
   // Copy the rotated image into the new pixbuf
-  gdk_pixbuf_copy_area(pixbuf_rotated, 0, 0, width_2, height_2, final_pixbuf, offset_x, offset_y); // copy the pixels occupied by the rotated pixbuf onto the final pixbuf
+  gdk_pixbuf_copy_area(pixbuf_rotated, 0, 0, width_2, height_2, final_pixbuf, offset_x, offset_y);
   g_object_unref(pixbuf_rotated);
 
   return final_pixbuf;
