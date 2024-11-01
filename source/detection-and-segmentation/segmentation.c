@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "structures.h"
-#include "grid-detection.h"
+#include "detection.h"
 
 /* Cuts the surface into a smaller surface representing
  * a bounding box

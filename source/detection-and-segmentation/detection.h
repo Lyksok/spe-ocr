@@ -1,5 +1,5 @@
-#ifndef GRID_DETECTION_H
-#define GRID_DETECTION_H
+#ifndef DETECTION_H
+#define DETECTION_H
 
 #include <SDL2/SDL.h>
 #include "structures.h"
@@ -20,4 +20,4 @@ int is_already_closest_of(Point src_box, Point dest_box, Point* src, Point* dest
 BoundingBox* closest_bounding_boxes(BoundingBox* box, BoundingBox** boxes, int len, Point* src, Point* dest, int l);
 void get_all_links(BoundingBox** boxes, int len, Point** src, Point** dest);
 
-#endif /* GRID_DETECTION_H */
+#endif /* DETECTION_H */

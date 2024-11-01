@@ -170,6 +170,26 @@ void get_all_links(BoundingBox** boxes, int len, Point** src, Point** dest)
     }
 }
 
+void get_char_boxes()
+{
+    // TODO
+}
+
+void get_word_boxes()
+{
+    // TODO
+}
+
+BoundingBox* get_word_list_box()
+{
+    // TODO
+}
+
+BoundingBox* get_grid_box()
+{
+    // TODO
+}
+
 /*
 int main(int argc, char** argv)
 {
