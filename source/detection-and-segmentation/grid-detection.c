@@ -8,7 +8,6 @@
 #include "../binarization/binarizing.h"
 #include "cluster-detection.h"
 #include "structures.h"
-#include "../binarization/histograms.h"
 
 void draw_rect(SDL_Renderer *renderer, int rect[4])
 {
