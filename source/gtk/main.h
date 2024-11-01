@@ -8,7 +8,6 @@
 #include "pretreatment_utils.h"
 #include "splash_screen.h"
 
-
 // CONSTANTS
 #define IMAGE_WIDTH 1000
 #define IMAGE_HEIGHT 1000
@@ -16,6 +15,7 @@
 
 GtkWidget *init_button(const char *label, GCallback callback, gpointer data);
 GtkWidget *init_menu_bar(GtkWidget *image_widget);
+gboolean destroy_widget(gpointer data);
 // not needed static void activate(GtkApplication *app);
 int main(int argc, char **argv);
 

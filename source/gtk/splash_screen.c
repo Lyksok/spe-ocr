@@ -1,16 +1,6 @@
 #include "splash_screen.h"
 
 /**
- * @brief Destroys a widget.
- * @param data The widget to destroy.
- * @return FALSE to stop the timeout.
- */
-gboolean destroy_widget(gpointer data)
-{
-    gtk_widget_destroy(GTK_WIDGET(data));
-    return FALSE; // Return FALSE to stop the timeout
-}
-/**
  * @brief Shows the splash screen.
  * @param app The GtkApplication instance.
  * @note The splash screen is destroyed after a timeout.

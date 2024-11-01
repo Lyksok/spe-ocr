@@ -1,6 +1,34 @@
 #include "main.h"
 
 /**
+ * @brief Callback function to destroy a widget.
+ * @param widget The widget to be destroyed.
+ * @return gboolean Always returns FALSE to stop the timeout.
+ */
+gboolean destroy_widget(gpointer widget)
+{
+  /**
+   * TODO : this forcing method to free is not working, thus the leaks are relative to the libpango as side effect of gtk
+   * 1. This loop goes through each element in the `children` GList
+   * 2/ Converts the child data to a GTK_WIDGET
+   * 3. Ultimatly destroys the widget
+   * 01/11/24
+   */
+  if (GTK_IS_WIDGET(widget))
+  {
+    GList *children, *p;                                          // p pointer to current element
+    children = gtk_container_get_children(GTK_CONTAINER(widget)); // list
+    for (p = children; p != NULL; p = g_list_next(p))
+    {
+      gtk_widget_destroy(GTK_WIDGET(p->data));
+    }
+    g_list_free(children);                  // free the handy list
+    gtk_widget_destroy(GTK_WIDGET(widget)); // free parent
+  }
+  return FALSE;
+}
+
+/**
  * @brief Creates a button widget.
  *
  * This function initializes and returns a new GtkButton widget.
@@ -35,7 +63,6 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
 
   // Creates a menu bar
   menu_bar = gtk_menu_bar_new();
-  // TODO remove possible legacy code
   // Creates a file menu => menu bar
   file_menu = gtk_menu_new();
   file_menu_item = gtk_menu_item_new_with_label("📁 File");
@@ -72,6 +99,9 @@ static void activate(GtkApplication *app)
   window = gtk_application_window_new(app);
   gtk_window_set_title(GTK_WINDOW(window), "Organized Chaotic Results software");
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+
+  // 01/11 FIX : Connect the destroy signal to gtk_main_quit to handle window close
+  g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
   /**  Get screen size preperties  */
   GdkDisplay *display = gdk_display_get_default();
@@ -115,8 +145,12 @@ static void activate(GtkApplication *app)
   // Manage entry buttons for the rotation
   GtkWidget *left_angle_entry = gtk_entry_new();
   GtkWidget *right_angle_entry = gtk_entry_new();
-  gtk_entry_set_text(GTK_ENTRY(left_angle_entry), g_strdup_printf("%.2f", DEFAULT_LEFT_ANGLE));
-  gtk_entry_set_text(GTK_ENTRY(right_angle_entry), g_strdup_printf("%.2f", DEFAULT_RIGHT_ANGLE));     //  pass the address of the angle to update
+  char *left_angle_text = g_strdup_printf("%.2f", DEFAULT_LEFT_ANGLE);
+  char *right_angle_text = g_strdup_printf("%.2f", DEFAULT_RIGHT_ANGLE);
+  gtk_entry_set_text(GTK_ENTRY(left_angle_entry), left_angle_text);
+  gtk_entry_set_text(GTK_ENTRY(right_angle_entry), right_angle_text);
+  g_free(left_angle_text);
+  g_free(right_angle_text);
   g_signal_connect(left_angle_entry, "activate", G_CALLBACK(on_angle_entry_activate), &left_angle);   // updates when the user presses enter
   g_signal_connect(right_angle_entry, "activate", G_CALLBACK(on_angle_entry_activate), &right_angle); // updates when the user presses enter
   gtk_box_pack_start(GTK_BOX(vbox_buttons), gtk_label_new("Left angle:"), FALSE, FALSE, 0);
@@ -139,7 +173,7 @@ static void activate(GtkApplication *app)
     {
       g_signal_connect(button, "clicked", G_CALLBACK(on_binarize_clicked), image);
     }
-    // TODO simplfy the callbacks for rotation
+
     else if (strcmp(button_labels[i], "↪️ Rotate left") == 0)
     {
       double *angle = g_new(double, 1);
