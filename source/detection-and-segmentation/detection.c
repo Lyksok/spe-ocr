@@ -9,9 +9,6 @@
 #include "cluster-detection.h"
 #include "structures.h"
 
-// Define the tolerance for the grid disparity
-int tolerance = 5;
-
 void draw_rect(SDL_Renderer *renderer, int rect[4])
 {
 	if(SDL_SetRenderDrawColor(renderer, 0, 255, 0, SDL_ALPHA_OPAQUE))
@@ -65,6 +62,8 @@ Point get_points_average(Point p1, Point p2)
 
 int ascending_bounding_box(BoundingBox* b1, BoundingBox* b2)
 {
+    // Define the tolerance for the grid disparity
+    int tolerance = 5;
     Point p1 = get_bounding_box_center(b1);
     Point p2 = get_bounding_box_center(b2);
 
@@ -183,11 +182,13 @@ void get_word_boxes()
 BoundingBox* get_word_list_box()
 {
     // TODO
+    return NULL;
 }
 
 BoundingBox* get_grid_box()
 {
     // TODO
+    return NULL;
 }
 
 /*
