@@ -2,7 +2,13 @@
 #define ROTATION_UTILS_H
 
 // INCLUDE DEPENDENCIES
-#include "main.h"
+// #include "main.h"
+#include <gtk/gtk.h>
+#include <math.h>
+#include <stdio.h>
+#include "conversion_utils.h"
+#include "image_utils.h"
+#include <SDL2/SDL.h>
 
 // CONSTANTS
 #define PI 3.1415926535897932
@@ -17,5 +23,6 @@ GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle);
 void on_rotate_left_clicked(GtkWidget *widget, gpointer data);
 void on_rotate_right_clicked(GtkWidget *widget, gpointer data);
 void on_angle_entry_activate(GtkEntry *entry, gpointer data);
+int main(int argc, char **argv);
 
 #endif // ROTATION_UTILS_H

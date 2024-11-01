@@ -21,95 +21,64 @@ void on_angle_entry_activate(GtkEntry *entry, gpointer data)
  * @param angle The angle in degrees to rotate the pixbuf.
  * @return A new GdkPixbuf that is the rotated version of the input pixbuf.
  */
-GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle)
+GdkPixbuf *rotate_pixbuf(GdkPixbuf *src, double angle)
 {
-    // Get the original dimensions of the pixbuf
-    int width = gdk_pixbuf_get_width(pixbuf);
-    int height = gdk_pixbuf_get_height(pixbuf);
+    int src_width = gdk_pixbuf_get_width(src);
+    int src_height = gdk_pixbuf_get_height(src);
+    int channels = gdk_pixbuf_get_n_channels(src);
+    int rowstride = gdk_pixbuf_get_rowstride(src);
+    guchar *src_pixels = gdk_pixbuf_get_pixels(src);
 
-    double angle_rad = angle * PI / 180.0;
-    double sin_angle = fabs(sin(angle_rad));
-    double cos_angle = fabs(cos(angle_rad));
+    // Convert angle to radians
+    double radians = angle * M_PI / 180.0;
+    double cos_angle = cos(radians);
+    double sin_angle = sin(radians);
 
-    // Calculate the new dimensions of the rotated image
-    int width_2 = (int)(width * cos_angle + height * sin_angle);
-    int height_2 = (int)(width * sin_angle + height * cos_angle);
+    // Calculate dimensions of the rotated image
+    int dest_width = (int)(fabs(src_width * cos_angle) + fabs(src_height * sin_angle));
+    int dest_height = (int)(fabs(src_width * sin_angle) + fabs(src_height * cos_angle));
 
-    // Create a new pixbuf to hold the rotated image
-    GdkPixbuf *pixbuf_rotated = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width_2, height_2);
-    if (!pixbuf_rotated)
+    // Create a new pixbuf for the rotated image
+    GdkPixbuf *dest = gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(src), 8, dest_width, dest_height);
+    guchar *dest_pixels = gdk_pixbuf_get_pixels(dest);
+    int dest_rowstride = gdk_pixbuf_get_rowstride(dest);
+
+    // Initialize the destination pixbuf to transparent (for images with alpha channel)
+    memset(dest_pixels, 0, dest_height * dest_rowstride);
+
+    // Center of the source and destination images
+    int cx = src_width / 2;
+    int cy = src_height / 2;
+    int dcx = dest_width / 2;
+    int dcy = dest_height / 2;
+
+    // Loop over destination pixels and map them to source pixels
+    for (int y = 0; y < dest_height; y++)
     {
-        return NULL; // Handle error if pixbuf creation fails
-    }
-
-    // Get the pixel data and rowstride of the original and rotated pixbufs
-    guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
-    guchar *pixels_rotated = gdk_pixbuf_get_pixels(pixbuf_rotated);
-    int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
-    int rowstride_2 = gdk_pixbuf_get_rowstride(pixbuf_rotated);
-    int channels = gdk_pixbuf_get_n_channels(pixbuf);
-
-    // Calculate the center of the original and rotated images
-    int O_x = width / 2;
-    int O_y = height / 2;
-    int O_x2 = width_2 / 2;
-    int O_y2 = height_2 / 2;
-
-    // Initialize the rotated pixbuf with a transparent background
-    memset(pixels_rotated, 0, height_2 * rowstride_2);
-
-    // Perform the rotation using bilinear interpolation
-    for (int x2 = 0; x2 < width_2; x2++)
-    {
-        for (int y2 = 0; y2 < height_2; y2++)
+        for (int x = 0; x < dest_width; x++)
         {
-            // Calculate the corresponding source coordinates
-            double x = (x2 - O_x2) * cos(angle_rad) + (y2 - O_y2) * sin(angle_rad) + O_x;
-            double y = -(x2 - O_x2) * sin(angle_rad) + (y2 - O_y2) * cos(angle_rad) + O_y;
+            // Calculate the corresponding source position
+            int src_x = (int)((x - dcx) * cos_angle + (y - dcy) * sin_angle + cx);
+            int src_y = (int)(-(x - dcx) * sin_angle + (y - dcy) * cos_angle + cy);
 
-            if (x >= 0 && x < width - 1 && y >= 0 && y < height - 1)
+            // Check if the source position is within bounds
+            if (src_x >= 0 && src_x < src_width && src_y >= 0 && src_y < src_height)
             {
-                int x1 = (int)x;
-                int y1 = (int)y;
-                double dx = x - x1;
-                double dy = y - y1;
+                // Get the source pixel
+                guchar *src_pixel = src_pixels + src_y * rowstride + src_x * channels;
+                // Get the destination pixel
+                guchar *dest_pixel = dest_pixels + y * dest_rowstride + x * channels;
 
+                // Copy pixel data (RGB and possibly alpha)
                 for (int c = 0; c < channels; c++)
                 {
-                    double value = (1 - dx) * (1 - dy) * pixels[(y1 * rowstride + x1 * channels) + c] +
-                                   dx * (1 - dy) * pixels[(y1 * rowstride + (x1 + 1) * channels) + c] +
-                                   (1 - dx) * dy * pixels[((y1 + 1) * rowstride + x1 * channels) + c] +
-                                   dx * dy * pixels[((y1 + 1) * rowstride + (x1 + 1) * channels) + c];
-
-                    pixels_rotated[(y2 * rowstride_2 + x2 * channels) + c] = (unsigned char)value;
+                    dest_pixel[c] = src_pixel[c];
                 }
             }
         }
     }
 
-    // Create a new pixbuf with the original dimensions and a transparent background
-    GdkPixbuf *final_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
-    if (!final_pixbuf)
-    {
-        g_object_unref(pixbuf_rotated);
-        return NULL; // Handle error if pixbuf creation fails
-    }
-
-    // Calculate the offset to center the rotated image in the new pixbuf validatied
-    int offset_x = (width - width_2) / 2;
-    int offset_y = (height - height_2) / 2;
-
-    // Ensure the offset is valid, it is the 'décalage" of the center
-    if (offset_x < 0)
-        offset_x = 0;
-    if (offset_y < 0)
-        offset_y = 0;
-
-    // Copy the rotated image into the new pixbuf
-    gdk_pixbuf_copy_area(pixbuf_rotated, 0, 0, width_2, height_2, final_pixbuf, offset_x, offset_y);
-    g_object_unref(pixbuf_rotated);
-
-    return final_pixbuf;
+    return dest;
 }
 
 /**
