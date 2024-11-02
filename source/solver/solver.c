@@ -36,6 +36,7 @@ int Min(int a, int b)
 
 /*
  * word : a string, assumed filled with only letters
+ * (but honestly we do not care if there is something else)
  * Changes in place the word to upper letters
  */
 void ToUpper(char word[])
@@ -43,7 +44,7 @@ void ToUpper(char word[])
 	size_t i = 0;
 	while (word[i] != 0)
 	{
-		if (word[i] >= 'a')
+		if (word[i] >= 'a' && word[i] <= 'z')
 			word[i] = word[i] - 32;
 		i++;
 	}
