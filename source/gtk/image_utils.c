@@ -1,7 +1,8 @@
 #include "image_utils.h"
 
 /**
- * @brief Processes and displays a pixbuf in the specified image widget.
+ * @brief Processes and displays an image in an image widget.
+ * It resizes the pixbuf to fit within the diagonal length and creates a new pixbuf with alpha borders. And then displays the final image with alpha borders.
  * @param image_widget The image widget to display the pixbuf in.
  * @param pixbuf The pixbuf to process and display.
  */
@@ -22,11 +23,13 @@ void process_and_display_image(GtkWidget *image_widget, GdkPixbuf *pixbuf)
     gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), final_pixbuf);
     printf("Image set in image_widget\n");
 
-    // Free the final pixbuf
     g_object_unref(final_pixbuf);
     printf("Freed final pixbuf\n");
 }
-
+/**
+ * @brief Callback function to change the image in the image widget.
+ * @param widget The widget that triggered the function.
+ */
 void on_change_image(GtkWidget *widget, gpointer data)
 {
     GtkWidget *image_widget = GTK_WIDGET(data);
@@ -60,7 +63,10 @@ void on_change_image(GtkWidget *widget, gpointer data)
 
     gtk_widget_destroy(dialog);
 }
-
+/**
+ * @brief Callback function to save the image in the image widget.
+ * @param widget The widget that triggered the function.
+ */
 void *on_save_image(GtkWidget *widget, gpointer data)
 {
     GtkWidget *image_widget = GTK_WIDGET(data);
@@ -107,14 +113,12 @@ void display_pixbuf(GtkWidget *image_widget, GdkPixbuf *pixbuf)
 }
 
 /**
- * @brief Resizes a pixbuf to fit within the specified dimensions while maintaining the aspect ratio.
- * @param pixbuf The pixbuf to resize.
- * @param max_width The maximum width of the resized pixbuf.
- * @param max_height The maximum height of the resized pixbuf.
- * @return A pointer to the resized pixbuf with the adequate aspect ratio.
- * @note The pixbuf is not freed.
+ * @brief AUXILIARY FUNCTION called by the resize_with_borders() function. Resizes a pixbuf.
+ * @param pixbuf The original pixbuf to resize.
+ * @param new_width The new width of the pixbuf.
+ * @param new_height The new height of the pixbuf.
+ * @return A pointer to the new pixbuf.
  */
-
 GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int new_width, int new_height)
 {
     int width = gdk_pixbuf_get_width(pixbuf);
@@ -205,6 +209,7 @@ GdkPixbuf *resize_with_borders(GdkPixbuf *pixbuf)
     return final_pixbuf;
 }
 /**
+ * TODO : refactoring
  * @brief Creates a new pixbuf with alpha borders and centers the original pixbuf within it.
  * @param pixbuf The original pixbuf to center.
  * @param width The width of the new pixbuf.
