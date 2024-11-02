@@ -20,4 +20,7 @@ int is_already_closest_of(Point src_box, Point dest_box, Point* src, Point* dest
 BoundingBox* closest_bounding_boxes(BoundingBox* box, BoundingBox** boxes, int len, Point* src, Point* dest, int l);
 void get_all_links(BoundingBox** boxes, int len, Point** src, Point** dest);
 
+// Main function for detection
+BoundingBox** get_char_boxes(SDL_Surface* surface);
+
 #endif /* DETECTION_H */
