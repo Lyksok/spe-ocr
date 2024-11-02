@@ -30,13 +30,13 @@ make
 ```
 ### Solver
 ```sh
-cd src/solver
+cd source/solver
 make
 ./solver
 ```
 ### Neural network
 ```sh
-cd src/neural_network
+cd source/neural_network
 make
 ./neural
 ```
