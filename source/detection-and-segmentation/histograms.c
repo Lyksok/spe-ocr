@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_surface.h>
+#include <stdio.h>
 
 #include "histograms.h"
 #include "detection.h"
@@ -95,4 +95,97 @@ BoundingBox*** group_by_cols(SDL_Surface* surface, BoundingBox** boxes, int len,
     }
     return res;
 
+}
+
+int* get_row_box_histogram(SDL_Surface* surface, BoundingBox** boxes, int len)
+{
+    int* histogram = malloc(surface->h*sizeof(int));
+    for(int i=0; i<surface->h; i++)
+    {
+        histogram[i]=0;
+    }
+    for (int j=0; j<surface->h; j++)
+    {
+        for(int i=0; i<len; i++)
+        {
+            Point point = {get_bounding_box_center(boxes[i]).x,j};
+            if(is_in_box(boxes[i], point))
+            {
+                histogram[j]+=1;
+            }
+        }
+    }
+    return histogram;
+}
+
+int* get_col_box_histogram(SDL_Surface* surface, BoundingBox** boxes, int len)
+{
+    int* histogram = malloc(surface->w*sizeof(int));
+    for(int i=0; i<surface->w; i++)
+    {
+        histogram[i]=0;
+    }
+    for (int j=0; j<surface->w; j++)
+    {
+        for(int i=0; i<len; i++)
+        {
+            Point point = {j,get_bounding_box_center(boxes[i]).y};
+            if(is_in_box(boxes[i], point))
+            {
+                histogram[j]+=1;
+            }
+        }
+    }
+    return histogram;
+}
+
+void print_int_histogram(int* histogram, int len)
+{
+    for(int i=0; i<len; i++)
+    {
+        printf("%i ", histogram[i]);
+    }
+}
+
+int get_max(int* histogram, int len)
+{
+    int max = histogram[0];
+    for(int i=1; i<len; i++)
+    {
+        if(histogram[i]>max)
+            max = histogram[i];
+    }
+    return max;
+}
+
+int get_max_by_index(int* histogram, int len)
+{
+    int max = histogram[0];
+    int max_index = 0;
+    for(int i=1; i<len; i++)
+    {
+        if(histogram[i]>max || max_index==0)
+        {
+            max = histogram[i];
+            max_index = i;
+        }
+    }
+    return max_index;
+}
+
+int get_most_frequent(int* histogram, int len)
+{
+    int max = get_max(histogram, len);
+    int* range = malloc((max+1)*sizeof(int));
+    for(int i=0; i<=max; i++)
+    {
+        range[i]=0;
+    }
+    for(int i=0; i<len; i++)
+    {
+        range[histogram[i]]+=1;
+    }
+    int most_frequent = get_max_by_index(range, max+1);
+    free(range);
+    return most_frequent;
 }
