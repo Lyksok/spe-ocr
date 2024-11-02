@@ -73,16 +73,27 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
 {
     (void)data;                                                                          // Remove unused parameter warning
     GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget"); // Retrieve the image widget
+    if (!GTK_IS_IMAGE(image))
+    {
+        printf("Failed to retrieve image widget\n");
+        return;
+    }
     GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(image));
     if (!pixbuf)
     {
+        printf("Failed to get pixbuf from image\n");
         return;
     }
+    printf("Rotating left by %f degrees\n", left_angle);
     GdkPixbuf *final_pixbuf = rotate_pixbuf(pixbuf, left_angle);
     if (final_pixbuf)
     {
-        process_and_display_image(widget, final_pixbuf);
+        process_and_display_image(image, final_pixbuf);
         g_object_unref(final_pixbuf);
+    }
+    else
+    {
+        printf("Failed to rotate pixbuf\n");
     }
     g_object_unref(pixbuf);
 }
@@ -96,16 +107,27 @@ void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
 {
     (void)data;                                                                          // Remove unused parameter warning
     GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget"); // Retrieve the image widget
+    if (!GTK_IS_IMAGE(image))
+    {
+        printf("Failed to retrieve image widget\n");
+        return;
+    }
     GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(image));
     if (!pixbuf)
     {
+        printf("Failed to get pixbuf from image\n");
         return;
     }
+    printf("Rotating right by %f degrees\n", right_angle);
     GdkPixbuf *final_pixbuf = rotate_pixbuf(pixbuf, right_angle);
     if (final_pixbuf)
     {
-        process_and_display_image(widget, final_pixbuf);
+        process_and_display_image(image, final_pixbuf);
         g_object_unref(final_pixbuf);
+    }
+    else
+    {
+        printf("Failed to rotate pixbuf\n");
     }
     g_object_unref(pixbuf);
 }

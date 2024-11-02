@@ -9,25 +9,11 @@ void process_and_display_image(GtkWidget *image_widget, GdkPixbuf *pixbuf)
 {
     printf("Entered process_and_display_image\n");
 
-    // Resize the image if necessary
-    int width = gdk_pixbuf_get_width(pixbuf);
-    int height = gdk_pixbuf_get_height(pixbuf);
-    printf("Original image dimensions: width=%d, height=%d\n", width, height);
-
-    GdkPixbuf *resized_pixbuf = resize_pixbuf(pixbuf, MAX_WIDTH, MAX_HEIGHT);
-    if (!resized_pixbuf)
-    {
-        printf("Failed to resize pixbuf\n");
-        return;
-    }
-    printf("Resized pixbuf created\n");
-
     // Create a new pixbuf with alpha borders and center the resized pixbuf within it
-    GdkPixbuf *final_pixbuf = create_pixbuf_with_alpha_borders(resized_pixbuf, MAX_WIDTH, MAX_HEIGHT);
+    GdkPixbuf *final_pixbuf = resize_with_borders(pixbuf);
     if (!final_pixbuf)
     {
         printf("Failed to create pixbuf with alpha borders\n");
-        g_object_unref(resized_pixbuf);
         return;
     }
     printf("Final pixbuf with alpha borders created\n");
@@ -36,10 +22,9 @@ void process_and_display_image(GtkWidget *image_widget, GdkPixbuf *pixbuf)
     gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), final_pixbuf);
     printf("Image set in image_widget\n");
 
-    // Free the pixbufs
-    g_object_unref(resized_pixbuf);
+    // Free the final pixbuf
     g_object_unref(final_pixbuf);
-    printf("Freed resized and final pixbufs\n");
+    printf("Freed final pixbuf\n");
 }
 
 /**
@@ -163,17 +148,67 @@ GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int max_width, int max_height)
     int original_width = gdk_pixbuf_get_width(pixbuf);
     int original_height = gdk_pixbuf_get_height(pixbuf);
 
-    double scale = MIN((double)max_width / original_width, (double)max_height / original_height);
+    double scale = fmin((double)max_width / original_width, (double)max_height / original_height);
 
     int new_width = (int)(original_width * scale);
     int new_height = (int)(original_height * scale);
 
-    // Resize the pixbuf while maintaining the aspect ratio
-    GdkPixbuf *resized_pixbuf = gdk_pixbuf_scale_simple(pixbuf, new_width, new_height, GDK_INTERP_BILINEAR);
+    // Create a new pixbuf for the resized image
+    GdkPixbuf *resized_pixbuf = gdk_pixbuf_new(gdk_pixbuf_get_colorspace(pixbuf),
+                                               gdk_pixbuf_get_has_alpha(pixbuf),
+                                               gdk_pixbuf_get_bits_per_sample(pixbuf),
+                                               new_width, new_height);
+
+    // Scale the original pixbuf into the new pixbuf
+    gdk_pixbuf_scale(pixbuf, resized_pixbuf,
+                     0, 0, new_width, new_height,
+                     0, 0, (double)new_width / original_width, (double)new_height / original_height,
+                     GDK_INTERP_BILINEAR);
 
     return resized_pixbuf;
 }
 
+/**
+ * @brief Resizes a pixbuf to fit within the diagonal length and creates a new pixbuf with alpha borders.
+ * @param pixbuf The original pixbuf to resize and center.
+ * @return A pointer to the new pixbuf with alpha borders.
+ */
+GdkPixbuf *resize_with_borders(GdkPixbuf *pixbuf)
+{
+    int original_width = gdk_pixbuf_get_width(pixbuf);
+    int original_height = gdk_pixbuf_get_height(pixbuf);
+
+    // Step 1: Calculate the diagonal length
+    int diagonal_length = (int)sqrt(original_width * original_width + original_height * original_height);
+
+    // Step 2: Add borders to make the image a square with side length equal to the diagonal length
+    GdkPixbuf *pixbuf_1 = create_pixbuf_with_alpha_borders(pixbuf, diagonal_length, diagonal_length);
+    if (!pixbuf_1)
+    {
+        printf("Failed to create pixbuf with alpha borders\n");
+        return NULL;
+    }
+
+    // Step 3: Resize the squared image to fit within MAX_WIDTH and MAX_HEIGHT
+    GdkPixbuf *resized_pixbuf = resize_pixbuf(pixbuf_1, MAX_WIDTH, MAX_HEIGHT);
+    g_object_unref(pixbuf_1);
+    if (!resized_pixbuf)
+    {
+        printf("Failed to resize pixbuf\n");
+        return NULL;
+    }
+
+    // Step 4: Add borders to the resized image to fit within MAX_WIDTH and MAX_HEIGHT
+    GdkPixbuf *final_pixbuf = create_pixbuf_with_alpha_borders(resized_pixbuf, MAX_WIDTH, MAX_HEIGHT);
+    g_object_unref(resized_pixbuf);
+    if (!final_pixbuf)
+    {
+        printf("Failed to create final pixbuf with alpha borders\n");
+        return NULL;
+    }
+
+    return final_pixbuf;
+}
 /**
  * @brief Creates a new pixbuf with alpha borders and centers the original pixbuf within it.
  * @param pixbuf The original pixbuf to center.

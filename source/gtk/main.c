@@ -49,6 +49,9 @@ GtkWidget *init_button(const char *label, GCallback callback, gpointer data)
   GtkWidget *txt_widget = gtk_bin_get_child(GTK_BIN(button));
   gtk_widget_set_halign(txt_widget, GTK_ALIGN_START);
 
+  // Set the image widget as data on the button
+  g_object_set_data(G_OBJECT(button), "image-widget", data);
+
   return button;
 }
 /**
@@ -165,7 +168,7 @@ static void activate(GtkApplication *app, gpointer user_data)
   const char *button_labels[] = {"⚪ Grayscale", "🤖 Binarize", "↪️ Rotate left", "↩️ Rotate right"};
   for (long unsigned int i = 0; i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
   {
-    button = init_button(button_labels[i], NULL, NULL);
+    button = init_button(button_labels[i], NULL, image_widget);
     gtk_box_pack_start(GTK_BOX(vbox_buttons), button, FALSE, FALSE, 0);
     // Connect the buttons to their respective effects
     if (strcmp(button_labels[i], "⚪ Grayscale") == 0)
