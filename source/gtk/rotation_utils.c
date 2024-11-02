@@ -30,36 +30,66 @@ GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle)
     int original_width = gdk_pixbuf_get_width(pixbuf);
     int original_height = gdk_pixbuf_get_height(pixbuf);
 
-    // Create a transformation matrix
-    cairo_matrix_t matrix;
-    cairo_matrix_init_identity(&matrix);
-    cairo_matrix_translate(&matrix, original_width / 2.0, original_height / 2.0);
-    cairo_matrix_rotate(&matrix, radians);
-    cairo_matrix_translate(&matrix, -original_width / 2.0, -original_height / 2.0);
+    // Calculate the dimensions of the rotated image
+    double abs_cos = fabs(cos(radians));
+    double abs_sin = fabs(sin(radians));
+    int rotated_width = (int)(original_width * abs_cos + original_height * abs_sin);
+    int rotated_height = (int)(original_width * abs_sin + original_height * abs_cos);
 
     // Create a new pixbuf to hold the rotated image
-    GdkPixbuf *rotated_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, original_width, original_height);
+    GdkPixbuf *rotated_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, rotated_width, rotated_height);
     gdk_pixbuf_fill(rotated_pixbuf, 0x00000000); // Fill with transparent color
 
-    // Create a Cairo context to perform the rotation
-    cairo_surface_t *surface = cairo_image_surface_create_for_data(
-        gdk_pixbuf_get_pixels(rotated_pixbuf),
-        CAIRO_FORMAT_ARGB32,
-        original_width,
-        original_height,
-        gdk_pixbuf_get_rowstride(rotated_pixbuf));
-    cairo_t *cr = cairo_create(surface);
+    // Get the pixel data of the original and rotated pixbufs
+    guchar *src_pixels = gdk_pixbuf_get_pixels(pixbuf);
+    guchar *dst_pixels = gdk_pixbuf_get_pixels(rotated_pixbuf);
+    int src_rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+    int dst_rowstride = gdk_pixbuf_get_rowstride(rotated_pixbuf);
+    int src_n_channels = gdk_pixbuf_get_n_channels(pixbuf);
+    int dst_n_channels = gdk_pixbuf_get_n_channels(rotated_pixbuf);
 
-    // Apply the transformation matrix
-    cairo_set_matrix(cr, &matrix);
+    // Calculate the center of the original and rotated images
+    double cx = original_width / 2.0;
+    double cy = original_height / 2.0;
+    double ncx = rotated_width / 2.0;
+    double ncy = rotated_height / 2.0;
 
-    // Draw the original image onto the rotated pixbuf
-    gdk_cairo_set_source_pixbuf(cr, pixbuf, 0, 0);
-    cairo_paint(cr);
+    // Perform the rotation with bilinear interpolation
+    for (int y = 0; y < rotated_height; y++)
+    {
+        for (int x = 0; x < rotated_width; x++)
+        {
+            // Calculate the source coordinates
+            double src_x = (x - ncx) * cos(-radians) - (y - ncy) * sin(-radians) + cx;
+            double src_y = (x - ncx) * sin(-radians) + (y - ncy) * cos(-radians) + cy;
 
-    // Free mem !
-    cairo_destroy(cr);
-    cairo_surface_destroy(surface);
+            // Check if the source coordinates are within the bounds of the original image
+            if (src_x >= 0 && src_x < original_width - 1 && src_y >= 0 && src_y < original_height - 1)
+            {
+                // Get the integer and fractional parts of the source coordinates
+                int src_x_int = (int)src_x;
+                int src_y_int = (int)src_y;
+                double src_x_frac = src_x - src_x_int;
+                double src_y_frac = src_y - src_y_int;
+
+                // Perform bilinear interpolation
+                for (int c = 0; c < dst_n_channels; c++)
+                {
+                    guchar p1 = src_pixels[src_y_int * src_rowstride + src_x_int * src_n_channels + c];
+                    guchar p2 = src_pixels[src_y_int * src_rowstride + (src_x_int + 1) * src_n_channels + c];
+                    guchar p3 = src_pixels[(src_y_int + 1) * src_rowstride + src_x_int * src_n_channels + c];
+                    guchar p4 = src_pixels[(src_y_int + 1) * src_rowstride + (src_x_int + 1) * src_n_channels + c];
+
+                    double value = (1 - src_x_frac) * (1 - src_y_frac) * p1 +
+                                   src_x_frac * (1 - src_y_frac) * p2 +
+                                   (1 - src_x_frac) * src_y_frac * p3 +
+                                   src_x_frac * src_y_frac * p4;
+
+                    dst_pixels[y * dst_rowstride + x * dst_n_channels + c] = (guchar)value;
+                }
+            }
+        }
+    }
 
     return rotated_pixbuf;
 }
