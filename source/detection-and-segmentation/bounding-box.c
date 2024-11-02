@@ -132,3 +132,33 @@ BoundingBox** get_minimal(BoundingBox** boxes, int len, int* res_len)
     }
     return res;
 }
+
+int average_box_height(BoundingBox** boxes, int len)
+{
+    int sum = 0;
+    int count = 0;
+    for(int i=0; i<len; i++)
+    {
+        if(boxes[i]!=NULL)
+        {
+            sum += boxes[i]->p2.y - boxes[i]->p1.y;
+            count++;
+        }
+    }
+    return sum/count;
+}
+
+int average_box_width(BoundingBox** boxes, int len)
+{
+    int sum = 0;
+    int count = 0;
+    for(int i=0; i<len; i++)
+    {
+        if(boxes[i]!=NULL)
+        {
+            sum += boxes[i]->p2.x - boxes[i]->p1.x;
+            count++;
+        }
+    }
+    return sum/count;
+}
