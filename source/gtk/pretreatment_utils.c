@@ -19,7 +19,6 @@ void on_grayscale_clicked(GtkWidget *widget, gpointer data)
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
   display_pixbuf(data, new_pixbuf);
 
-  g_object_unref(pixbuf);
   SDL_FreeSurface(surface); // Free the surface
 }
 /**
