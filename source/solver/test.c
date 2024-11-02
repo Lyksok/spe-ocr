@@ -52,8 +52,8 @@ void Hiv1(char * word)
 void Mat(char * word)
 {
 /*
-	char mat[][4] =  { 
-		{'t', 'h', 'i', 's'}, 
+	char mat[][4] =  {
+		{'t', 'h', 'i', 's'},
 		{'i', 's', ' ', 'a'},
 		{'t', 'e', 's', 't'}	};
 */
@@ -65,7 +65,7 @@ void Mat(char * word)
 	free(mat);
 }
 
-// int main(int argc, char *argv[]) 
+// int main(int argc, char *argv[])
 int main ()
 {
 //	Hiv0("Hi");

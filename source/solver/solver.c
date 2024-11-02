@@ -3,10 +3,10 @@
 
 #include "solver.h"
 
-// 1 == TRUE 
+// 1 == TRUE
 // 0 == FALSE
 
-/* 
+/*
  * word : a string, list of caracters
  * Returns the length of the word
  */
@@ -18,7 +18,7 @@ int Length(char word[])
 	return i;
 }
 
-/* 
+/*
  * Returns the max between a and b
  */
 int Max(int a, int b)
@@ -26,7 +26,7 @@ int Max(int a, int b)
 	return a > b ? a : b;
 }
 
-/* 
+/*
  * Returns the min between a and b
  */
 int Min(int a, int b)
@@ -56,9 +56,9 @@ void ToUpper(char word[])
  * n : the length of the word
  * Returns True or False if the word is found
  */
-//int Search(int row, int col, char mat[row][col], 
-//int Search(int row, int col, char *mat[col], 
-int Search(int row, int col, char **mat, 
+//int Search(int row, int col, char mat[row][col],
+//int Search(int row, int col, char *mat[col],
+int Search(int row, int col, char **mat,
 	char word[], int r, int c, int n,
 	int *er, int *ec)
 {
@@ -109,7 +109,7 @@ int Search(int row, int col, char **mat,
 				// set to FALSE
 				noStop = 0;
 			}
-			else if (mat[ri][ci] != word[i]) 
+			else if (mat[ri][ci] != word[i])
 			{
 				// no match :
 				// set to FALSE

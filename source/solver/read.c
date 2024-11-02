@@ -47,7 +47,7 @@ char* ReadLine(FILE *file, int *n) {
 		}
 		// append the character to the line
 		// THEN increment the length
-		line[length++] = c;  
+		line[length++] = c;
 	}
 
 	// If EOF is reached without any characters read :
