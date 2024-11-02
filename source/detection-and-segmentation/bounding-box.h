@@ -21,5 +21,7 @@ int get_nb_of_boxes(BoundingBox** boxes, int len);
 BoundingBox** get_minimal(BoundingBox** boxes, int len, int* res_len);
 int average_box_height(BoundingBox** boxes, int len);
 int average_box_width(BoundingBox** boxes, int len);
+int is_in_box(BoundingBox* box, Point point);
+int is_in_boxes(BoundingBox** boxes, int len, Point point);
 
 #endif /* BOUNDING_BOX_H */

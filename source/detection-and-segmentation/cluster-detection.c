@@ -3,25 +3,6 @@
 #include "structures.h"
 #include "bounding-box.h"
 
-int is_in_boxes(BoundingBox** boxes, int len, Point point)
-{
-    for (int i=0; i<len; i++)
-    {
-        BoundingBox* box = boxes[i];
-        if(box!=NULL)
-        {
-            // x axis
-            if(box->p2.x>=point.x && box->p1.x<=point.x)
-            {
-                // y axis
-                if(box->p2.y>=point.y && box->p1.y<=point.y)
-                    return 1;
-            }
-        }
-    }
-    return 0;
-}
-
 int is_background(SDL_Surface* surface, Point coord)
 {
 	Uint32 pixel = ((Uint32*)surface->pixels)[coord.y*surface->w+coord.x];
