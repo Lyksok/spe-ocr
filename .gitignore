@@ -10,5 +10,6 @@ compile_commands.json
 .idea/
 *~
 *.DotSettings.user
+out.txt # pour détecter erreurs
 
 

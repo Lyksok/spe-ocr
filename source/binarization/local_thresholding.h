@@ -5,6 +5,6 @@
 #include <math.h>
 #include "histograms.h"
 
-void get_all_thresholds(SDL_Surface* surface, int** histogram);
+void get_all_thresholds(SDL_Surface *surface, int **histogram);
 
 #endif /* LOCAL_THRESHOLDING_H */
