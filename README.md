@@ -34,6 +34,13 @@ cd src/solver
 make
 ./solver
 ```
+### Neural network
+```sh
+cd src/neural_network
+make
+./neural
+```
+
 ### Every function is declared in a header file and defined and commented in the source code
 
 ## License
