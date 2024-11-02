@@ -22,14 +22,17 @@ NixOS
 ```sh
 sudo nix-env -iA nixos.gcc nixos.pkgconfig nixos.gtk3 nixos.SDL2 nixos.SDL2_image
 ```
-## Installation
-```sh
-make
-```
 ## Usage
 ### GUI
 ```sh
+make
 ./app_launcher
+```
+### Solver
+```sh
+cd src/solver
+make
+./solver
 ```
 ### Every function is declared in a header file and defined and commented in the source code
 
