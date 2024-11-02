@@ -27,17 +27,17 @@ GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle)
     double radians = angle * G_PI / 180.0;
 
     // Get the original dimensions of the image
-    int original_width = gdk_pixbuf_get_width(pixbuf);
-    int original_height = gdk_pixbuf_get_height(pixbuf);
+    int width_src = gdk_pixbuf_get_width(pixbuf);
+    int height_src = gdk_pixbuf_get_height(pixbuf);
 
     // Calculate the dimensions of the rotated image
     double abs_cos = fabs(cos(radians));
     double abs_sin = fabs(sin(radians));
-    int rotated_width = (int)(original_width * abs_cos + original_height * abs_sin);
-    int rotated_height = (int)(original_width * abs_sin + original_height * abs_cos);
+    int width_new = (int)(width_src * abs_cos + height_src * abs_sin);
+    int height_new = (int)(width_src * abs_sin + height_src * abs_cos);
 
     // Create a new pixbuf to hold the rotated image
-    GdkPixbuf *rotated_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, rotated_width, rotated_height);
+    GdkPixbuf *rotated_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width_new, height_new);
     gdk_pixbuf_fill(rotated_pixbuf, 0x00000000); // Fill with transparent color
 
     // Get the pixel data of the original and rotated pixbufs
@@ -49,41 +49,45 @@ GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle)
     int dst_n_channels = gdk_pixbuf_get_n_channels(rotated_pixbuf);
 
     // Calculate the center of the original and rotated images
-    double cx = original_width / 2.0;
-    double cy = original_height / 2.0;
-    double ncx = rotated_width / 2.0;
-    double ncy = rotated_height / 2.0;
+    double cx = width_src / 2.0;
+    double cy = height_src / 2.0;
+    double ncx = width_new / 2.0;
+    double ncy = height_new / 2.0;
 
     // Perform the rotation with bilinear interpolation
-    for (int y = 0; y < rotated_height; y++)
+    for (int y = 0; y < height_new; y++)
     {
-        for (int x = 0; x < rotated_width; x++)
+        for (int x = 0; x < width_new; x++)
         {
             // Calculate the source coordinates
             double src_x = (x - ncx) * cos(-radians) - (y - ncy) * sin(-radians) + cx;
             double src_y = (x - ncx) * sin(-radians) + (y - ncy) * cos(-radians) + cy;
 
             // Check if the source coordinates are within the bounds of the original image
-            if (src_x >= 0 && src_x < original_width - 1 && src_y >= 0 && src_y < original_height - 1)
+            if (src_x >= 0 && src_x < width_src - 1 && src_y >= 0 && src_y < height_src - 1)
             {
                 // Get the integer and fractional parts of the source coordinates
                 int src_x_int = (int)src_x;
                 int src_y_int = (int)src_y;
-                double src_x_frac = src_x - src_x_int;
-                double src_y_frac = src_y - src_y_int;
+                double dx = src_x - src_x_int;
+                double dy = src_y - src_y_int;
 
                 // Perform bilinear interpolation
                 for (int c = 0; c < dst_n_channels; c++)
                 {
+                    // p1 : top left neighbour pixel of the source coordinates
                     guchar p1 = src_pixels[src_y_int * src_rowstride + src_x_int * src_n_channels + c];
+                    // p2 : top right neighbour pixel of the source coordinates
                     guchar p2 = src_pixels[src_y_int * src_rowstride + (src_x_int + 1) * src_n_channels + c];
+                    // p23 : bottom left neighbour pixel of the source coordinates
                     guchar p3 = src_pixels[(src_y_int + 1) * src_rowstride + src_x_int * src_n_channels + c];
+                    // p4 : bottom right neighbour pixel of the source coordinates
                     guchar p4 = src_pixels[(src_y_int + 1) * src_rowstride + (src_x_int + 1) * src_n_channels + c];
-
-                    double value = (1 - src_x_frac) * (1 - src_y_frac) * p1 +
-                                   src_x_frac * (1 - src_y_frac) * p2 +
-                                   (1 - src_x_frac) * src_y_frac * p3 +
-                                   src_x_frac * src_y_frac * p4;
+                    // bilinear interpolation formula
+                    double value = (1 - dx) * (1 - dy) * p1 +
+                                   dx * (1 - dy) * p2 +
+                                   (1 - dx) * dy * p3 +
+                                   dx * dy * p4;
 
                     dst_pixels[y * dst_rowstride + x * dst_n_channels + c] = (guchar)value;
                 }
