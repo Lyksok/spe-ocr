@@ -13,7 +13,9 @@ ocr_word_search_solver_fr-1.pdf
 *.o
 *.obj
 *.out
-out.txt # for detecting errors
+out.txt
+# for detecting errors
+
 # Ignore coding-style folder
 coding-style/
 # Ignore build outputs

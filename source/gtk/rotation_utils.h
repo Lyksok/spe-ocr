@@ -9,6 +9,7 @@
 #include "conversion_utils.h"
 #include "image_utils.h"
 #include <SDL2/SDL.h>
+#include "main.h"
 
 // CONSTANTS
 #define PI 3.1415926535897932
