@@ -21,66 +21,48 @@ void on_angle_entry_activate(GtkEntry *entry, gpointer data)
  * @param angle The angle in degrees to rotate the pixbuf.
  * @return A new GdkPixbuf that is the rotated version of the input pixbuf.
  */
-GdkPixbuf *rotate_pixbuf(GdkPixbuf *src, double angle)
+GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle)
 {
-    int src_width = gdk_pixbuf_get_width(src);
-    int src_height = gdk_pixbuf_get_height(src);
-    int channels = gdk_pixbuf_get_n_channels(src);
-    int rowstride = gdk_pixbuf_get_rowstride(src);
-    guchar *src_pixels = gdk_pixbuf_get_pixels(src);
+    // Calculate the rotation angle in radians
+    double radians = angle * G_PI / 180.0;
 
-    // Convert angle to radians
-    double radians = angle * M_PI / 180.0;
-    double cos_angle = cos(radians);
-    double sin_angle = sin(radians);
+    // Get the original dimensions of the image
+    int original_width = gdk_pixbuf_get_width(pixbuf);
+    int original_height = gdk_pixbuf_get_height(pixbuf);
 
-    // Calculate dimensions of the rotated image
-    int dest_width = (int)(fabs(src_width * cos_angle) + fabs(src_height * sin_angle));
-    int dest_height = (int)(fabs(src_width * sin_angle) + fabs(src_height * cos_angle));
+    // Create a transformation matrix
+    cairo_matrix_t matrix;
+    cairo_matrix_init_identity(&matrix);
+    cairo_matrix_translate(&matrix, original_width / 2.0, original_height / 2.0);
+    cairo_matrix_rotate(&matrix, radians);
+    cairo_matrix_translate(&matrix, -original_width / 2.0, -original_height / 2.0);
 
-    // Create a new pixbuf for the rotated image
-    GdkPixbuf *dest = gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(src), 8, dest_width, dest_height);
-    guchar *dest_pixels = gdk_pixbuf_get_pixels(dest);
-    int dest_rowstride = gdk_pixbuf_get_rowstride(dest);
+    // Create a new pixbuf to hold the rotated image
+    GdkPixbuf *rotated_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, original_width, original_height);
+    gdk_pixbuf_fill(rotated_pixbuf, 0x00000000); // Fill with transparent color
 
-    // Initialize the destination pixbuf to transparent (for images with alpha channel)
-    memset(dest_pixels, 0, dest_height * dest_rowstride);
+    // Create a Cairo context to perform the rotation
+    cairo_surface_t *surface = cairo_image_surface_create_for_data(
+        gdk_pixbuf_get_pixels(rotated_pixbuf),
+        CAIRO_FORMAT_ARGB32,
+        original_width,
+        original_height,
+        gdk_pixbuf_get_rowstride(rotated_pixbuf));
+    cairo_t *cr = cairo_create(surface);
 
-    // Center of the source and destination images
-    int cx = src_width / 2;
-    int cy = src_height / 2;
-    int dcx = dest_width / 2;
-    int dcy = dest_height / 2;
+    // Apply the transformation matrix
+    cairo_set_matrix(cr, &matrix);
 
-    // Loop over destination pixels and map them to source pixels
-    for (int y = 0; y < dest_height; y++)
-    {
-        for (int x = 0; x < dest_width; x++)
-        {
-            // Calculate the corresponding source position
-            int src_x = (int)((x - dcx) * cos_angle + (y - dcy) * sin_angle + cx);
-            int src_y = (int)(-(x - dcx) * sin_angle + (y - dcy) * cos_angle + cy);
+    // Draw the original image onto the rotated pixbuf
+    gdk_cairo_set_source_pixbuf(cr, pixbuf, 0, 0);
+    cairo_paint(cr);
 
-            // Check if the source position is within bounds
-            if (src_x >= 0 && src_x < src_width && src_y >= 0 && src_y < src_height)
-            {
-                // Get the source pixel
-                guchar *src_pixel = src_pixels + src_y * rowstride + src_x * channels;
-                // Get the destination pixel
-                guchar *dest_pixel = dest_pixels + y * dest_rowstride + x * channels;
+    // Free mem !
+    cairo_destroy(cr);
+    cairo_surface_destroy(surface);
 
-                // Copy pixel data (RGB and possibly alpha)
-                for (int c = 0; c < channels; c++)
-                {
-                    dest_pixel[c] = src_pixel[c];
-                }
-            }
-        }
-    }
-
-    return dest;
+    return rotated_pixbuf;
 }
-
 /**
  * @brief Callback function to rotate the image to the left by 5 degrees.
  * @param widget The widget that triggered the function.
@@ -89,20 +71,20 @@ GdkPixbuf *rotate_pixbuf(GdkPixbuf *src, double angle)
  */
 void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
 {
-    (void)data; // Remove unused parameter warning
-    GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget");
-    GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(image)); // Convert GtkImage to GdkPixbuf
+    (void)data;                                                                          // Remove unused parameter warning
+    GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget"); // Retrieve the image widget
+    GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(image));
     if (!pixbuf)
     {
-        return; // Handle error if pixbuf is NULL
+        return;
     }
-    GdkPixbuf *final_pixbuf = rotate_pixbuf(pixbuf, left_angle); // Rotate the pixbuf by the specified angle
+    GdkPixbuf *final_pixbuf = rotate_pixbuf(pixbuf, left_angle);
     if (final_pixbuf)
     {
-        display_pixbuf(image, final_pixbuf); // Display the rotated pixbuf in the image widget
-        g_object_unref(final_pixbuf);        // Free the rotated pixbuf
+        process_and_display_image(widget, final_pixbuf);
+        g_object_unref(final_pixbuf);
     }
-    g_object_unref(pixbuf); // Free the original pixbuf
+    g_object_unref(pixbuf);
 }
 
 /**
@@ -112,18 +94,18 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
  */
 void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
 {
-    (void)data; // Remove unused parameter warning
-    GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget");
-    GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(image)); // Convert GtkImage to GdkPixbuf
+    (void)data;                                                                          // Remove unused parameter warning
+    GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget"); // Retrieve the image widget
+    GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(image));
     if (!pixbuf)
     {
-        return; // Handle error if pixbuf is NULL
+        return;
     }
-    GdkPixbuf *final_pixbuf = rotate_pixbuf(pixbuf, right_angle); // Rotate the pixbuf by the specified angle
+    GdkPixbuf *final_pixbuf = rotate_pixbuf(pixbuf, right_angle);
     if (final_pixbuf)
     {
-        display_pixbuf(image, final_pixbuf); // Display the rotated pixbuf in the image widget
-        g_object_unref(final_pixbuf);        // Free the rotated pixbuf
+        process_and_display_image(widget, final_pixbuf);
+        g_object_unref(final_pixbuf);
     }
-    g_object_unref(pixbuf); // Free the original pixbuf
+    g_object_unref(pixbuf);
 }

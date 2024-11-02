@@ -1,9 +1,51 @@
 #include "image_utils.h"
 
 /**
- * @brief Callback function to change the current image with a new image and pass it to image_to_pixbuf
- * @param widget The widget that triggered the function
- * @param data Pointer to the image widget to be updated
+ * @brief Processes and displays a pixbuf in the specified image widget.
+ * @param image_widget The image widget to display the pixbuf in.
+ * @param pixbuf The pixbuf to process and display.
+ */
+void process_and_display_image(GtkWidget *image_widget, GdkPixbuf *pixbuf)
+{
+    printf("Entered process_and_display_image\n");
+
+    // Resize the image if necessary
+    int width = gdk_pixbuf_get_width(pixbuf);
+    int height = gdk_pixbuf_get_height(pixbuf);
+    printf("Original image dimensions: width=%d, height=%d\n", width, height);
+
+    GdkPixbuf *resized_pixbuf = resize_pixbuf(pixbuf, MAX_WIDTH, MAX_HEIGHT);
+    if (!resized_pixbuf)
+    {
+        printf("Failed to resize pixbuf\n");
+        return;
+    }
+    printf("Resized pixbuf created\n");
+
+    // Create a new pixbuf with alpha borders and center the resized pixbuf within it
+    GdkPixbuf *final_pixbuf = create_pixbuf_with_alpha_borders(resized_pixbuf, MAX_WIDTH, MAX_HEIGHT);
+    if (!final_pixbuf)
+    {
+        printf("Failed to create pixbuf with alpha borders\n");
+        g_object_unref(resized_pixbuf);
+        return;
+    }
+    printf("Final pixbuf with alpha borders created\n");
+
+    // Display the final image with alpha borders
+    gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), final_pixbuf);
+    printf("Image set in image_widget\n");
+
+    // Free the pixbufs
+    g_object_unref(resized_pixbuf);
+    g_object_unref(final_pixbuf);
+    printf("Freed resized and final pixbufs\n");
+}
+
+/**
+ * @brief Callback function to change the current image with a new image.
+ * @param widget The widget that triggered the function.
+ * @param data Pointer to the image widget to be updated.
  */
 void on_change_image(GtkWidget *widget, gpointer data)
 {
@@ -32,29 +74,20 @@ void on_change_image(GtkWidget *widget, gpointer data)
         filename = gtk_file_chooser_get_filename(chooser);
 
         // Load the selected image
-        GdkPixbuf *loaded_pixbuf = load_pixbuf(filename);
+        GdkPixbuf *loaded_pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
         g_free(filename);
 
-        // Resize the image if necessary
-
-        int width = gdk_pixbuf_get_width(loaded_pixbuf);
-        int height = gdk_pixbuf_get_height(loaded_pixbuf);
-        GdkPixbuf *resized_pixbuf = resize_pixbuf(loaded_pixbuf, width, height);
-
-        // Apply white borders to the resized image
-        GdkPixbuf *final_pixbuf = calculate_borders(resized_pixbuf, IMAGE_WIDTH, IMAGE_HEIGHT);
-
-        // Display the final image with white borders
-        gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), final_pixbuf);
-
-        // Free the pixbufs
-        g_object_unref(loaded_pixbuf);
-        g_object_unref(resized_pixbuf);
-        g_object_unref(final_pixbuf);
+        if (loaded_pixbuf)
+        {
+            // Process and display the selected image
+            process_and_display_image(image_widget, loaded_pixbuf);
+            g_object_unref(loaded_pixbuf);
+        }
     }
 
     gtk_widget_destroy(dialog);
 }
+
 /**
  * @brief Opens a file saving dialog and returns a GtkImage.
  *
@@ -72,7 +105,6 @@ void *on_save_image(GtkWidget *widget, gpointer data)
     GtkWidget *dialog;
     GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
     gint res;
-    // TODO understand gtk_widget_get_toplevel
     dialog = gtk_file_chooser_dialog_new("Save File",
                                          GTK_WINDOW(gtk_widget_get_toplevel(widget)),
                                          action,
@@ -106,16 +138,6 @@ void *on_save_image(GtkWidget *widget, gpointer data)
     }
     return NULL;
 }
-/**
- * @brief Loads a pixbuf from a file.
- * @param file_path The path to the file.
- * @return A pointer to the loaded pixbuf.
- * @note The pixbuf is not freed
- */
-GdkPixbuf *load_pixbuf(const char *file_path)
-{
-    return gdk_pixbuf_new_from_file(file_path, NULL);
-}
 
 /**
  * @brief Displays a pixbuf in an image widget.
@@ -129,66 +151,48 @@ void display_pixbuf(GtkWidget *image_widget, GdkPixbuf *pixbuf)
 }
 
 /**
- * @brief Resizes a pixbuf to fit within the specified dimensions.
+ * @brief Resizes a pixbuf to fit within the specified dimensions while maintaining the aspect ratio.
  * @param pixbuf The pixbuf to resize.
- * @param width The maximum width of the resized pixbuf.
- * @param height The maximum height of the resized pixbuf.
- * @return A pointer to the resized pixbuf with the adequate aspect ratio and borders.
- * @note The pixbuf is not freed
+ * @param max_width The maximum width of the resized pixbuf.
+ * @param max_height The maximum height of the resized pixbuf.
+ * @return A pointer to the resized pixbuf with the adequate aspect ratio.
+ * @note The pixbuf is not freed.
  */
-GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int width, int height)
-{ // TODOOOOOO FIX !
+GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int max_width, int max_height)
+{
     int original_width = gdk_pixbuf_get_width(pixbuf);
     int original_height = gdk_pixbuf_get_height(pixbuf);
 
-    // Calculate the scaling factor to maintain the aspect ratio
-    double scale = MIN((double)width / original_width, (double)height / original_height);
+    double scale = MIN((double)max_width / original_width, (double)max_height / original_height);
 
     int new_width = (int)(original_width * scale);
     int new_height = (int)(original_height * scale);
 
-    return gdk_pixbuf_scale_simple(pixbuf, new_width, new_height, GDK_INTERP_BILINEAR); // Bilinear interpolation to resize the image
+    // Resize the pixbuf while maintaining the aspect ratio
+    GdkPixbuf *resized_pixbuf = gdk_pixbuf_scale_simple(pixbuf, new_width, new_height, GDK_INTERP_BILINEAR);
+
+    return resized_pixbuf;
 }
 
 /**
- * @brief Creates a alpha-background pixbuf of the specified dimensions.
- * @param width The width of the pixbuf.
- * @param height The height of the pixbuf.
- * @return A pointer to the new white pixbuf.
- * @note The pixbuf is not freed. You should call it with the sizes as macros for consistency.
+ * @brief Creates a new pixbuf with alpha borders and centers the original pixbuf within it.
+ * @param pixbuf The original pixbuf to center.
+ * @param width The width of the new pixbuf.
+ * @param height The height of the new pixbuf.
+ * @return A pointer to the new pixbuf with alpha borders.
  */
-GdkPixbuf *create_alpha_pixbuf(int width, int height)
-{
-    GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
-    guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
-    int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
-
-    for (int y = 0; y < height; y++)
-    {
-        for (int x = 0; x < width; x++)
-        {
-            guchar *pixel = pixels + y * rowstride + x * 4;
-            pixel[0] = 0; // Red
-            pixel[1] = 0; // Green
-            pixel[2] = 0; // Blue
-            pixel[3] = 0; // Alpha
-        }
-    }
-
-    return pixbuf;
-}
-
-// Function to add borders to a pixbuf to fit within the specified dimensions
-GdkPixbuf *calculate_borders(GdkPixbuf *pixbuf, int width, int height)
+GdkPixbuf *create_pixbuf_with_alpha_borders(GdkPixbuf *pixbuf, int width, int height)
 {
     int original_width = gdk_pixbuf_get_width(pixbuf);
     int original_height = gdk_pixbuf_get_height(pixbuf);
 
-    GdkPixbuf *white_pixbuf = create_alpha_pixbuf(width, height);
+    GdkPixbuf *final_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
+    gdk_pixbuf_fill(final_pixbuf, 0x00000000); // Fill with transparent color
+
     int offset_x = (width - original_width) / 2;
     int offset_y = (height - original_height) / 2;
 
-    gdk_pixbuf_copy_area(pixbuf, 0, 0, original_width, original_height, white_pixbuf, offset_x, offset_y);
+    gdk_pixbuf_copy_area(pixbuf, 0, 0, original_width, original_height, final_pixbuf, offset_x, offset_y);
 
-    return white_pixbuf;
+    return final_pixbuf;
 }

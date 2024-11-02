@@ -86,71 +86,74 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
  * @brief Activates the app. Precisely, it lays out the widgets and connects the signals.
  * @param app A pointer to the GtkApplication instance.
  */
-static void activate(GtkApplication *app)
+static void activate(GtkApplication *app, gpointer user_data)
 {
-  // Show the splash screen defined in splash_screen.c
-  show_splash_screen(app);
+  GtkWidget *window;
+  GtkWidget *main_box;
+  GtkWidget *menu_bar;
+  GtkWidget *grid;
+  GtkWidget *image_container;
+  GtkWidget *image_widget;
+  GtkWidget *vbox_buttons;
+  GtkWidget *button;
 
-  /* Objects declaration */
-  GtkWidget *window, *image, *button, *menu_bar, *grid, *vbox_buttons;
-  GdkPixbuf *pixbuf, *resized_pixbuf, *final_pixbuf;
-
-  // Create the main application window
+  (void)user_data; // Unused parameter removed warning
+  // Create a new window
   window = gtk_application_window_new(app);
   gtk_window_set_title(GTK_WINDOW(window), "Organized Chaotic Results software");
-  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+  gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
 
-  // 01/11 FIX : Connect the destroy signal to gtk_main_quit to handle window close
-  g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+  // Create a main box to hold the menu bar and the grid
+  main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+  gtk_container_add(GTK_CONTAINER(window), main_box);
 
-  /**  Get screen size preperties  */
-  GdkDisplay *display = gdk_display_get_default();
-  GdkMonitor *current_monitor = gdk_display_get_primary_monitor(display);
-  GdkRectangle monitor_geometry;
-  gdk_monitor_get_geometry(current_monitor, &monitor_geometry);
-  int screen_height = monitor_geometry.height;
-  int screen_width = monitor_geometry.width;
-
-  gtk_window_set_default_size(GTK_WINDOW(window), screen_width, screen_height);
-
-  // Create a grid container
-  grid = gtk_grid_new();
-  gtk_container_set_border_width(GTK_CONTAINER(grid), 10);
-  gtk_container_add(GTK_CONTAINER(window), grid);
-
-  // Create an alpha pixbuf of the specified size
-  pixbuf = create_alpha_pixbuf(IMAGE_WIDTH, IMAGE_HEIGHT);
-
-  // Load and resize the image
-  GdkPixbuf *loaded_pixbuf = load_pixbuf(SAMPLE_IMAGE_PATH);
-  resized_pixbuf = resize_pixbuf(loaded_pixbuf, IMAGE_WIDTH, IMAGE_HEIGHT);
-
-  // Add white borders if necessary
-  final_pixbuf = calculate_borders(resized_pixbuf, IMAGE_WIDTH, IMAGE_HEIGHT);
-  image = gtk_image_new_from_pixbuf(final_pixbuf);
+  // Create an image widget
+  image_widget = gtk_image_new();
 
   // Initialize the menu bar
-  menu_bar = init_menu_bar(image);
-  gtk_grid_attach(GTK_GRID(grid), menu_bar, 0, 0, 2, 1);
+  menu_bar = init_menu_bar(image_widget);
+  gtk_box_pack_start(GTK_BOX(main_box), menu_bar, FALSE, FALSE, 0);
 
-  // Center the image in the grid
-  gtk_widget_set_halign(image, GTK_ALIGN_CENTER);
-  gtk_widget_set_valign(image, GTK_ALIGN_CENTER);
-  gtk_grid_attach(GTK_GRID(grid), image, 0, 1, 1, 1);
+  // Create a grid container for the main content
+  grid = gtk_grid_new();
+  gtk_container_set_border_width(GTK_CONTAINER(grid), 10);
+  gtk_box_pack_start(GTK_BOX(main_box), grid, TRUE, TRUE, 0);
+
+  // Create an image container
+  image_container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+  gtk_widget_set_halign(image_container, GTK_ALIGN_CENTER);
+  gtk_widget_set_valign(image_container, GTK_ALIGN_CENTER);
+  gtk_grid_attach(GTK_GRID(grid), image_container, 0, 0, 1, 1);
+
+  gtk_container_add(GTK_CONTAINER(image_container), image_widget);
+
+  // Load a sample image
+  GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(SAMPLE_IMAGE_PATH, NULL);
+  if (pixbuf)
+  {
+    process_and_display_image(image_widget, pixbuf);
+    g_object_unref(pixbuf);
+  }
+  else
+  {
+    printf("Failed to load image from %s\n", SAMPLE_IMAGE_PATH);
+  }
 
   // Create a vertical box for buttons
   vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-  gtk_grid_attach(GTK_GRID(grid), vbox_buttons, 1, 1, 1, 1);
+  gtk_grid_attach(GTK_GRID(grid), vbox_buttons, 1, 0, 1, 1);
 
   // Manage entry buttons for the rotation
   GtkWidget *left_angle_entry = gtk_entry_new();
   GtkWidget *right_angle_entry = gtk_entry_new();
   char *left_angle_text = g_strdup_printf("%.2f", DEFAULT_LEFT_ANGLE);
-  char *right_angle_text = g_strdup_printf("%.2f", DEFAULT_RIGHT_ANGLE);
   gtk_entry_set_text(GTK_ENTRY(left_angle_entry), left_angle_text);
-  gtk_entry_set_text(GTK_ENTRY(right_angle_entry), right_angle_text);
   g_free(left_angle_text);
+
+  char *right_angle_text = g_strdup_printf("%.2f", DEFAULT_RIGHT_ANGLE);
+  gtk_entry_set_text(GTK_ENTRY(right_angle_entry), right_angle_text);
   g_free(right_angle_text);
+
   g_signal_connect(left_angle_entry, "activate", G_CALLBACK(on_angle_entry_activate), &left_angle);   // updates when the user presses enter
   g_signal_connect(right_angle_entry, "activate", G_CALLBACK(on_angle_entry_activate), &right_angle); // updates when the user presses enter
   gtk_box_pack_start(GTK_BOX(vbox_buttons), gtk_label_new("Left angle:"), FALSE, FALSE, 0);
@@ -167,45 +170,26 @@ static void activate(GtkApplication *app)
     // Connect the buttons to their respective effects
     if (strcmp(button_labels[i], "⚪ Grayscale") == 0)
     {
-      g_signal_connect(button, "clicked", G_CALLBACK(on_grayscale_clicked), image);
+      g_signal_connect(button, "clicked", G_CALLBACK(on_grayscale_clicked), image_widget);
     }
     else if (strcmp(button_labels[i], "🤖 Binarize") == 0)
     {
-      g_signal_connect(button, "clicked", G_CALLBACK(on_binarize_clicked), image);
+      g_signal_connect(button, "clicked", G_CALLBACK(on_binarize_clicked), image_widget);
     }
-
     else if (strcmp(button_labels[i], "↪️ Rotate left") == 0)
     {
-      double *angle = g_new(double, 1);
-      *angle = DEFAULT_LEFT_ANGLE;
-      g_object_set_data(G_OBJECT(button), "image-widget", image); // it
-      g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_left_clicked), angle);
+      g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_left_clicked), image_widget);
     }
     else if (strcmp(button_labels[i], "↩️ Rotate right") == 0)
     {
-      double *angle = g_new(double, 1);
-      *angle = DEFAULT_RIGHT_ANGLE;
-      g_object_set_data(G_OBJECT(button), "image-widget", image);
-      g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_right_clicked), angle);
+      g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_right_clicked), image_widget);
     }
   }
 
-  // Proportional parameters to resize the widgets if the window is resized
-  gtk_widget_set_hexpand(image, TRUE);
-  gtk_widget_set_vexpand(image, TRUE);
-  gtk_widget_set_hexpand(vbox_buttons, TRUE);
-  gtk_widget_set_vexpand(vbox_buttons, TRUE);
-
-  // Show all widgets
+  // Show all widgets in the window
   gtk_widget_show_all(window);
-
-  // Free the objects
-
-  g_object_unref(pixbuf);
-  g_object_unref(resized_pixbuf);
-  g_object_unref(final_pixbuf);
-  g_object_unref(loaded_pixbuf);
 }
+
 /**
  * @brief Main function to run the GTK application.
  * @param argc Argument count.

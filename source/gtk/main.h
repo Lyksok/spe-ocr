@@ -2,6 +2,7 @@
 #define MAIN_H
 
 #include <gtk/gtk.h>
+#include <stdio.h>
 #include "conversion_utils.h"
 #include "image_utils.h"
 #include "rotation_utils.h"
@@ -9,8 +10,8 @@
 #include "splash_screen.h"
 
 // CONSTANTS
-#define IMAGE_WIDTH 1000
-#define IMAGE_HEIGHT 1000
+#define MAX_WIDTH 1000
+#define MAX_HEIGHT 1000
 #define SAMPLE_IMAGE_PATH "images/abstract_background.jpg"
 
 GtkWidget *init_button(const char *label, GCallback callback, gpointer data);
