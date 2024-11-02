@@ -5,16 +5,18 @@
  * @param app The GtkApplication instance.
  * @note The splash screen is destroyed after a timeout.
  */
-void show_splash_screen(GtkApplication *app)
-{
+void show_splash_screen(GtkApplication *app) {
   printf("🖼️ Showing splash screen\n");
   GtkWidget *splash_window, *splash_img;
 
   // Create splash screen window
   splash_window = gtk_application_window_new(app);
   gtk_window_set_position(GTK_WINDOW(splash_window), GTK_WIN_POS_CENTER);
-  gtk_widget_set_size_request(splash_window, SPLASH_MAX_WIDTH, SPLASH_MAX_HEIGHT); // standard wizard size
-  gtk_window_set_decorated(GTK_WINDOW(splash_window), FALSE);                      // remove default title bar, resize controls, etc.
+  gtk_widget_set_size_request(splash_window, SPLASH_MAX_WIDTH,
+                              SPLASH_MAX_HEIGHT); // standard wizard size
+  gtk_window_set_decorated(
+      GTK_WINDOW(splash_window),
+      FALSE); // remove default title bar, resize controls, etc.
   printf("🪟 Splash screen window created\n");
 
   // Load splash screen image
@@ -22,7 +24,9 @@ void show_splash_screen(GtkApplication *app)
   gtk_container_add(GTK_CONTAINER(splash_window), splash_img);
   printf("🖼️ Splash screen image loaded\n");
 
-  gtk_window_set_keep_above(GTK_WINDOW(splash_window), TRUE); // Keep splash screen on top of every other window
+  gtk_window_set_keep_above(
+      GTK_WINDOW(splash_window),
+      TRUE); // Keep splash screen on top of every other window
   printf("🔝 Splash screen set to stay on top\n");
 
   // Show splash screen

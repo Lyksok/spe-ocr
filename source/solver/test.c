@@ -5,10 +5,8 @@
 
 // void Print(int row, int col, char mat[row][col])
 // void Print(int row, int col, char *mat[col])
-void Print(int row, int col, char **mat)
-{
-  for (int r = 0; r < row; r++)
-  {
+void Print(int row, int col, char **mat) {
+  for (int r = 0; r < row; r++) {
     for (int c = 0; c < col; c++)
       printf("%c ", mat[r][c]);
     printf("\n");
@@ -17,16 +15,14 @@ void Print(int row, int col, char **mat)
 
 // void canIt(int row, int col, char mat[row][col], char * word)
 // void canIt(int row, int col, char *mat[col], char * word)
-void canIt(int row, int col, char **mat, char *word)
-{
+void canIt(int row, int col, char **mat, char *word) {
   Print(row, col, mat);
   //	printf("Wow a change !\n");
   printf("Coordinates of \"%s\" be in our matrice : ", word);
   Solver(row, col, mat, word);
 }
 
-void Hiv0(char *word)
-{
+void Hiv0(char *word) {
   //	char mat[][1] = { {'H'}, {'i'} };
   char **mat = malloc(2 * sizeof(char *));
   mat[0] = "H";
@@ -35,8 +31,7 @@ void Hiv0(char *word)
   free(mat);
 }
 
-void Hiv1(char *word)
-{
+void Hiv1(char *word) {
   //	char mat[][2] =  { {'H', 'i'}, {'c', 'd'} };
   char **mat = malloc(2 * sizeof(char *));
   //	char arr[2] = {'H', 'i'};
@@ -49,8 +44,7 @@ void Hiv1(char *word)
   free(mat);
 }
 
-void Mat(char *word)
-{
+void Mat(char *word) {
   /*
     char mat[][4] =  {
       {'t', 'h', 'i', 's'},
@@ -66,8 +60,7 @@ void Mat(char *word)
 }
 
 // int main(int argc, char *argv[])
-int main()
-{
+int main() {
   //	Hiv0("Hi");
   //	Hiv1("Hi");
   //	Hiv0("Hello");

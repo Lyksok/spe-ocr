@@ -8,14 +8,12 @@
  * @param image_widget The image widget to display the pixbuf in.
  * @param pixbuf The pixbuf to process and display.
  */
-void process_and_display_image(GtkWidget *image_widget, GdkPixbuf *pixbuf)
-{
+void process_and_display_image(GtkWidget *image_widget, GdkPixbuf *pixbuf) {
   printf("Entered process_and_display_image\n");
 
   // Create a new pixbuf with alpha borders and center the resized pixbuf
   GdkPixbuf *final_pixbuf = resize_with_borders(pixbuf);
-  if (!final_pixbuf)
-  {
+  if (!final_pixbuf) {
     printf("Failed to create pixbuf with alpha borders\n");
     return;
   }
@@ -32,8 +30,7 @@ void process_and_display_image(GtkWidget *image_widget, GdkPixbuf *pixbuf)
  * @brief Callback function to change the image in the image widget.
  * @param widget The widget that triggered the function.
  */
-void on_change_image(GtkWidget *widget, gpointer data)
-{
+void on_change_image(GtkWidget *widget, gpointer data) {
   GtkWidget *image_widget = GTK_WIDGET(data);
   GtkWidget *dialog;
   GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
@@ -44,14 +41,12 @@ void on_change_image(GtkWidget *widget, gpointer data)
       "_Cancel", GTK_RESPONSE_CANCEL, "_Open", GTK_RESPONSE_ACCEPT, NULL);
 
   res = gtk_dialog_run(GTK_DIALOG(dialog));
-  if (res == GTK_RESPONSE_ACCEPT)
-  {
+  if (res == GTK_RESPONSE_ACCEPT) {
     char *filename;
     GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
     filename = gtk_file_chooser_get_filename(chooser);
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
-    if (pixbuf)
-    {
+    if (pixbuf) {
       process_and_display_image(image_widget, pixbuf);
       g_object_unref(pixbuf);
     }
@@ -64,8 +59,7 @@ void on_change_image(GtkWidget *widget, gpointer data)
  * @brief Callback function to save the image in the image widget.
  * @param widget The widget that triggered the function.
  */
-void *on_save_image(GtkWidget *widget, gpointer data)
-{
+void *on_save_image(GtkWidget *widget, gpointer data) {
   GtkWidget *image_widget = GTK_WIDGET(data);
   GtkWidget *dialog;
   GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
@@ -76,14 +70,12 @@ void *on_save_image(GtkWidget *widget, gpointer data)
       "_Cancel", GTK_RESPONSE_CANCEL, "_Save", GTK_RESPONSE_ACCEPT, NULL);
 
   res = gtk_dialog_run(GTK_DIALOG(dialog));
-  if (res == GTK_RESPONSE_ACCEPT)
-  {
+  if (res == GTK_RESPONSE_ACCEPT) {
     char *filename;
     GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
     filename = gtk_file_chooser_get_filename(chooser);
     GdkPixbuf *pixbuf = gtk_image_get_pixbuf(GTK_IMAGE(image_widget));
-    if (pixbuf)
-    {
+    if (pixbuf) {
       gdk_pixbuf_save(pixbuf, filename, "png", NULL, NULL);
     }
     g_free(filename);
@@ -100,8 +92,7 @@ void *on_save_image(GtkWidget *widget, gpointer data)
  * @param pixbuf The pixbuf to display.
  * @note The pixbuf is not freed
  */
-void display_pixbuf(GtkWidget *image_widget, GdkPixbuf *pixbuf)
-{
+void display_pixbuf(GtkWidget *image_widget, GdkPixbuf *pixbuf) {
   gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), pixbuf);
 }
 
@@ -113,8 +104,7 @@ void display_pixbuf(GtkWidget *image_widget, GdkPixbuf *pixbuf)
  * @param new_height The new height of the pixbuf.
  * @return A pointer to the new pixbuf.
  */
-GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int new_width, int new_height)
-{
+GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int new_width, int new_height) {
   int width = gdk_pixbuf_get_width(pixbuf);
   int height = gdk_pixbuf_get_height(pixbuf);
 
@@ -125,10 +115,8 @@ GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int new_width, int new_height)
       gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(pixbuf), 8,
                      new_width, new_height);
 
-  for (int x = 0; x < new_width; x++)
-  {
-    for (int y = 0; y < new_height; y++)
-    {
+  for (int x = 0; x < new_width; x++) {
+    for (int y = 0; y < new_height; y++) {
       double oldx = x / xscale;
       double oldy = y / yscale;
 
@@ -137,10 +125,8 @@ GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int new_width, int new_height)
       int left = (int)floor(oldx);
       int right = left + 1;
 
-      if (top < height && left < width && bottom < height && right < width)
-      {
-        for (int c = 0; c < gdk_pixbuf_get_n_channels(pixbuf); c++)
-        {
+      if (top < height && left < width && bottom < height && right < width) {
+        for (int c = 0; c < gdk_pixbuf_get_n_channels(pixbuf); c++) {
           // Get the pixel values at the four corners
           double top_left = gdk_pixbuf_get_pixels(
               pixbuf)[top * gdk_pixbuf_get_rowstride(pixbuf) +
@@ -182,8 +168,7 @@ GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int new_width, int new_height)
  * @param pixbuf The original pixbuf to resize and center.
  * @return A pointer to the new pixbuf with alpha borders.
  */
-GdkPixbuf *resize_with_borders(GdkPixbuf *pixbuf)
-{
+GdkPixbuf *resize_with_borders(GdkPixbuf *pixbuf) {
   int original_width = gdk_pixbuf_get_width(pixbuf);
   int original_height = gdk_pixbuf_get_height(pixbuf);
 
@@ -195,8 +180,7 @@ GdkPixbuf *resize_with_borders(GdkPixbuf *pixbuf)
   // the diagonal length
   GdkPixbuf *pixbuf_1 = create_pixbuf_with_alpha_borders(
       pixbuf, diagonal_length, diagonal_length);
-  if (!pixbuf_1)
-  {
+  if (!pixbuf_1) {
     printf("Failed to create pixbuf with alpha borders\n");
     return NULL;
   }
@@ -204,8 +188,7 @@ GdkPixbuf *resize_with_borders(GdkPixbuf *pixbuf)
   // Step 3: Resize the squared image to fit within MAX_WIDTH and MAX_HEIGHT
   GdkPixbuf *resized_pixbuf = resize_pixbuf(pixbuf_1, MAX_WIDTH, MAX_HEIGHT);
   g_object_unref(pixbuf_1);
-  if (!resized_pixbuf)
-  {
+  if (!resized_pixbuf) {
     printf("Failed to resize pixbuf\n");
     return NULL;
   }
@@ -214,8 +197,7 @@ GdkPixbuf *resize_with_borders(GdkPixbuf *pixbuf)
   GdkPixbuf *final_pixbuf =
       create_pixbuf_with_alpha_borders(resized_pixbuf, MAX_WIDTH, MAX_HEIGHT);
   g_object_unref(resized_pixbuf);
-  if (!final_pixbuf)
-  {
+  if (!final_pixbuf) {
     printf("Failed to create final pixbuf with alpha borders\n");
     return NULL;
   }
@@ -232,8 +214,7 @@ GdkPixbuf *resize_with_borders(GdkPixbuf *pixbuf)
  * @return A pointer to the new pixbuf with alpha borders.
  */
 GdkPixbuf *create_pixbuf_with_alpha_borders(GdkPixbuf *pixbuf, int width,
-                                            int height)
-{
+                                            int height) {
   int original_width = gdk_pixbuf_get_width(pixbuf);
   int original_height = gdk_pixbuf_get_height(pixbuf);
 

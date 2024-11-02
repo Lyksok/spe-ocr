@@ -3,8 +3,7 @@
 
 #include "solver.h"
 
-void FreeMat(char **mat, int n)
-{
+void FreeMat(char **mat, int n) {
   for (int i = 0; i < n; i++)
     free(*(mat + i));
   free(mat);
@@ -15,8 +14,7 @@ void FreeMat(char **mat, int n)
  * n : value to return the number of char in the lign
  * returns the lign read
  */
-char *ReadLine(FILE *file, int *n)
-{
+char *ReadLine(FILE *file, int *n) {
   /*
    * capacity : initial buffer size
    * length : index of the length of the line
@@ -28,22 +26,18 @@ char *ReadLine(FILE *file, int *n)
   char *line = malloc(capacity * sizeof(char));
   int c;
 
-  if (line == NULL)
-  {
+  if (line == NULL) {
     printf("Memory allocation failed (line1)\n");
     return NULL;
   }
 
-  while ((c = fgetc(file)) != EOF && c != '\n')
-  {
-    if (length + 1 >= capacity)
-    {
+  while ((c = fgetc(file)) != EOF && c != '\n') {
+    if (length + 1 >= capacity) {
       // it is full :
       // we add to the capacity
       capacity += 10;
       line = realloc(line, capacity * sizeof(char));
-      if (line == NULL)
-      {
+      if (line == NULL) {
         free(line);
         printf("Memory allocation failed (line2)\n");
         return NULL;
@@ -56,8 +50,7 @@ char *ReadLine(FILE *file, int *n)
 
   // If EOF is reached without any characters read :
   // return NULL
-  if (length == 0 && c == EOF)
-  {
+  if (length == 0 && c == EOF) {
     free(line);
     return NULL;
   }
@@ -74,11 +67,9 @@ char *ReadLine(FILE *file, int *n)
  * returns a matrix of characters
  * CAREFUL : nothing is freed, except mat for errors
  */
-char **ReadFile(char *filename, int *row, int *col)
-{
+char **ReadFile(char *filename, int *row, int *col) {
   FILE *file = fopen(filename, "r");
-  if (file == NULL)
-  {
+  if (file == NULL) {
     printf("Error opening file");
     return NULL;
   }
@@ -92,8 +83,7 @@ char **ReadFile(char *filename, int *row, int *col)
   char *line;
   int r = 0;
   int c = 0;
-  while ((line = ReadLine(file, col)) != NULL)
-  {
+  while ((line = ReadLine(file, col)) != NULL) {
     r++;
     free(line);
   }
@@ -105,10 +95,8 @@ char **ReadFile(char *filename, int *row, int *col)
 
   r = 0;
   c = *col;
-  while ((line = ReadLine(file, col)) != NULL)
-  {
-    if (c != *col)
-    {
+  while ((line = ReadLine(file, col)) != NULL) {
+    if (c != *col) {
       fclose(file);
       free(line);
       FreeMat(mat, r);

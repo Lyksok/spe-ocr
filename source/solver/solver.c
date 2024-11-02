@@ -10,8 +10,7 @@
  * word : a string, list of caracters
  * Returns the length of the word
  */
-int Length(char word[])
-{
+int Length(char word[]) {
   int i = 0;
   while (word[i] != 0)
     i++;
@@ -33,11 +32,9 @@ int Min(int a, int b) { return a < b ? a : b; }
  * (but honestly we do not care if there is something else)
  * Changes in place the word to upper letters
  */
-void ToUpper(char word[])
-{
+void ToUpper(char word[]) {
   size_t i = 0;
-  while (word[i] != 0)
-  {
+  while (word[i] != 0) {
     if (word[i] >= 'a' && word[i] <= 'z')
       word[i] = word[i] - 32;
     i++;
@@ -53,10 +50,8 @@ void ToUpper(char word[])
  */
 // int Search(int row, int col, char mat[row][col],
 // int Search(int row, int col, char *mat[col],
-int Search(int row, int col, char **mat,
-           char word[], int r, int c, int n,
-           int *er, int *ec)
-{
+int Search(int row, int col, char **mat, char word[], int r, int c, int n,
+           int *er, int *ec) {
   /*
    * will give us the direction in which to search
    * x is for the rows
@@ -83,8 +78,7 @@ int Search(int row, int col, char **mat,
   int found = 0;
   int noStop;
 
-  while (dir < 8 && !found)
-  {
+  while (dir < 8 && !found) {
     // we update the direction
     ri = r + x[dir];
     ci = c + y[dir];
@@ -94,24 +88,18 @@ int Search(int row, int col, char **mat,
     // set to True
     noStop = 1;
 
-    while (i < n && noStop)
-    {
+    while (i < n && noStop) {
       *er = ri;
       *ec = ci;
-      if (ri >= row || ri < 0 || ci >= col || ci < 0)
-      {
+      if (ri >= row || ri < 0 || ci >= col || ci < 0) {
         // out of bounds :
         // set to FALSE
         noStop = 0;
-      }
-      else if (mat[ri][ci] != word[i])
-      {
+      } else if (mat[ri][ci] != word[i]) {
         // no match :
         // set to FALSE
         noStop = 0;
-      }
-      else
-      {
+      } else {
         // we have a match :
         // we continue in our directions
         i++;
@@ -134,8 +122,7 @@ int Search(int row, int col, char **mat,
  */
 // int Solver(int row, int col, char mat[row][col], char word[]) {
 // int Solver(int row, int col, char *mat[col], char word[]) {
-int Solver(int row, int col, char **mat, char word[])
-{
+int Solver(int row, int col, char **mat, char word[]) {
   /*
    * len : the length of the word
    * max : the max between the numbers of rows and columns
@@ -145,13 +132,10 @@ int Solver(int row, int col, char **mat, char word[])
 
   // if the word is bigger than what is possible :
   // return False
-  if (len > max)
-  {
+  if (len > max) {
     printf("Not Found\n");
     return 0;
-  }
-  else
-  {
+  } else {
     /*
      * r : to iterate over rows
      * c : to iterate over columns
@@ -169,13 +153,10 @@ int Solver(int row, int col, char **mat, char word[])
     int *er = calloc(1, sizeof(int));
     int *ec = calloc(1, sizeof(int));
 
-    while (r < row && !found)
-    {
+    while (r < row && !found) {
       c = 0;
-      while (c < col && !found)
-      {
-        if (mat[r][c] == word[0])
-        {
+      while (c < col && !found) {
+        if (mat[r][c] == word[0]) {
           // the first letter of the word match
           // we check for the rest
           mr = r;
