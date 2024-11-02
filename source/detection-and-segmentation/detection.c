@@ -169,13 +169,12 @@ void get_all_links(BoundingBox** boxes, int len, Point** src, Point** dest)
     }
 }
 
-BoundingBox** get_char_boxes(SDL_Surface* surface)
+BoundingBox** get_char_boxes(SDL_Surface* surface, int* res_len)
 {
     int len = surface->w*surface->h;
     BoundingBox** char_boxes = malloc(len*sizeof(BoundingBox*));
     get_bounding_boxes(surface, &char_boxes);
-    int n_len;
-    char_boxes = get_minimal(char_boxes, len, &n_len);
+    char_boxes = get_minimal(char_boxes, len, res_len);
     return char_boxes;
 }
 
@@ -192,7 +191,9 @@ BoundingBox* get_word_list_box()
 
 BoundingBox* get_grid_box()
 {
-    // TODO
+    // Group by col and row
+
+    // Search the largest rectangle
     return NULL;
 }
 

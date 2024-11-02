@@ -21,6 +21,6 @@ BoundingBox* closest_bounding_boxes(BoundingBox* box, BoundingBox** boxes, int l
 void get_all_links(BoundingBox** boxes, int len, Point** src, Point** dest);
 
 // Main function for detection
-BoundingBox** get_char_boxes(SDL_Surface* surface);
+BoundingBox** get_char_boxes(SDL_Surface* surface, int* res_len);
 
 #endif /* DETECTION_H */
