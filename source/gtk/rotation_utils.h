@@ -12,8 +12,8 @@
 
 // CONSTANTS
 #define PI 3.1415926535897932
-#define DEFAULT_LEFT_ANGLE -5.0 // Default left rotation angle
-#define DEFAULT_RIGHT_ANGLE 5.0 // Default right rotation angle
+#define DEFAULT_LEFT_ANGLE 45.0  // Default left rotation angle
+#define DEFAULT_RIGHT_ANGLE 45.0 // Default right rotation angle
 
 // extern variables can be used by other files
 extern double left_angle;
