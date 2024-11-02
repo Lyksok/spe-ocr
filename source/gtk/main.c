@@ -182,32 +182,37 @@ static void activate(GtkApplication *app, gpointer user_data)
   gtk_box_pack_start(GTK_BOX(vbox_buttons), right_angle_entry, FALSE, FALSE, 0);
 
   // Add buttons to the vertical box
-  const char *button_labels[] = {"⚪ Grayscale", "🤖 Binarize",
-                                 "↪️ Rotate left", "↩️ Rotate right"};
+  const char *button_labels[] = {"Grayscale", "Binarize", "Invert colors",
+                                 "Rotate left", "Rotate right"};
   for (long unsigned int i = 0;
        i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
   {
     button = init_button(button_labels[i], NULL, image_widget);
     gtk_box_pack_start(GTK_BOX(vbox_buttons), button, FALSE, FALSE, 0);
     // Connect the buttons to their respective effects
-    if (strcmp(button_labels[i], "⚪ Grayscale") == 0)
+    if (strcmp(button_labels[i], "Grayscale") == 0)
     {
       g_signal_connect(button, "clicked", G_CALLBACK(on_grayscale_clicked),
                        image_widget);
     }
-    else if (strcmp(button_labels[i], "🤖 Binarize") == 0)
+    else if (strcmp(button_labels[i], "Binarize") == 0)
     {
       g_signal_connect(button, "clicked", G_CALLBACK(on_binarize_clicked),
                        image_widget);
     }
-    else if (strcmp(button_labels[i], "↪️ Rotate left") == 0)
+    else if (strcmp(button_labels[i], "Rotate left") == 0)
     {
       g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_left_clicked),
                        image_widget);
     }
-    else if (strcmp(button_labels[i], "↩️ Rotate right") == 0)
+    else if (strcmp(button_labels[i], "Rotate right") == 0)
     {
       g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_right_clicked),
+                       image_widget);
+    }
+    else if (strcmp(button_labels[i], "Invert colors") == 0)
+    {
+      g_signal_connect(button, "clicked", G_CALLBACK(on_invert_colors_clicked),
                        image_widget);
     }
   }
@@ -235,7 +240,8 @@ int main(int argc, char **argv)
   /*  Signal connections */
   // "activate" signal connection
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
-  // connects the "activate" signal to the "activate" function
+  // "destroy" signal connection
+  g_signal_connect(app, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
   /*  Run event loop  */
   status = g_application_run(G_APPLICATION(app), argc, argv);
