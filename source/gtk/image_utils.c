@@ -27,11 +27,6 @@ void process_and_display_image(GtkWidget *image_widget, GdkPixbuf *pixbuf)
     printf("Freed final pixbuf\n");
 }
 
-/**
- * @brief Callback function to change the current image with a new image.
- * @param widget The widget that triggered the function.
- * @param data Pointer to the image widget to be updated.
- */
 void on_change_image(GtkWidget *widget, gpointer data)
 {
     GtkWidget *image_widget = GTK_WIDGET(data);
@@ -42,85 +37,61 @@ void on_change_image(GtkWidget *widget, gpointer data)
     dialog = gtk_file_chooser_dialog_new("Open File",
                                          GTK_WINDOW(gtk_widget_get_toplevel(widget)),
                                          action,
-                                         "_Cancel", GTK_RESPONSE_CANCEL,
-                                         "_Open", GTK_RESPONSE_ACCEPT,
+                                         "_Cancel",
+                                         GTK_RESPONSE_CANCEL,
+                                         "_Open",
+                                         GTK_RESPONSE_ACCEPT,
                                          NULL);
 
     res = gtk_dialog_run(GTK_DIALOG(dialog));
-    if (res == GTK_RESPONSE_CANCEL)
-    {
-        gtk_widget_destroy(dialog);
-        return;
-    }
     if (res == GTK_RESPONSE_ACCEPT)
     {
         char *filename;
         GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
         filename = gtk_file_chooser_get_filename(chooser);
-
-        // Load the selected image
-        GdkPixbuf *loaded_pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
-        g_free(filename);
-
-        if (loaded_pixbuf)
+        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
+        if (pixbuf)
         {
-            // Process and display the selected image
-            process_and_display_image(image_widget, loaded_pixbuf);
-            g_object_unref(loaded_pixbuf);
+            process_and_display_image(image_widget, pixbuf);
+            g_object_unref(pixbuf);
         }
+        g_free(filename);
     }
 
     gtk_widget_destroy(dialog);
 }
 
-/**
- * @brief Opens a file saving dialog and returns a GtkImage.
- *
- * @param widget The widget that triggers the dialog.
- * @param data User data passed to the function.
- * @return GtkImage* The image selected in the dialog.
- * @note Only the filename is freed // TODO rework
- */
 void *on_save_image(GtkWidget *widget, gpointer data)
 {
-    /**
-     * TODO add gtk_file_chooser_get_create_folders, gets whether file choser will offer to create new folders. See gtk_file_chooser_set_create_folders().
-
-  since: 2.18 */
+    GtkWidget *image_widget = GTK_WIDGET(data);
     GtkWidget *dialog;
     GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
     gint res;
+
     dialog = gtk_file_chooser_dialog_new("Save File",
                                          GTK_WINDOW(gtk_widget_get_toplevel(widget)),
                                          action,
-                                         "_Cancel", GTK_RESPONSE_CANCEL,
-                                         "_Save", GTK_RESPONSE_ACCEPT,
+                                         "_Cancel",
+                                         GTK_RESPONSE_CANCEL,
+                                         "_Save",
+                                         GTK_RESPONSE_ACCEPT,
                                          NULL);
+
     res = gtk_dialog_run(GTK_DIALOG(dialog));
-    if (res == GTK_RESPONSE_CANCEL)
-    {
-        gtk_widget_destroy(dialog);
-        return NULL;
-    }
     if (res == GTK_RESPONSE_ACCEPT)
     {
         char *filename;
         GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
         filename = gtk_file_chooser_get_filename(chooser);
-        // Save the image
-        GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
-        if (pixbuf != NULL)
+        GdkPixbuf *pixbuf = gtk_image_get_pixbuf(GTK_IMAGE(image_widget));
+        if (pixbuf)
         {
-            /**TODO there must be an elegant way
-            Ensure the filename has a .png extension*/
-            const char *extension = ".png";
-            char *filename_with_extension = g_strconcat(filename, extension, NULL);
-            gdk_pixbuf_save(pixbuf, filename_with_extension, "png", NULL, NULL);
-            g_free(filename_with_extension);
+            gdk_pixbuf_save(pixbuf, filename, "png", NULL, NULL);
         }
-        gtk_widget_destroy(dialog);
         g_free(filename);
     }
+
+    gtk_widget_destroy(dialog);
     return NULL;
 }
 

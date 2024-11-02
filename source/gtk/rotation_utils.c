@@ -21,82 +21,58 @@ void on_angle_entry_activate(GtkEntry *entry, gpointer data)
  * @param angle The angle in degrees to rotate the pixbuf.
  * @return A new GdkPixbuf that is the rotated version of the input pixbuf.
  */
-GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle)
+GdkPixbuf *rotate_pixbuf(GdkPixbuf *src_pixbuf, double angle)
 {
-    // Calculate the rotation angle in radians
+    int width_src = gdk_pixbuf_get_width(src_pixbuf);
+    int height_src = gdk_pixbuf_get_height(src_pixbuf);
     double radians = angle * G_PI / 180.0;
 
-    // Get the original dimensions of the image
-    int width_src = gdk_pixbuf_get_width(pixbuf);
-    int height_src = gdk_pixbuf_get_height(pixbuf);
+    int width_new = (int)(fabs(width_src * cos(radians)) + fabs(height_src * sin(radians)));
+    int height_new = (int)(fabs(width_src * sin(radians)) + fabs(height_src * cos(radians)));
 
-    // Calculate the dimensions of the rotated image
-    double abs_cos = fabs(cos(radians));
-    double abs_sin = fabs(sin(radians));
-    int width_new = (int)(width_src * abs_cos + height_src * abs_sin);
-    int height_new = (int)(width_src * abs_sin + height_src * abs_cos);
+    GdkPixbuf *dst_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(src_pixbuf), 8, width_new, height_new);
+    gdk_pixbuf_fill(dst_pixbuf, 0x00000000); // Fill with transparent color
 
-    // Create a new pixbuf to hold the rotated image
-    GdkPixbuf *rotated_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width_new, height_new);
-    gdk_pixbuf_fill(rotated_pixbuf, 0x00000000); // Fill with transparent color
+    int ncx = width_new / 2;
+    int ncy = height_new / 2;
+    int cx = width_src / 2;
+    int cy = height_src / 2;
 
-    // Get the pixel data of the original and rotated pixbufs
-    guchar *src_pixels = gdk_pixbuf_get_pixels(pixbuf);
-    guchar *dst_pixels = gdk_pixbuf_get_pixels(rotated_pixbuf);
-    int src_rowstride = gdk_pixbuf_get_rowstride(pixbuf);
-    int dst_rowstride = gdk_pixbuf_get_rowstride(rotated_pixbuf);
-    int src_n_channels = gdk_pixbuf_get_n_channels(pixbuf);
-    int dst_n_channels = gdk_pixbuf_get_n_channels(rotated_pixbuf);
-
-    // Calculate the center of the original and rotated images
-    double cx = width_src / 2.0;
-    double cy = height_src / 2.0;
-    double ncx = width_new / 2.0;
-    double ncy = height_new / 2.0;
-
-    // Perform the rotation with bilinear interpolation
     for (int y = 0; y < height_new; y++)
     {
         for (int x = 0; x < width_new; x++)
         {
-            // Calculate the source coordinates
             double src_x = (x - ncx) * cos(-radians) - (y - ncy) * sin(-radians) + cx;
             double src_y = (x - ncx) * sin(-radians) + (y - ncy) * cos(-radians) + cy;
 
-            // Check if the source coordinates are within the bounds of the original image
             if (src_x >= 0 && src_x < width_src - 1 && src_y >= 0 && src_y < height_src - 1)
             {
-                // Get the integer and fractional parts of the source coordinates
                 int src_x_int = (int)src_x;
                 int src_y_int = (int)src_y;
                 double dx = src_x - src_x_int;
                 double dy = src_y - src_y_int;
 
-                // Perform bilinear interpolation
-                for (int c = 0; c < dst_n_channels; c++)
+                for (int c = 0; c < gdk_pixbuf_get_n_channels(src_pixbuf); c++)
                 {
-                    // p1 : top left neighbour pixel of the source coordinates
-                    guchar p1 = src_pixels[src_y_int * src_rowstride + src_x_int * src_n_channels + c];
-                    // p2 : top right neighbour pixel of the source coordinates
-                    guchar p2 = src_pixels[src_y_int * src_rowstride + (src_x_int + 1) * src_n_channels + c];
-                    // p23 : bottom left neighbour pixel of the source coordinates
-                    guchar p3 = src_pixels[(src_y_int + 1) * src_rowstride + src_x_int * src_n_channels + c];
-                    // p4 : bottom right neighbour pixel of the source coordinates
-                    guchar p4 = src_pixels[(src_y_int + 1) * src_rowstride + (src_x_int + 1) * src_n_channels + c];
-                    // bilinear interpolation formula
-                    double value = (1 - dx) * (1 - dy) * p1 +
-                                   dx * (1 - dy) * p2 +
-                                   (1 - dx) * dy * p3 +
-                                   dx * dy * p4;
+                    guchar p1 = gdk_pixbuf_get_pixels(src_pixbuf)[src_y_int * gdk_pixbuf_get_rowstride(src_pixbuf) + src_x_int * gdk_pixbuf_get_n_channels(src_pixbuf) + c];
+                    guchar p2 = gdk_pixbuf_get_pixels(src_pixbuf)[src_y_int * gdk_pixbuf_get_rowstride(src_pixbuf) + (src_x_int + 1) * gdk_pixbuf_get_n_channels(src_pixbuf) + c];
+                    guchar p3 = gdk_pixbuf_get_pixels(src_pixbuf)[(src_y_int + 1) * gdk_pixbuf_get_rowstride(src_pixbuf) + src_x_int * gdk_pixbuf_get_n_channels(src_pixbuf) + c];
+                    guchar p4 = gdk_pixbuf_get_pixels(src_pixbuf)[(src_y_int + 1) * gdk_pixbuf_get_rowstride(src_pixbuf) + (src_x_int + 1) * gdk_pixbuf_get_n_channels(src_pixbuf) + c];
 
-                    dst_pixels[y * dst_rowstride + x * dst_n_channels + c] = (guchar)value;
+                    guchar value = (guchar)((1 - dx) * (1 - dy) * p1 + dx * (1 - dy) * p2 + (1 - dx) * dy * p3 + dx * dy * p4);
+                    gdk_pixbuf_get_pixels(dst_pixbuf)[y * gdk_pixbuf_get_rowstride(dst_pixbuf) + x * gdk_pixbuf_get_n_channels(dst_pixbuf) + c] = value;
                 }
             }
         }
     }
 
-    return rotated_pixbuf;
+    // Resize the rotated pixbuf to fit within MAX_WIDTH and MAX_HEIGHT
+    GdkPixbuf *resized_pixbuf = resize_pixbuf(dst_pixbuf, MAX_WIDTH, MAX_HEIGHT);
+    g_object_unref(dst_pixbuf);
+
+    return resized_pixbuf;
 }
+
 /**
  * @brief Callback function to rotate the image to the left by 5 degrees.
  * @param widget The widget that triggered the function.
@@ -122,7 +98,7 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
     GdkPixbuf *final_pixbuf = rotate_pixbuf(pixbuf, left_angle);
     if (final_pixbuf)
     {
-        process_and_display_image(image, final_pixbuf);
+        gtk_image_set_from_pixbuf(GTK_IMAGE(image), final_pixbuf);
         g_object_unref(final_pixbuf);
     }
     else
@@ -156,7 +132,7 @@ void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
     GdkPixbuf *final_pixbuf = rotate_pixbuf(pixbuf, right_angle);
     if (final_pixbuf)
     {
-        process_and_display_image(image, final_pixbuf);
+        gtk_image_set_from_pixbuf(GTK_IMAGE(image), final_pixbuf);
         g_object_unref(final_pixbuf);
     }
     else
