@@ -10,7 +10,8 @@ double right_angle = DEFAULT_RIGHT_ANGLE;
  * @param entry The GtkEntry widget.
  * @param data Pointer to the rotation angle macro to update.
  */
-void on_angle_entry_activate(GtkEntry *entry, gpointer data) {
+void on_angle_entry_activate(GtkEntry *entry, gpointer data)
+{
   double *angle = (double *)data;
   const char *angle_text = gtk_entry_get_text(entry);
   *angle = g_ascii_strtod(angle_text, NULL); // convert string to double
@@ -21,7 +22,8 @@ void on_angle_entry_activate(GtkEntry *entry, gpointer data) {
  * @param dst_pixbuf The destination pixbuf to store the rotated image into.
  * @param angle The angle to rotate the image by.
  */
-void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle) {
+void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
+{
   /**
    * Process
    * Rotation formula explanation at :
@@ -55,13 +57,16 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle) {
 
   gdk_pixbuf_fill(dst_pixbuf, 0x00000000); // Fill with transparent color
 
-  for (int y = 0; y < height_dst; y++) {
-    for (int x = 0; x < width_dst; x++) {
+  for (int y = 0; y < height_dst; y++)
+  {
+    for (int x = 0; x < width_dst; x++)
+    {
       double src_x = (x - ncx) * cos(-radians) - (y - ncy) * sin(-radians) + cx;
       double src_y = (x - ncx) * sin(-radians) + (y - ncy) * cos(-radians) + cy;
 
       if (src_x >= 0 && src_x < width_src - 1 && src_y >= 0 &&
-          src_y < height_src - 1) {
+          src_y < height_src - 1)
+      {
         int src_x_int = (int)src_x;
         int src_y_int = (int)src_y;
         /** Interpolation weights: fractional parts of the original
@@ -77,7 +82,8 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle) {
         double dx = src_x - src_x_int;
         double dy = src_y - src_y_int;
 
-        for (int c = 0; c < gdk_pixbuf_get_n_channels(src_pixbuf); c++) {
+        for (int c = 0; c < gdk_pixbuf_get_n_channels(src_pixbuf); c++)
+        {
           // Get the pixel values of the four nearest pixels
           // p1: top-left, p2: top-right, p3: bottom-left,
           // p4: bottom-right
@@ -114,16 +120,19 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle) {
  * @param widget The widget that triggered the function.
  * @param data User data passed to the function.
  */
-void on_rotate_left_clicked(GtkWidget *widget, gpointer data) {
+void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
+{
   (void)data; // Remove unused warning
   GtkWidget *image =
       (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget");
-  if (!GTK_IS_IMAGE(image)) {
+  if (!GTK_IS_IMAGE(image))
+  {
     printf("Failed to retrieve image widget\n");
     return;
   }
   GdkPixbuf *pixbuf = gtk_image_get_pixbuf(GTK_IMAGE(image));
-  if (!pixbuf) {
+  if (!pixbuf)
+  {
     printf("Failed to get pixbuf from image\n");
     return;
   }
@@ -134,7 +143,7 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data) {
   GdkPixbuf *rotated_pixbuf = gdk_pixbuf_new(
       GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(pixbuf), 8, width, height);
 
-  rotate_pixbuf(pixbuf, rotated_pixbuf, left_angle);
+  rotate_pixbuf(pixbuf, rotated_pixbuf, -left_angle);
   gtk_image_set_from_pixbuf(GTK_IMAGE(image), rotated_pixbuf);
   g_object_unref(rotated_pixbuf);
 }
@@ -144,16 +153,19 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data) {
  * @param widget The widget that triggered the function.
  * @param data User data passed to the function.
  */
-void on_rotate_right_clicked(GtkWidget *widget, gpointer data) {
+void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
+{
   (void)data; // Remove unused warning
   GtkWidget *image =
       (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget");
-  if (!GTK_IS_IMAGE(image)) {
+  if (!GTK_IS_IMAGE(image))
+  {
     printf("Failed to retrieve image widget\n");
     return;
   }
   GdkPixbuf *pixbuf = gtk_image_get_pixbuf(GTK_IMAGE(image));
-  if (!pixbuf) {
+  if (!pixbuf)
+  {
     printf("Failed to get pixbuf from image\n");
     return;
   }

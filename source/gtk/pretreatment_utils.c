@@ -38,7 +38,6 @@ void on_binarize_clicked(GtkWidget *widget, gpointer data)
   display_pixbuf(data, new_pixbuf);
   is_binarized = 1; // 1 == TRUE
 
-  g_object_unref(pixbuf);
   SDL_FreeSurface(surface); // Free the surface
 }
 
@@ -57,5 +56,4 @@ void on_invert_colors_clicked(GtkWidget *widget, gpointer data)
   display_pixbuf(data, new_pixbuf);
 
   SDL_FreeSurface(surface); // Free the surface
-  g_object_unref(pixbuf);
 }
