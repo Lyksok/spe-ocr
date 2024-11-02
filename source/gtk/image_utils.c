@@ -114,31 +114,47 @@ void display_pixbuf(GtkWidget *image_widget, GdkPixbuf *pixbuf)
  * @return A pointer to the resized pixbuf with the adequate aspect ratio.
  * @note The pixbuf is not freed.
  */
-GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int max_width, int max_height)
+
+GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int new_width, int new_height)
 {
-    int original_width = gdk_pixbuf_get_width(pixbuf);
-    int original_height = gdk_pixbuf_get_height(pixbuf);
+    int width = gdk_pixbuf_get_width(pixbuf);
+    int height = gdk_pixbuf_get_height(pixbuf);
 
-    double scale = fmin((double)max_width / original_width, (double)max_height / original_height);
+    double xscale = new_width / (double)width;
+    double yscale = new_height / (double)height;
 
-    int new_width = (int)(original_width * scale);
-    int new_height = (int)(original_height * scale);
+    GdkPixbuf *new_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(pixbuf), 8, new_width, new_height);
 
-    // Create a new pixbuf for the resized image
-    GdkPixbuf *resized_pixbuf = gdk_pixbuf_new(gdk_pixbuf_get_colorspace(pixbuf),
-                                               gdk_pixbuf_get_has_alpha(pixbuf),
-                                               gdk_pixbuf_get_bits_per_sample(pixbuf),
-                                               new_width, new_height);
+    for (int x = 0; x < new_width; x++)
+    {
+        for (int y = 0; y < new_height; y++)
+        {
+            double oldx = x / xscale;
+            double oldy = y / yscale;
 
-    // Scale the original pixbuf into the new pixbuf
-    gdk_pixbuf_scale(pixbuf, resized_pixbuf,
-                     0, 0, new_width, new_height,
-                     0, 0, (double)new_width / original_width, (double)new_height / original_height,
-                     GDK_INTERP_BILINEAR);
+            int top = (int)floor(oldy);
+            int bottom = top + 1;
+            int left = (int)floor(oldx);
+            int right = left + 1;
 
-    return resized_pixbuf;
+            for (int c = 0; c < gdk_pixbuf_get_n_channels(pixbuf); c++)
+            {
+                double top_left = gdk_pixbuf_get_pixels(pixbuf)[top * gdk_pixbuf_get_rowstride(pixbuf) + left * gdk_pixbuf_get_n_channels(pixbuf) + c];
+                double top_right = gdk_pixbuf_get_pixels(pixbuf)[top * gdk_pixbuf_get_rowstride(pixbuf) + right * gdk_pixbuf_get_n_channels(pixbuf) + c];
+                double bottom_left = gdk_pixbuf_get_pixels(pixbuf)[bottom * gdk_pixbuf_get_rowstride(pixbuf) + left * gdk_pixbuf_get_n_channels(pixbuf) + c];
+                double bottom_right = gdk_pixbuf_get_pixels(pixbuf)[bottom * gdk_pixbuf_get_rowstride(pixbuf) + right * gdk_pixbuf_get_n_channels(pixbuf) + c];
+
+                double top_interp = top_left + (top_right - top_left) * (oldx - left);
+                double bottom_interp = bottom_left + (bottom_right - bottom_left) * (oldx - left);
+                double value = top_interp + (bottom_interp - top_interp) * (oldy - top);
+
+                gdk_pixbuf_get_pixels(new_pixbuf)[y * gdk_pixbuf_get_rowstride(new_pixbuf) + x * gdk_pixbuf_get_n_channels(new_pixbuf) + c] = (guchar)value;
+            }
+        }
+    }
+
+    return new_pixbuf;
 }
-
 /**
  * @brief Resizes a pixbuf to fit within the diagonal length and creates a new pixbuf with alpha borders.
  * @param pixbuf The original pixbuf to resize and center.

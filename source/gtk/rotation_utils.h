@@ -19,7 +19,7 @@
 extern double left_angle;
 extern double right_angle;
 
-GdkPixbuf *rotate_pixbuf(GdkPixbuf *pixbuf, double angle);
+void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle);
 void on_rotate_left_clicked(GtkWidget *widget, gpointer data);
 void on_rotate_right_clicked(GtkWidget *widget, gpointer data);
 void on_angle_entry_activate(GtkEntry *entry, gpointer data);

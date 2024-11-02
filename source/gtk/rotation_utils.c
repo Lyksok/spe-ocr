@@ -5,7 +5,7 @@ double left_angle = DEFAULT_LEFT_ANGLE;
 double right_angle = DEFAULT_RIGHT_ANGLE;
 
 /**
- * @brief Callback function to handle the "activate" signal of the GtkEntry widgets. This is a lot of code for a simple function!
+ * @brief Callback function to handle the "activate" signal of the GtkEntry widgets.
  * @param entry The GtkEntry widget.
  * @param data Pointer to the rotation angle macro to update.
  */
@@ -21,26 +21,24 @@ void on_angle_entry_activate(GtkEntry *entry, gpointer data)
  * @param angle The angle in degrees to rotate the pixbuf.
  * @return A new GdkPixbuf that is the rotated version of the input pixbuf.
  */
-GdkPixbuf *rotate_pixbuf(GdkPixbuf *src_pixbuf, double angle)
+void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
 {
     int width_src = gdk_pixbuf_get_width(src_pixbuf);
     int height_src = gdk_pixbuf_get_height(src_pixbuf);
+    int width_dst = gdk_pixbuf_get_width(dst_pixbuf);
+    int height_dst = gdk_pixbuf_get_height(dst_pixbuf);
     double radians = angle * G_PI / 180.0;
 
-    int width_new = (int)(fabs(width_src * cos(radians)) + fabs(height_src * sin(radians)));
-    int height_new = (int)(fabs(width_src * sin(radians)) + fabs(height_src * cos(radians)));
-
-    GdkPixbuf *dst_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(src_pixbuf), 8, width_new, height_new);
-    gdk_pixbuf_fill(dst_pixbuf, 0x00000000); // Fill with transparent color
-
-    int ncx = width_new / 2;
-    int ncy = height_new / 2;
+    int ncx = width_dst / 2;
+    int ncy = height_dst / 2;
     int cx = width_src / 2;
     int cy = height_src / 2;
 
-    for (int y = 0; y < height_new; y++)
+    gdk_pixbuf_fill(dst_pixbuf, 0x00000000); // Fill with transparent color
+
+    for (int y = 0; y < height_dst; y++)
     {
-        for (int x = 0; x < width_new; x++)
+        for (int x = 0; x < width_dst; x++)
         {
             double src_x = (x - ncx) * cos(-radians) - (y - ncy) * sin(-radians) + cx;
             double src_y = (x - ncx) * sin(-radians) + (y - ncy) * cos(-radians) + cy;
@@ -65,12 +63,6 @@ GdkPixbuf *rotate_pixbuf(GdkPixbuf *src_pixbuf, double angle)
             }
         }
     }
-
-    // Resize the rotated pixbuf to fit within MAX_WIDTH and MAX_HEIGHT
-    GdkPixbuf *resized_pixbuf = resize_pixbuf(dst_pixbuf, MAX_WIDTH, MAX_HEIGHT);
-    g_object_unref(dst_pixbuf);
-
-    return resized_pixbuf;
 }
 
 /**
@@ -81,33 +73,29 @@ GdkPixbuf *rotate_pixbuf(GdkPixbuf *src_pixbuf, double angle)
  */
 void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
 {
-    (void)data;                                                                          // Remove unused parameter warning
-    GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget"); // Retrieve the image widget
+    (void)data; // Remove unused warning
+    GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget");
     if (!GTK_IS_IMAGE(image))
     {
         printf("Failed to retrieve image widget\n");
         return;
     }
-    GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(image));
+    GdkPixbuf *pixbuf = gtk_image_get_pixbuf(GTK_IMAGE(image));
     if (!pixbuf)
     {
         printf("Failed to get pixbuf from image\n");
         return;
     }
     printf("Rotating left by %f degrees\n", left_angle);
-    GdkPixbuf *final_pixbuf = rotate_pixbuf(pixbuf, left_angle);
-    if (final_pixbuf)
-    {
-        gtk_image_set_from_pixbuf(GTK_IMAGE(image), final_pixbuf);
-        g_object_unref(final_pixbuf);
-    }
-    else
-    {
-        printf("Failed to rotate pixbuf\n");
-    }
-    g_object_unref(pixbuf);
-}
 
+    int width = gdk_pixbuf_get_width(pixbuf);
+    int height = gdk_pixbuf_get_height(pixbuf);
+    GdkPixbuf *rotated_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(pixbuf), 8, width, height);
+
+    rotate_pixbuf(pixbuf, rotated_pixbuf, left_angle);
+    gtk_image_set_from_pixbuf(GTK_IMAGE(image), rotated_pixbuf);
+    g_object_unref(rotated_pixbuf);
+}
 /**
  * @brief Callback function to rotate the image to the right by the specified angle.
  * @param widget The widget that triggered the function.
@@ -115,29 +103,26 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
  */
 void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
 {
-    (void)data;                                                                          // Remove unused parameter warning
-    GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget"); // Retrieve the image widget
+    (void)data; // Remove unused warning
+    GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget");
     if (!GTK_IS_IMAGE(image))
     {
         printf("Failed to retrieve image widget\n");
         return;
     }
-    GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(image));
+    GdkPixbuf *pixbuf = gtk_image_get_pixbuf(GTK_IMAGE(image));
     if (!pixbuf)
     {
         printf("Failed to get pixbuf from image\n");
         return;
     }
     printf("Rotating right by %f degrees\n", right_angle);
-    GdkPixbuf *final_pixbuf = rotate_pixbuf(pixbuf, right_angle);
-    if (final_pixbuf)
-    {
-        gtk_image_set_from_pixbuf(GTK_IMAGE(image), final_pixbuf);
-        g_object_unref(final_pixbuf);
-    }
-    else
-    {
-        printf("Failed to rotate pixbuf\n");
-    }
-    g_object_unref(pixbuf);
+
+    int width = gdk_pixbuf_get_width(pixbuf);
+    int height = gdk_pixbuf_get_height(pixbuf);
+    GdkPixbuf *rotated_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(pixbuf), 8, width, height);
+
+    rotate_pixbuf(pixbuf, rotated_pixbuf, right_angle);
+    gtk_image_set_from_pixbuf(GTK_IMAGE(image), rotated_pixbuf);
+    g_object_unref(rotated_pixbuf);
 }

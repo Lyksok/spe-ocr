@@ -147,6 +147,7 @@ static void activate(GtkApplication *app, gpointer user_data)
   gtk_grid_attach(GTK_GRID(grid), vbox_buttons, 1, 0, 1, 1);
 
   // Manage entry buttons for the rotation
+  // Update angle values according to user input
   GtkWidget *left_angle_entry = gtk_entry_new();
   GtkWidget *right_angle_entry = gtk_entry_new();
   char *left_angle_text = g_strdup_printf("%.2f", DEFAULT_LEFT_ANGLE);

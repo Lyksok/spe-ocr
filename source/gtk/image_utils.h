@@ -5,7 +5,7 @@
 #include <math.h>
 
 void process_and_display_image(GtkWidget *image_widget, GdkPixbuf *pixbuf);
-GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int max_width, int max_height);
+GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int new_width, int new_height);
 GdkPixbuf *create_pixbuf_with_alpha_borders(GdkPixbuf *pixbuf, int width, int height);
 GdkPixbuf *resize_with_borders(GdkPixbuf *pixbuf);
 void display_pixbuf(GtkWidget *image_widget, GdkPixbuf *pixbuf);
