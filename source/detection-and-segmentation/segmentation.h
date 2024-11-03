@@ -5,7 +5,6 @@
 
 #include "structures.h"
 
-SDL_Surface *Cut(SDL_Surface *surface, BoundingBox *box);
 void save_bounding_box(SDL_Surface* surface, BoundingBox* box);
 void save_bounding_boxes(SDL_Surface* surface, BoundingBox** boxes, int len);
 
