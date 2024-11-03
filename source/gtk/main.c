@@ -215,6 +215,18 @@ static void activate(GtkApplication *app, gpointer user_data)
       g_signal_connect(button, "clicked", G_CALLBACK(on_invert_colors_clicked),
                        image_widget);
     }
+    /**
+    else if (strcmp(button_labels[i], "Detect") == 0)
+    {
+      g_signal_connect(button, "clicked", G_CALLBACK(on_detect_clicked),
+                       image_widget);
+    }
+    else if (strcmp(button_labels[i], "Segment) == 0)
+    {
+      g_signal_connect(button, "clicked", G_CALLBACK(on_segment_clicked),
+                       image_widget);
+    }
+    */
   }
 
   // Show all widgets in the window
