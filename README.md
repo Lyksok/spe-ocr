@@ -32,7 +32,7 @@ make
 ```sh
 cd source/solver
 make
-./solver
+./solver <grid as text> <word>
 ```
 ### Neural network
 ```sh
