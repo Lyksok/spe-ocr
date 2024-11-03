@@ -3,13 +3,13 @@
 
 // INCLUDE DEPENDENCIES
 // #include "main.h"
+#include "conversion_utils.h"
+#include "image_utils.h"
+#include "main.h"
+#include <SDL2/SDL.h>
 #include <gtk/gtk.h>
 #include <math.h>
 #include <stdio.h>
-#include "conversion_utils.h"
-#include "image_utils.h"
-#include <SDL2/SDL.h>
-#include "main.h"
 
 // CONSTANTS
 #define PI 3.1415926535897932

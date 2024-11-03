@@ -1,13 +1,13 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <gtk/gtk.h>
-#include <stdio.h>
 #include "conversion_utils.h"
 #include "image_utils.h"
-#include "rotation_utils.h"
 #include "pretreatment_utils.h"
+#include "rotation_utils.h"
 #include "splash_screen.h"
+#include <gtk/gtk.h>
+#include <stdio.h>
 
 // CONSTANTS
 #define MAX_WIDTH 1000
