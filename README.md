@@ -44,7 +44,7 @@ make
 ```sh
 cd source/detection-and-segmentation
 make
-./det-seg
+./det-seg <image path> <detection/segmentation> <chars/grid/list/words>
 ```
 ### Every function is declared in a header file and defined and commented in the source code
 

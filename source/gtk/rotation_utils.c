@@ -10,8 +10,7 @@ double right_angle = DEFAULT_RIGHT_ANGLE;
  * @param entry The GtkEntry widget.
  * @param data Pointer to the rotation angle macro to update.
  */
-void on_angle_entry_activate(GtkEntry *entry, gpointer data)
-{
+void on_angle_entry_activate(GtkEntry *entry, gpointer data) {
   printf("🔄 Activating angle entry\n");
   double *angle = (double *)data;
   const char *angle_text = gtk_entry_get_text(entry);
@@ -25,8 +24,7 @@ void on_angle_entry_activate(GtkEntry *entry, gpointer data)
  * @param dst_pixbuf The destination pixbuf to store the rotated image into.
  * @param angle The angle to rotate the image by.
  */
-void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
-{
+void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle) {
   printf("🔄 Rotating pixbuf by angle: %f\n", angle);
   int src_width = gdk_pixbuf_get_width(src_pixbuf);
   int src_height = gdk_pixbuf_get_height(src_pixbuf);
@@ -42,19 +40,15 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
   double cos_angle = cos(angle_rad);
   double sin_angle = sin(angle_rad);
 
-  for (int y = 0; y < dst_height; y++)
-  {
-    for (int x = 0; x < dst_width; x++)
-    {
+  for (int y = 0; y < dst_height; y++) {
+    for (int x = 0; x < dst_width; x++) {
       int src_x = (int)((x - dst_width / 2) * cos_angle -
                         (y - dst_height / 2) * sin_angle + src_width / 2);
       int src_y = (int)((x - dst_width / 2) * sin_angle +
                         (y - dst_height / 2) * cos_angle + src_height / 2);
 
-      if (src_x >= 0 && src_x < src_width && src_y >= 0 && src_y < src_height)
-      {
-        for (int c = 0; c < n_channels; c++)
-        {
+      if (src_x >= 0 && src_x < src_width && src_y >= 0 && src_y < src_height) {
+        for (int c = 0; c < n_channels; c++) {
           guchar *src_pixel = gdk_pixbuf_get_pixels(src_pixbuf) +
                               src_y * gdk_pixbuf_get_rowstride(src_pixbuf) +
                               src_x * n_channels + c;
@@ -75,8 +69,7 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
  * @param widget The widget that triggered the function.
  * @param data Pointer to the image widget to be updated.
  */
-void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
-{
+void on_rotate_left_clicked(GtkWidget *widget, gpointer data) {
   printf("🔄 Rotating image to the left by %f degrees\n", left_angle);
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
@@ -94,8 +87,7 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
  * @param widget The widget that triggered the function.
  * @param data Pointer to the image widget to be updated.
  */
-void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
-{
+void on_rotate_right_clicked(GtkWidget *widget, gpointer data) {
   printf("🔄 Rotating image to the right by %f degrees\n", right_angle);
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
