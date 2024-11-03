@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 
+int is_inverted(SDL_Surface *surface);
 void image_to_grayscale(SDL_Surface *surface);
 void image_to_binarized(SDL_Surface *surface, size_t threshold);
 void convert_image(SDL_Surface *surface,

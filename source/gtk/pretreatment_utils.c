@@ -43,6 +43,40 @@ void on_binarize_clicked(GtkWidget *widget, gpointer data)
   SDL_FreeSurface(surface); // Free the surface
 }
 
+/** TODO Dupe of the original function for debug purposes */
+void invert_binarized_colors_dupe(SDL_Surface *surface)
+{
+  if (is_inverted(surface))
+  {
+    for (int j = 0; j < surface->h; j++)
+    {
+      for (int i = 0; i < surface->w; i++)
+      {
+        SDL_LockSurface(surface);
+        Uint32 pixel = ((Uint32 *)surface->pixels)[j * surface->w + i];
+
+        Uint8 h_index;
+        Uint8 tmp1;
+        Uint8 tmp2;
+        Uint8 a;
+        SDL_GetRGBA(pixel, surface->format, &h_index, &tmp1, &tmp2, &a);
+        if (h_index == 0)
+        {
+          pixel = SDL_MapRGBA(surface->format, 255, 255, 255, a);
+        }
+        else
+        {
+          pixel = SDL_MapRGBA(surface->format, 0, 0, 0, a);
+        }
+
+        ((Uint32 *)surface->pixels)[j * surface->w + i] = pixel;
+
+        SDL_UnlockSurface(surface);
+      }
+    }
+  }
+}
+
 /**
  * @brief Callback function to invert the colors of the image.
  *  @param widget The widget that triggered the function
@@ -62,7 +96,7 @@ void on_invert_colors_clicked(GtkWidget *widget, gpointer data)
     printf("🔄 Inverting colors\n");
     GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
     SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-    invert_colors(surface);
+    invert_binarized_colors_dupe(surface);
     GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
     display_pixbuf(data, new_pixbuf);
     printf("✅ Inverting colors done\n");
