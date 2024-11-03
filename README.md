@@ -40,7 +40,12 @@ cd source/neural_network
 make
 ./neural
 ```
-
+### Detection and segmentation
+```sh
+cd source/detection-and-segmentation
+make
+./det-seg
+```
 ### Every function is declared in a header file and defined and commented in the source code
 
 ## License
