@@ -18,15 +18,18 @@ int is_background(SDL_Surface* surface, Point coord)
 
 // int nb = 0;
 
-void flood_fill(SDL_Surface* surface, Point* p1, Point* p2, Point coord, int** visited)
+void flood_fill(SDL_Surface* surface, Point* p1, Point* p2,
+	Point coord, int** visited)
 {
-    if(coord.x <= 0 || coord.y <= 0 || coord.x >= surface->w-1 || coord.y >= surface->h-1)
+    if(coord.x <= 0 || coord.y <= 0
+		|| coord.x >= surface->w-1 || coord.y >= surface->h-1)
         return;
-    if(is_background(surface, coord)==1 || (*visited)[coord.y*surface->w+coord.x]==1)
+    if(is_background(surface, coord)==1
+		|| (*visited)[coord.y*surface->w+coord.x]==1)
         return;
 
     (*visited)[coord.y*surface->w+coord.x] = 1;
-    
+
     if(coord.x==p1->x)
         p1->x--;
     if(coord.y==p1->y)
@@ -35,7 +38,7 @@ void flood_fill(SDL_Surface* surface, Point* p1, Point* p2, Point coord, int** v
         p2->x++;
     if(coord.y==p2->y)
         p2->y++;
-    
+
     int dir_x[] = {0, 0, -1, 1};
     int dir_y[] = {-1, 1, 0, 0};
     for(size_t i=0; i<4; i++)
@@ -58,15 +61,15 @@ void get_bounding_box(SDL_Surface* surface, Point coord, BoundingBox*** boxes)
     {
         return;
     }
-    // if pixel is white : call recursive clustering cells (histogram with bool)
+    // if pixel is white : call recursive clustering cells
     // If pixel is on edge, return
     if(coord.x==0 || coord.y==0 || coord.x==surface->w || coord.y==surface->h)
     {
         return;
     }
     Point p1 = {coord.x-1, coord.y-1};
-    Point p2 = {coord.x+1, coord.y+1};    
-    
+    Point p2 = {coord.x+1, coord.y+1};
+
     int* histogram = malloc(len*sizeof(int));
     for(int i=0; i<len; i++)
     {

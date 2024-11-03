@@ -1,10 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
-#include <time.h>
 #include "detection.h"
 #include "structures.h"
-
 
 int add_box(BoundingBox box, BoundingBox*** boxes, int len)
 {
@@ -48,7 +46,7 @@ int remove_box(BoundingBox box, BoundingBox*** boxes, int len)
         if(are_equal_box(*(*boxes)[i], box))
         {
             free((*boxes)[i]);
-            (*boxes)[i]=NULL; 
+            (*boxes)[i]=NULL;
             return 0;
         }
     }

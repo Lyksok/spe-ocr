@@ -1,4 +1,3 @@
-#include "detection.h"
 #include <err.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -8,8 +7,9 @@
 
 #include "bounding-box.h"
 #include "cluster-detection.h"
-#include "structures.h"
+#include "detection.h"
 #include "histograms.h"
+#include "structures.h"
 
 void draw_rect(SDL_Renderer *renderer, int rect[4])
 {
@@ -48,7 +48,6 @@ void draw_lines(SDL_Renderer* renderer, Point* src, Point* dest, int len)
     }
 }
 
-
 Point get_bounding_box_center(BoundingBox* b)
 {
     int x = (b->p1.x+b->p2.x)/2;
@@ -79,7 +78,7 @@ int ascending_bounding_box(BoundingBox* b1, BoundingBox* b2)
             return 1;
         else
             return 0;
-    } 
+    }
     if(p1.y <= p2.y)
         return 1;
     else
@@ -88,7 +87,8 @@ int ascending_bounding_box(BoundingBox* b1, BoundingBox* b2)
 
 /* Sort bounding boxes by ascending Y then X
 */
-void sort_bounding_boxes(BoundingBox*** boxes, int len, int (*asc)(BoundingBox*, BoundingBox*))
+void sort_bounding_boxes(BoundingBox*** boxes, int len,
+	int (*asc)(BoundingBox*, BoundingBox*))
 {
     int swapped = 0;
     for(int i=0; i<len-1; i++)
@@ -121,12 +121,15 @@ double dist(Point p1, Point p2)
     return sqrt(pow(p1.x-p2.x, 2)+pow(p1.y-p2.y, 2));
 }
 
-int is_already_closest_of(Point src_box, Point dest_box, Point* src, Point* dest, int l)
+int is_already_closest_of(Point src_box, Point dest_box,
+	Point* src, Point* dest, int l)
 {
     for(int i=0; i<l; i++)
     {
-        if((are_equal_point(src_box, src[i]) && are_equal_point(dest_box, dest[i]))
-            || (are_equal_point(dest_box, src[i]) && are_equal_point(src_box, dest[i])))
+        if((are_equal_point(src_box, src[i])
+				&& are_equal_point(dest_box, dest[i]))
+            || (are_equal_point(dest_box, src[i])
+				&& are_equal_point(src_box, dest[i])))
         {
             return 1;
         }
@@ -136,7 +139,8 @@ int is_already_closest_of(Point src_box, Point dest_box, Point* src, Point* dest
     return 0;
 }
 
-BoundingBox* closest_bounding_boxes(BoundingBox* box, BoundingBox** boxes, int len)
+BoundingBox* closest_bounding_boxes(BoundingBox* box, BoundingBox** boxes,
+	int len)
 {
     Point p = get_bounding_box_center(box);
     // Get the first distance
@@ -192,7 +196,6 @@ Point get_closest_point(Point point, Point* points, int len)
     return closest;
 }
 
-
 BoundingBox** get_char_boxes(SDL_Surface* surface, int* res_len)
 {
     int len = surface->w*surface->h;
@@ -217,12 +220,12 @@ void get_corners(Point* points, int len, Point** corners)
         // TOP LEFT
         if(points[i].x<top_left.x || points[i].y<top_left.y)
             top_left = points[i];
-        
+
         // BOTTOM RIGHT
         if(points[i].x>bottom_right.x || points[i].y>bottom_right.y)
             bottom_right = points[i];
     }
-    
+
     (*corners)[0] = top_left;
     (*corners)[1] = bottom_right;
 }
@@ -238,7 +241,8 @@ Point compute_mean_of_points(Point* points, int len)
         m_y += points[i].y;
         count++;
     }
-    return (Point){(int)((double)m_x/(double)count), (int)((double)m_y/(double)count)};
+    return (Point){(int)((double)m_x/(double)count),
+		(int)((double)m_y/(double)count)};
 }
 
 void k_means(SDL_Surface* surface, Point** res_centroids)
@@ -248,11 +252,11 @@ void k_means(SDL_Surface* surface, Point** res_centroids)
     Point* points = bounding_box_to_points(boxes, len);
     Point* centroids = calloc(2, sizeof(Point));
     get_corners(points, len, &centroids);
-    
+
     Point centroid_points[2][len];
     int centroid_p_index[2];
     int nb_points[2];
-    
+
     int changes = 1;
     while(changes!=0)
     {
@@ -272,7 +276,7 @@ void k_means(SDL_Surface* surface, Point** res_centroids)
         for(int i=0; i<len; i++)
         {
             Point point = points[i];
-            
+
             // Get closest centroid
             int closest_centroid = 0;
             double min_dist = dist(point, centroids[closest_centroid]);
@@ -285,22 +289,24 @@ void k_means(SDL_Surface* surface, Point** res_centroids)
                     closest_centroid = j;
                 }
             }
-            
+
             // Update variables for mean calculation
-            centroid_points[closest_centroid][centroid_p_index[closest_centroid]++] = point;
+            centroid_points[closest_centroid]
+				[centroid_p_index[closest_centroid]++] = point;
             nb_points[closest_centroid] += 1;
         }
-        
+
         for(int i=0; i<2; i++)
-        {   
+        {
             Point old_centroid = centroids[i];
-            Point new_centroid = compute_mean_of_points(centroid_points[i], centroid_p_index[i]);
+            Point new_centroid = compute_mean_of_points(centroid_points[i],
+					centroid_p_index[i]);
             if(abs(old_centroid.x - new_centroid.x)>2)
                 changes = 1;
             centroids[i]=new_centroid;
         }
     }
-    
+
     printf("Number of points per centroid\n");
     for(int i=0; i<2; i++)
     {
@@ -308,7 +314,7 @@ void k_means(SDL_Surface* surface, Point** res_centroids)
     }
     (*res_centroids)[0] = centroids[0];
     (*res_centroids)[1] = centroids[1];
-    
+
     free(centroids);
     free_boxes(boxes, len);
     free(points);
@@ -320,7 +326,7 @@ BoundingBox* histo_grid_detect(SDL_Surface* surface)
     BoundingBox** boxes = get_char_boxes(surface, &len);
     int* col_histo = get_col_box_histogram(surface, boxes, len);
     int* row_histo = get_row_box_histogram(surface, boxes, len);
-    
+
     Point* src = calloc(len, sizeof(Point));
     Point* dest = calloc(len, sizeof(Point));
     get_all_links(boxes, len, &src, &dest);
@@ -331,16 +337,17 @@ BoundingBox* histo_grid_detect(SDL_Surface* surface)
     printf("COL=%i\n", col);
     printf("ROW=%i\n", row);
     printf("Estimated dimensions of the grid:\n");
-    printf("%i x %i\n", get_most_frequent(row_histo, surface->h), get_most_frequent(col_histo, surface->w));
-    
+    printf("%i x %i\n", get_most_frequent(row_histo, surface->h),
+		get_most_frequent(col_histo, surface->w));
+
     for(int i=0; i<len; i++)
     {
         printf("%lf ",dist(src[i], dest[i]));
     }
     */
-    
+
     sort_bounding_boxes(&boxes, len, ascending_bounding_box);
-    
+
     BoundingBox* grid[col][row];
     for(int i=0; i<col; i++)
     {
@@ -383,7 +390,7 @@ BoundingBox* histo_grid_detect(SDL_Surface* surface)
     BoundingBox* res = calloc(1, sizeof(BoundingBox));
     res->p1 = top_left;
     res->p2 = bottom_right;
-    
+
     return res;
 
 }
@@ -447,7 +454,8 @@ BoundingBox* histo_word_list_detect(SDL_Surface* surface)
 
     int* col_histo = get_col_box_histogram(surface, boxes, len);
     int* row_histo = get_row_box_histogram(surface, boxes, len);
-    int new_len = len - get_most_frequent(col_histo, surface->w) * get_most_frequent(row_histo, surface->h);
+    int new_len = len - get_most_frequent(col_histo, surface->w)
+		* get_most_frequent(row_histo, surface->h);
 
     BoundingBox** word_list_boxes = malloc(new_len*sizeof(BoundingBox*));
     for(int i=0; i<new_len; i++)
@@ -465,10 +473,12 @@ BoundingBox* histo_word_list_detect(SDL_Surface* surface)
         }
     }
     BoundingBox* res = malloc(1*sizeof(BoundingBox));
-    Point p1 = {get_min_x(word_list_boxes, new_len), get_min_y(word_list_boxes, new_len)};
-    Point p2 = {get_max_x(word_list_boxes, new_len), get_max_y(word_list_boxes, new_len)};
+    Point p1 = {get_min_x(word_list_boxes, new_len),
+		get_min_y(word_list_boxes, new_len)};
+    Point p2 = {get_max_x(word_list_boxes, new_len),
+		get_max_y(word_list_boxes, new_len)};
     *res = (BoundingBox){p1,p2};
-    
+
     return res;
 }
 
@@ -479,7 +489,7 @@ int count_except_null(int* histogram, int len)
     // Remove trailing 0
     while(i<len && histogram[i]==0)
         i++;
-    
+
     // Count when 0 appear
     while(i<len)
     {
@@ -494,7 +504,8 @@ int count_except_null(int* histogram, int len)
     return count;
 }
 
-int* get_words_length(int* histogram, int len, int nb_words, int** words_height)
+int* get_words_length(int* histogram, int len, int nb_words,
+	int** words_height)
 {
     int* res = calloc(nb_words, sizeof(int));
     int c=0;
@@ -502,7 +513,7 @@ int* get_words_length(int* histogram, int len, int nb_words, int** words_height)
     // Remove trailing 0
     while(i<len && histogram[i]==0)
         i++;
-    
+
     // Count when 0 appear
     while(i<len)
     {
@@ -530,7 +541,8 @@ BoundingBox** histo_words_detect(SDL_Surface* surface, int* word_count)
 
     int* col_histo = get_col_box_histogram(surface, boxes, len);
     int* row_histo = get_row_box_histogram(surface, boxes, len);
-    int new_len = len - get_most_frequent(col_histo, surface->w) * get_most_frequent(row_histo, surface->h);
+    int new_len = len - get_most_frequent(col_histo, surface->w)
+		* get_most_frequent(row_histo, surface->h);
 
     BoundingBox** word_list_boxes = malloc(new_len*sizeof(BoundingBox*));
     for(int i=0; i<new_len; i++)
@@ -547,30 +559,34 @@ BoundingBox** histo_words_detect(SDL_Surface* surface, int* word_count)
             c++;
         }
     }
-    
+
     sort_bounding_boxes(&word_list_boxes, new_len, ascending_bounding_box);
 
     BoundingBox* word_list_box = malloc(1*sizeof(BoundingBox));
-    Point p1 = {get_min_x(word_list_boxes, new_len), get_min_y(word_list_boxes, new_len)};
-    Point p2 = {get_max_x(word_list_boxes, new_len), get_max_y(word_list_boxes, new_len)};
+    Point p1 = {get_min_x(word_list_boxes, new_len),
+		get_min_y(word_list_boxes, new_len)};
+    Point p2 = {get_max_x(word_list_boxes, new_len),
+		get_max_y(word_list_boxes, new_len)};
     *word_list_box = (BoundingBox){p1,p2};
 
-    int* col_words_histo = get_row_bounded_box_histogram(word_list_boxes, word_list_box, new_len);
-    
+    int* col_words_histo = get_row_bounded_box_histogram(word_list_boxes,
+		word_list_box, new_len);
+
     /*
     for(int i=0; i<word_list_box->p2.y-word_list_box->p1.y; i++)
     {
         printf("%i\n", col_words_histo[i]);
     }
     */
-    
+
     *word_count = count_except_null(col_words_histo, word_list_box->p2.y);
-    
+
     int* words_height = calloc(*word_count, sizeof(int));
-    int* word_lengths = get_words_length(col_words_histo, word_list_box->p2.y, *word_count, &words_height);
-    
+    int* word_lengths = get_words_length(col_words_histo, word_list_box->p2.y,
+		*word_count, &words_height);
+
     BoundingBox** res = calloc(*word_count, sizeof(BoundingBox*));
-    
+
     for(int i=0; i<*word_count; i++)
     {
         int c=0;
@@ -588,7 +604,7 @@ BoundingBox** histo_words_detect(SDL_Surface* surface, int* word_count)
                 c++;
             }
         }
-        
+
         if(c!=word_lengths[i])
             return NULL;
 
@@ -601,7 +617,7 @@ BoundingBox** histo_words_detect(SDL_Surface* surface, int* word_count)
 
         res[i]=word_res;
     }
-    
+
     free(col_words_histo);
     free(row_histo);
     free(col_histo);
@@ -660,7 +676,6 @@ int main(int argc, char** argv)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_SetWindowSize(window,  surface->w, surface->h);
-    
 
 	// ITS HERE GUYS
     printf("Here");
@@ -674,7 +689,7 @@ int main(int argc, char** argv)
     BoundingBox** min_boxes = get_minimal(boxes, len, &min_len);
     Point* src = calloc(min_len, sizeof(Point));
     Point* dest = calloc(min_len, sizeof(Point));
-    
+
     get_all_links(min_boxes, min_len, &src, &dest);
 
     // ITS ENDING HERE GUYS
@@ -683,7 +698,6 @@ int main(int argc, char** argv)
     SDL_RenderCopy(renderer,texture,NULL,NULL);
     SDL_RenderPresent(renderer);
 
-    
     SDL_Event event;
     while (1)
     {
@@ -692,30 +706,31 @@ int main(int argc, char** argv)
         int width;
         int height;
         SDL_GetWindowSize(window, &width, &height);
-        
+
         for (int i=0; i<len; i++)
         {
             if(boxes[i]!=NULL)
             {
-                int x1 = (int)((double)boxes[i]->p1.x/(double)surface->w*(double)width);
-                int y1 = (int)((double)boxes[i]->p1.y/(double)surface->h*(double)height);
-                int x2 = (int)((double)boxes[i]->p2.x/(double)surface->w*(double)width);
-                int y2 = (int)((double)boxes[i]->p2.y/(double)surface->h*(double)height);
-                //int rect[]={boxes[i]->p1.x, boxes[i]->p1.y, boxes[i]->p2.x-boxes[i]->p1.x, boxes[i]->p2.y-boxes[i]->p1.y};
+			int x1 = (int)((double)boxes[i]->p1.x/(double)surface->w*(double)width);
+			int y1 = (int)((double)boxes[i]->p1.y/(double)surface->h*(double)height);
+			int x2 = (int)((double)boxes[i]->p2.x/(double)surface->w*(double)width);
+			int y2 = (int)((double)boxes[i]->p2.y/(double)surface->h*(double)height);
+                //int rect[]={boxes[i]->p1.x, boxes[i]->p1.y,
+					boxes[i]->p2.x-boxes[i]->p1.x, boxes[i]->p2.y-boxes[i]->p1.y};
                 int rect[]={x1,y1,x2-x1,y2-y1};
                 draw_rect(renderer, rect);
             }
         }
-//        for(int i=0; i<min_len; i++)
-//        {
-//            src[i] = (Point){(int)((double)src[i].x/(double)surface->w*(double)width),
-//                (int)((double)src[i].y/(double)surface->h*(double)height)};
-//        }
-//        for(int i=0; i<min_len; i++)
-//        {
-//            dest[i] = (Point){(int)((double)dest[i].x/(double)surface->w*(double)width),
-//                (int)((double)dest[i].y/(double)surface->h*(double)height)};
-//        }
+        for(int i=0; i<min_len; i++)
+        {
+		src[i] = (Point){(int)((double)src[i].x/(double)surface->w*(double)width),
+			(int)((double)src[i].y/(double)surface->h*(double)height)};
+        }
+        for(int i=0; i<min_len; i++)
+        {
+		dest[i] = (Point){(int)((double)dest[i].x/(double)surface->w*(double)width),
+			(int)((double)dest[i].y/(double)surface->h*(double)height)};
+        }
         draw_lines(renderer, src, dest, min_len);
         SDL_RenderPresent(renderer);
 

@@ -8,7 +8,7 @@
 /* Cuts the surface into a smaller surface representing
  * a bounding box
 */
-SDL_Surface *Cut(SDL_Surface *surface, BoundingBox *box)
+SDL_Surface *cut(SDL_Surface *surface, BoundingBox *box)
 {
 	int x_up = box -> p1.x;
 	int y_up = box -> p1.y;
@@ -37,7 +37,7 @@ SDL_Surface *Cut(SDL_Surface *surface, BoundingBox *box)
 */
 void save_bounding_box(SDL_Surface* surface, BoundingBox* box)
 {
-	surface = Cut(surface, box);
+	surface = cut(surface, box);
 	Point p = get_bounding_box_center(box);
 	char buffer[128];
 	char* dir_path = "./segmentation-results/";
@@ -46,7 +46,7 @@ void save_bounding_box(SDL_Surface* surface, BoundingBox* box)
 	printf("Save bounding box: %s\n", buffer);
 }
 
-/* Saves all bounding boxes as images 
+/* Saves all bounding boxes as images
  * and renames them using average coordinates
 */
 void save_bounding_boxes(SDL_Surface* surface, BoundingBox** boxes, int len)

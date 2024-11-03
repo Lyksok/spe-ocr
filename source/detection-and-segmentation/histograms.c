@@ -40,7 +40,8 @@ void get_row_histogram(SDL_Surface* surface, int** histogram)
     }
 }
 
-BoundingBox*** group_by_rows(SDL_Surface* surface, BoundingBox** boxes, int len, int* n_len)
+BoundingBox*** group_by_rows(SDL_Surface* surface, BoundingBox** boxes,
+	int len, int* n_len)
 {
     int avg_height = average_box_height(boxes, len);
     *n_len = surface->h/avg_height;
@@ -68,10 +69,11 @@ BoundingBox*** group_by_rows(SDL_Surface* surface, BoundingBox** boxes, int len,
     return res;
 }
 
-BoundingBox*** group_by_cols(SDL_Surface* surface, BoundingBox** boxes, int len, int* n_len)
+BoundingBox*** group_by_cols(SDL_Surface* surface, BoundingBox** boxes,
+	int len, int* n_len)
 {
     int avg_width = average_box_width(boxes, len);
-    *n_len = surface->w/avg_width;    
+    *n_len = surface->w/avg_width;
     BoundingBox*** res = malloc(*n_len*sizeof(BoundingBox**));
 
     int count;
@@ -190,7 +192,8 @@ int get_most_frequent(int* histogram, int len)
     return most_frequent;
 }
 
-int* get_row_bounded_box_histogram(BoundingBox** boxes, BoundingBox* box, int len)
+int* get_row_bounded_box_histogram(BoundingBox** boxes, BoundingBox* box,
+	int len)
 {
     int* histogram = malloc(box->p2.y*sizeof(int));
     for(int i=0; i<box->p2.y; i++)
