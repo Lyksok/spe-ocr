@@ -254,8 +254,6 @@ int main(int argc, char **argv)
   /*  Signal connections */
   // "activate" signal connection
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
-  // "destroy" signal connection
-  g_signal_connect(app, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
   /*  Run event loop  */
   status = g_application_run(G_APPLICATION(app), argc, argv);
