@@ -2,14 +2,14 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <time.h>
+#include "detection.h"
 #include "structures.h"
 
 
 int add_box(BoundingBox box, BoundingBox*** boxes, int len)
 {
     BoundingBox* new_box = malloc(sizeof(BoundingBox));
-    new_box->p1 = box.p1;
-    new_box->p2 = box.p2;
+    *new_box = box;
     int i=0;
     while(i<len && (*boxes)[i]!=NULL)
     {
@@ -74,9 +74,9 @@ void free_boxes(BoundingBox** boxes, int len)
 {
     for(int i=0; i<len; i++)
     {
-        if(boxes[i]!=NULL)
-            free(boxes[i]);
+        free(boxes[i]);
     }
+    free(boxes);
 }
 
 void print_points(Point p1, Point p2)
@@ -121,6 +121,10 @@ BoundingBox** get_minimal(BoundingBox** boxes, int len, int* res_len)
 {
     *res_len = get_nb_of_boxes(boxes, len);
     BoundingBox** res = malloc(*res_len*sizeof(BoundingBox*));
+    for(int i=0; i<*res_len; i++)
+    {
+        res[i]=NULL;
+    }
     int c=0;
     for(int i=0; i<len; i++)
     {
@@ -172,7 +176,9 @@ int is_in_box(BoundingBox* box, Point point)
         {
             // y axis
             if(box->p2.y>=point.y && box->p1.y<=point.y)
+            {
                 return 1;
+            }
         }
     }
     return 0;
@@ -182,9 +188,27 @@ int is_in_boxes(BoundingBox** boxes, int len, Point point)
 {
     for (int i=0; i<len; i++)
     {
-        BoundingBox* box = boxes[i];
-        if(is_in_box(box, point))
-            return 1;
+        if(boxes[i]!=NULL)
+        {
+            BoundingBox* box = boxes[i];
+            if(is_in_box(box, point)==1)
+            {
+                return 1;
+            }
+        }
     }
     return 0;
+}
+
+Point* bounding_box_to_points(BoundingBox** boxes, int len)
+{
+    Point* points = malloc(len*sizeof(Point));
+    for(int i=0; i<len; i++)
+    {
+        if(boxes[i]!=NULL)
+        {
+            points[i]=get_bounding_box_center(boxes[i]);
+        }
+    }
+    return points;
 }

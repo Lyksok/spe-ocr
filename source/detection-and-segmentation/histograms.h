@@ -11,6 +11,7 @@ BoundingBox*** group_by_cols(SDL_Surface* surface, BoundingBox** boxes, int len,
 int* get_row_box_histogram(SDL_Surface* surface, BoundingBox** boxes, int len);
 int* get_col_box_histogram(SDL_Surface* surface, BoundingBox** boxes, int len);
 void print_int_histogram(int* histogram, int len);
+int* get_row_bounded_box_histogram(BoundingBox** boxes, BoundingBox* box, int len);
 
 int get_most_frequent(int* histogram, int len);
 

@@ -54,7 +54,7 @@ void get_bounding_box(SDL_Surface* surface, Point coord, BoundingBox*** boxes)
     Uint8 b;
     int len = surface->w*surface->h;
     SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-    if(r==0 || is_in_boxes(*boxes, len/2, coord))
+    if(r==0 || is_in_boxes(*boxes, len, coord))
     {
         return;
     }

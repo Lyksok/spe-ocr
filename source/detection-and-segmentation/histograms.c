@@ -189,3 +189,25 @@ int get_most_frequent(int* histogram, int len)
     free(range);
     return most_frequent;
 }
+
+int* get_row_bounded_box_histogram(BoundingBox** boxes, BoundingBox* box, int len)
+{
+    int* histogram = malloc(box->p2.y*sizeof(int));
+    for(int i=0; i<box->p2.y; i++)
+    {
+        histogram[i]=0;
+    }
+
+    for(int j=box->p1.y; j<box->p2.y; j++)
+    {
+        for(int i=0; i<len; i++)
+        {
+            Point point = {get_bounding_box_center(boxes[i]).x,j};
+            if(is_in_box(boxes[i], point))
+            {
+                histogram[j]+=1;
+            }
+        }
+    }
+    return histogram;
+}
