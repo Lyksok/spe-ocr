@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
   convert_to_grayscale(surface);
   convert_to_binarized_average(surface);
   invert_colors(surface);
-  
+
   int is_detection = 0;
   if(strcmp(argv[2], "detection")==0)
   {
@@ -71,7 +71,6 @@ int main(int argc, char **argv) {
   else if(strcmp(argv[3], "grid")==0)
     grid = 1;
 
-
   int number_of_characters;
   BoundingBox** characters = get_char_boxes(surface, &number_of_characters);
   BoundingBox* grid_box = get_grid_box(surface);
@@ -91,7 +90,7 @@ int main(int argc, char **argv) {
     int width;
     int height;
     SDL_GetWindowSize(window, &width, &height);
-    
+
     for(int i=0; i<word_count; i++)
     {
     int x1 =(int)((double)words_b[i]->p1.x/(double)surface->w*(double)width);
@@ -114,9 +113,9 @@ int main(int argc, char **argv) {
     y2 = (int)((double)grid_box->p2.y/(double)surface->h*(double)height);
     int rect2[]={x1,y1,x2-x1,y2-y1};
     draw_rect(renderer, rect2);
-    
+
     SDL_RenderPresent(renderer);
-    
+
     SDL_WaitEvent(&event);
     switch (event.type)
     {

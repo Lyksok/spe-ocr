@@ -24,7 +24,7 @@ void create_histogram_of_pixel(SDL_Surface *surface, int **histogram,
  * Takes in parameter the result histogram and the image surface
  */
 void create_histogram_of_surface(SDL_Surface *surface, int **histogram,
-                                 void (*func)(int **, size_t, size_t, SDL_Surface *))
+    void (*func)(int **, size_t, size_t, SDL_Surface *))
 {
     for (int j = 0; j < surface->h; j++)
     {
