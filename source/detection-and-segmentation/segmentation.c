@@ -40,7 +40,7 @@ void save_bounding_box(SDL_Surface* surface, BoundingBox* box)
 	surface = Cut(surface, box);
 	Point p = get_bounding_box_center(box);
 	char buffer[128];
-	char* dir_path = "./source/detection-and-segmentation/segmentation-results/";
+	char* dir_path = "./segmentation-results/";
 	sprintf(buffer, "%s%i-%i.png",dir_path , p.x, p.y);
 	IMG_SavePNG(surface, buffer);
 	printf("Save bounding box: %s\n", buffer);

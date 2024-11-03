@@ -51,6 +51,7 @@ int main(int argc, char** argv)
     
     int word_count;
     BoundingBox** res = get_word_boxes(surface, &word_count);
+    save_bounding_boxes(surface, res, word_count);
     int grid_found = 0;
     if(res==NULL)
         printf("No grid found\n");
