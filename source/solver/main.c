@@ -48,10 +48,8 @@ int main(int argc, char* argv[])
 	}
 
 	char **grid = ReadFile(argv[1], row, col);
-//	char grid[*row][*col] = ReadFile(argv[1], row, col);
 	if (grid == NULL)
 	{
-//		printf("Memory allocation failed (grid)\n");
 		printf("Could not create the grid\n");
 		return 3;
 	}
@@ -67,7 +65,6 @@ int main(int argc, char* argv[])
 		free(col);
 		return 4;
 	}
-//	ToUpper(argv[2]);
 
 	/* FOR TESTING PURPOSE
 	PrintMat(*row, *col, grid);
@@ -75,13 +72,6 @@ int main(int argc, char* argv[])
 	*/
 
 	Solver(*row, *col, grid, argv[2]);
-	/* FOR TESTING PURPOSE
-	int result = Solver(*row, *col, grid, argv[2]);
-	if (!result)
-		printf("Yeah so no it wasn't here\n");
-	else
-		printf("Here you go !\n");
-	*/
 
 	FreeMat(grid, *row);
 	free(row);
