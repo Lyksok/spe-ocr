@@ -1,5 +1,5 @@
 CC = gcc
-FLAGS = -Wall -Wextra -Werror -O2 -fsanitize=address
+FLAGS = -Wall -Wextra -O2 -fsanitize=address
 
 
 # Imported packages

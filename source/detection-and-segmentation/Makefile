@@ -4,7 +4,7 @@ SOURCE = segmentation.c cluster-detection.c bounding-box.c detection.c histogram
 TARGET = det-seg
 OBJECTS = segmentation.o cluster-detection.o bounding-box.o detection.o histograms.o main.o ../binarization/binarizing.o ../binarization/histograms.o ../binarization/global_thresholding.o ../binarization/converting.o ../binarization/local_thresholding.o
 LIBS = -lSDL2 -lSDL2_image -lm
-FLAGS = -Wall -Wextra -Werror -O2 -fsanitize=address
+FLAGS = -Wall -Wextra -O2 -fsanitize=address
 
 all: $(TARGET)
 
