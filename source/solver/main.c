@@ -51,7 +51,8 @@ int main(int argc, char* argv[])
 //	char grid[*row][*col] = ReadFile(argv[1], row, col);
 	if (grid == NULL)
 	{
-		printf("Memory allocation failed (grid)\n");
+//		printf("Memory allocation failed (grid)\n");
+		printf("Could not create the grid\n");
 		return 3;
 	}
 

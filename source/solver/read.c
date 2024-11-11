@@ -11,6 +11,19 @@ void FreeMat(char **mat, int n)
 }
 
 /*
+ * line : a list of characters
+ * n : the length of said list
+ * Returns whether something other than capital letters was found
+ */
+int InvalidLetter(char *line, int n)
+{
+	int i = 0;
+	while (i < n && line[i] >= 'A' && line[i] <= 'Z')
+		i++;
+	return i != n;
+}
+
+/*
  * file : a file already open to read
  * n : value to return the number of char in the lign
  * returns the lign read
@@ -21,6 +34,8 @@ char *ReadLine(FILE *file, int *n) {
 	 * length : index of the length of the line
 	 * line : an array that will hold the line
 	 * c : return value of fgetc()
+	 * c is an int to handle the potential errors
+	 *
 	 */
 	int capacity = 10;
 	int length = 0;
@@ -33,6 +48,7 @@ char *ReadLine(FILE *file, int *n) {
 	}
 
 	while ((c = fgetc(file)) != EOF && c != '\n') {
+		char cc = (char) c;
 		if (length + 1 >= capacity)
 		{
 			// it is full :
@@ -47,7 +63,7 @@ char *ReadLine(FILE *file, int *n) {
 		}
 		// append the character to the line
 		// THEN increment the length
-		line[length++] = c;  
+		line[length++] = cc;
 	}
 
 	// If EOF is reached without any characters read :
@@ -106,6 +122,15 @@ char **ReadFile(char *filename, int *row, int *col)
 			printf("The lines do not have the same length\n");
 			return NULL;
 
+		}
+		else if (InvalidLetter(line, c))
+		{
+			fclose(file);
+			free(line);
+			FreeMat(mat, r);
+			printf("The grid should only contains");
+			printf(" capital letters\n");
+			return NULL;
 		}
                 *(mat + r) = line;
                 r++;

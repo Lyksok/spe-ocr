@@ -9,8 +9,8 @@ FLAGS = -Wall -Wextra -Werror
 #all: $(TARGET-TEST) $(TARGET)
 all: $(TARGET)
 
-#$(TARGET-TEST): $(OBJECTS-TEST)
-#	$(CC) -o $@ $(OBJECTS-TEST) $(FLAGS)
+$(TARGET-TEST): $(OBJECTS-TEST)
+	$(CC) -o $@ $(OBJECTS-TEST) $(FLAGS)
 
 $(TARGET): $(OBJECTS)
 	$(CC) -o $@ $(OBJECTS) $(FLAGS)
