@@ -1,27 +1,19 @@
 CC = gcc
 
-TARGET1 = test
-TARGET2 = solver
-SOURCES1 = solver.c test.c
-SOURCES2 = solver.c read.c main.c
-OBJECTS1 = solver.o test.o
-OBJECTS2 = solver.o read.o main.o
+TARGET-TEST = test
+TARGET = solver
+OBJECTS-TEST = solver.o test.o
+OBJECTS = solver.o read.o main.o
 FLAGS = -Wall -Wextra -Werror
 
-all: $(TARGET1) $(TARGET2)
-#all: $(TARGET2)
+#all: $(TARGET-TEST) $(TARGET)
+all: $(TARGET)
 
-#$(TARGET1): $(SOURCES1)
-#	$(CC) -o $(TARGET1) $(SOURCES1) $(FLAGS)
+$(TARGET-TEST): $(OBJECTS-TEST)
+	$(CC) -o $@ $(OBJECTS-TEST) $(FLAGS)
 
-#$(TARGET2): 
-#	$(CC) -o $(TARGET2) $(SOURCES2) $(FLAGS)
-
-$(TARGET1): $(OBJECTS1)
-	$(CC) -o $@ $(OBJECTS1) $(FLAGS)
-
-$(TARGET2): $(OBJECTS2)
-	$(CC) -o $@ $(OBJECTS2) $(FLAGS)
+$(TARGET): $(OBJECTS)
+	$(CC) -o $@ $(OBJECTS) $(FLAGS)
 
 # Generic rule to compile .c files to .o files
 # %.o represents any object file (.o file)
@@ -32,4 +24,4 @@ $(TARGET2): $(OBJECTS2)
 	$(CC) -c $< $(FLAGS) -o $@
 
 clean:
-	rm -f $(TARGET1) $(TARGET2) *.o
+	rm -f $(TARGET) $(OBJECTS) $(OBJECTS-TEST) $(TARGET-TEST)
