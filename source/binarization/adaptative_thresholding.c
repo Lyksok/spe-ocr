@@ -1,4 +1,4 @@
-#include "local_thresholding.h"
+#include "adaptative_thresholding.h"
 
 size_t KERNEL_SIZE = 7;
 

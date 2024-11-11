@@ -1,5 +1,5 @@
-#ifndef LOCAL_THRESHOLDING_H
-#define LOCAL_THRESHOLDING_H
+#ifndef ADAPTATIVE_THRESHOLDING_H
+#define ADAPTATIVE_THRESHOLDING_H
 
 #include <stdio.h>
 #include <SDL2/SDL.h>
@@ -8,4 +8,4 @@
 
 void get_all_thresholds(SDL_Surface *surface, int **histogram);
 
-#endif /* LOCAL_THRESHOLDING_H */
+#endif /* ADAPTATIVE_THRESHOLDING_H */
