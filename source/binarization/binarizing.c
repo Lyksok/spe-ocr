@@ -1,7 +1,4 @@
 #include "binarizing.h"
-#include "converting.h"
-#include "global_thresholding.h"
-#include "local_thresholding.h"
 
 /* Convert an image to its grayscale representation
  */

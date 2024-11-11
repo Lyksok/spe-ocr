@@ -1,6 +1,7 @@
 #ifndef LOCAL_THRESHOLDING_H
 #define LOCAL_THRESHOLDING_H
 
+#include <stdio.h>
 #include <SDL2/SDL.h>
 #include <math.h>
 #include "histograms.h"

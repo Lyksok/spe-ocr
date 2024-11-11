@@ -1,9 +1,3 @@
-#include <SDL2/SDL.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "histograms.h"
 #include "local_thresholding.h"
 
 size_t KERNEL_SIZE = 7;
