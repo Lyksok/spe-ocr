@@ -35,6 +35,33 @@ int Min(int a, int b)
 }
 
 /*
+ * word : a string
+ * Changes in place the word to upper letters
+ * Boolean to check if characters other than letter was found
+ */
+int NotJustLetters(char word[])
+{
+	size_t i = 0;
+	while (word[i] != 0)
+	{
+		char c = word[i];
+		if (c >= 'a' && c <= 'z')
+			word[i] = c - 32;
+		else if (c >= 'A' && c <= 'Z')
+		{
+			// pass
+		}
+		else
+		{
+			printf("The word should only have letters\n");
+			return 1;
+		}
+		i++;
+	}
+	return 0;
+}
+
+/*
  * word : a string, assumed filled with only letters
  * Changes in place the word to upper letters
  */
@@ -54,14 +81,21 @@ void ToUpper(char word[])
  * mat : a matrice of characters
  * word : the word to search for
  * n : the length of the word
+ * er : a pointer to the row of the last letter
+ * ec : a pointer to the column of the last letter
  * Returns True or False if the word is found
  */
-//int Search(int row, int col, char mat[row][col], 
-//int Search(int row, int col, char *mat[col], 
 int Search(int row, int col, char **mat, 
 	char word[], int r, int c, int n,
 	int *er, int *ec)
 {
+	/*
+	 * we start the ends from the match
+	 * in case the word is made of only one letter
+	 */
+	*er = r;
+	*ec = c;
+
 	/*
 	 * will give us the direction in which to search
 	 * x is for the rows
@@ -137,8 +171,6 @@ int Search(int row, int col, char **mat,
  * word : the word to search for
  * Returns True or False if the word is found
  */
-//int Solver(int row, int col, char mat[row][col], char word[]) {
-//int Solver(int row, int col, char *mat[col], char word[]) {
 int Solver(int row, int col, char **mat, char word[]) {
 	/*
 	 * len : the length of the word

@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 	if (argc != 3)
 	{
 		int a = argc - 1;
-		printf("Incorrect number of arguments (%i)\n", a);
+		printf("Expected 2 arguments, but got %i\n", a);
 		return 1;
 	}
 
@@ -55,7 +55,18 @@ int main(int argc, char* argv[])
 		return 3;
 	}
 
-	ToUpper(argv[2]);
+	/*
+	 * This function checks for none letter characters
+	 * It also changes the word in place to uppercase
+	 */
+	if (NotJustLetters(argv[2]))
+	{
+		FreeMat(grid, *row);
+		free(row);
+		free(col);
+		return 4;
+	}
+//	ToUpper(argv[2]);
 
 	/* FOR TESTING PURPOSE
 	PrintMat(*row, *col, grid);

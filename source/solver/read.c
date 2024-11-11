@@ -15,7 +15,7 @@ void FreeMat(char **mat, int n)
  * n : value to return the number of char in the lign
  * returns the lign read
  */
-char* ReadLine(FILE *file, int *n) {
+char *ReadLine(FILE *file, int *n) {
 	/*
 	 * capacity : initial buffer size
 	 * length : index of the length of the line
