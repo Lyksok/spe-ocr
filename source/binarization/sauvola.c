@@ -1,6 +1,6 @@
 #include "sauvola.h"
 
-double k = 0.34; // Sensitivity
+double k = 0.06; // Sensitivity
 double w = 15.0; // Window size	
 double R = 128.0; // Standard deviation
 
