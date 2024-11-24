@@ -1,10 +1,10 @@
-EXEC = neural
+EXEC = nxor
 
 CC = gcc
 
 CFLAGS = -Wall -Wextra -g
 
-SRC = neural_letter.c
+SRC = neural_nxor.c
 
 all: $(EXEC)
 

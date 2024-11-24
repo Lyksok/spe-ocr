@@ -1,7 +1,10 @@
-#include "neural.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+
+#include "neural_letter.h"
+
+// rajouter une fonction softmax ?
 
 double sigmoid(double x)
 {
@@ -18,6 +21,7 @@ double init_weights()
 	return ((double)rand()) / ((double)RAND_MAX);
 }
 
+// to delete
 void shuffle(int *array, size_t n)
 {
 	if(n > 1)
@@ -42,6 +46,7 @@ int main(void)
 {
 	const double lr = 0.1f;
 
+	// pourquoi une liste et pas une matrice ?
 	double hiddenLayer[numHiddenNodes];
 	double outputLayer[numOutputs];
 
@@ -57,6 +62,7 @@ int main(void)
 		{1.0f, 0.0f},
 		{1.0f, 1.0f}
 	};
+	// a transformer en une liste (A, B, C...)
 	double training_output[numTrainingSets][numOutputs] = {
 		{1.0f},
 		{0.0f},
@@ -64,6 +70,7 @@ int main(void)
 		{1.0f}
 	};
 
+	// INITS --> propre fonction a part
 	for(int i = 0; i < numInputs; i++)
 	{
 		for(int j = 0; j < numHiddenNodes; j++)
@@ -85,20 +92,24 @@ int main(void)
 		outputLayerBias[i] = init_weights();
 	}
 
+	// to delete
 	int trainingSetOrder[] = {0, 1, 2, 3};
 
 	int numberOfEpochs = 100000;
 
 	for(int epoch = 0; epoch < numberOfEpochs; epoch++)
 	{
+		// to delete
 		shuffle(trainingSetOrder, numTrainingSets);
 
 		for (int x = 0; x < numTrainingSets; x++)
 		{
+			// to delete
 			int i = trainingSetOrder[x];
 			
-			//Forward pass
+			//Forward pass --> fonction a part
 
+			// activation --> fonction a part
 			for(int j = 0; j < numHiddenNodes; j++)
 			{
 				double activation = hiddenLayerBias[j];
@@ -113,6 +124,7 @@ int main(void)
 
 			}
 
+			// re - activation
 			for(int j = 0; j < numOutputs; j++)
 			{
 				double activation = hiddenLayerBias[j];
@@ -124,13 +136,14 @@ int main(void)
 				outputLayer[j] = sigmoid(activation);
 			}
 
+			// meriterait *presque* sa fonction x)
 			 printf("Input: [%g, %g] Output: %g Predicted Output: %g \n",
                                         training_inputs[i][0], 
 					training_inputs[i][1],
                                         outputLayer[0], training_output[i][0]);
 
 
-			//Backwardpropagation
+			//Backwardpropagation --> fonction a part
 			
 			//Compute change in output weights
 
@@ -158,7 +171,7 @@ int main(void)
 			}
 			
 
-			// Apply change in output weights
+			// Apply change in output weights --> fonction a part
 			for(int j = 0; j < numOutputs; j++)
 			{
 				outputLayerBias[j] += deltaOutput[j] * lr;
