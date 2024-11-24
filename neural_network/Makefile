@@ -1,20 +1,26 @@
-EXEC = neural
+TARGET = neural
 
 CC = gcc
 
-CFLAGS = -Wall -Wextra -g
+FLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g
+LIBS = -lSDL2 -lSDL2_image -lm
 
-SRC = neural_letter.c
+SRC = neural_letter.c convertion.c
+OBJ = neural_letter.o convertion.o
 
-all: $(EXEC)
+all: $(TARGET)
 
-$(EXEC): $(SRC)
-	$(CC) $(CFLAGS) -o $(EXEC) $(SRC) -lm
+$(TARGET): $(OBJ)
+	$(CC) -o $@ $(OBJ) $(CFLAGS) $(LIBS)
+
+%.o: %.c
+	$(CC) -c $< $(CFLAGS) -o $@
 
 clean:
-	rm -f $(EXEC)
+	rm -f $(TARGET)
 
-run: $(EXEC)
-	./$(EXEC)
+run: $(TARGET)
+	./$(TARGET)
 
 .PHONY: all clean run
