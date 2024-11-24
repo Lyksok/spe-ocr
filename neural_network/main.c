@@ -11,21 +11,22 @@ int main()
 	 * of a specific height and width
 	 * (here 16 x 16)
 	 * */
-        SDL_Surface* new = SDL_CreateRGBSurface(0, 16, 16, 8, 0, 0, 0, 0);
+	int size = 16;
+        SDL_Surface* new = SDL_CreateRGBSurface(0, size, size, 8, 0, 0, 0, 0);
 	if (new == NULL)
         {
                 printf("Failure to create the surface : ");
                 printf("%s", SDL_GetError());
         }
 
-	int len = 16 * 16;
+	int len = size * size;
 	int *list = calloc(len, sizeof(int));
 	SDL_to_list(new, len, &list);
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < size; i++)
 	{
-		for (int j = 0; j < 16; j++)
+		for (int j = 0; j < size; j++)
 		{
-			printf("%d ", list[i * 16 + j]);
+			printf("%d ", list[i * size + j]);
 		}
 		printf("\n");
 	}
