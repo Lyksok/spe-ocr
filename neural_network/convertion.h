@@ -6,6 +6,6 @@
 #include "convertion.h"
 
 SDL_Surface *toSDL(char *path);
-void SDL_to_list(SDL_Surface *surface, int **list, int len);
+void SDL_to_list(SDL_Surface *surface, int len, int **list);
 
 #endif /* CONVERTION_H */

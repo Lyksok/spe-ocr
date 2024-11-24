@@ -42,14 +42,11 @@ SDL_Surface *toSDL(char *path)
  * len : the length of the list
  * returns : build in place the list
  * */
-void SDL_to_list(SDL_Surface *surface, int **list, int len)
+void SDL_to_list(SDL_Surface *surface, int len, int **list)
 {
-	int i = 0;
-
 	SDL_LockSurface(surface);
 	Uint8 *pixels = (Uint8 *)surface->pixels;
-
-	for (; i < len; i++)
+	for (int i = 0; i < len; i++)
 	{
 		Uint8 pixel = pixels[i];
 		Uint8 r;
@@ -58,7 +55,7 @@ void SDL_to_list(SDL_Surface *surface, int **list, int len)
 		SDL_GetRGB(pixel, surface->format, &r, &g, &b);
 		// we take a surface with only black and white
 		// if one of the parameter is != 0, then it has to be white
-		*list[i] = r ? 1 : 0;
+		(*list)[i] = r ? 1 : 0;
 	}
 	SDL_UnlockSurface(surface);
 	SDL_FreeSurface(surface);
