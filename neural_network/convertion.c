@@ -12,16 +12,32 @@
  * */
 SDL_Surface *toSDL(char *path)
 {
-	SDL_Surface *new = IMG_Load(path);
+	SDL_Surface *temp = IMG_Load(path);
+	if (temp == NULL)
+	{
+		printf("Failure to create the surface : ");
+		printf("%s", SDL_GetError());
+	}
+	SDL_Surface *new;
+	new = SDL_ConvertSurfaceFormat(temp, SDL_PIXELFORMAT_INDEX8, 0);
+	/*
+	 * SDL_PIXELFORMAT_INDEX8 :
+	 * best for greyscaled images
+	 * most memory-efficient format for this
+	 * */
+	SDL_FreeSurface(temp);
 	if (new == NULL)
 	{
-		printf("Failure to create the surface");
+		printf("Failure to create the surface : ");
+		printf("%s", SDL_GetError());
 	}
+	SDL_ClearError();
 	return new;
 }
 
 /*
  * surface : a surface of black and white pixels
+ * --> format is SDL_PIXELFORMAT_INDEX8
  * list : a pointer to a list, to be filled with 0 and 1
  * len : the length of the list
  * returns : build in place the list
@@ -29,11 +45,13 @@ SDL_Surface *toSDL(char *path)
 void SDL_to_list(SDL_Surface *surface, int **list, int len)
 {
 	int i = 0;
+
 	SDL_LockSurface(surface);
+	Uint8 *pixels = (Uint8 *)surface->pixels;
 
 	for (; i < len; i++)
 	{
-		Uint32 pixel = ((Uint32*)surface->pixels)[i];
+		Uint8 pixel = pixels[i];
 		Uint8 r;
 		Uint8 g;
 		Uint8 b;
