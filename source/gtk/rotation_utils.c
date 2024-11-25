@@ -4,27 +4,23 @@
 double left_angle = DEFAULT_LEFT_ANGLE;
 double right_angle = DEFAULT_RIGHT_ANGLE;
 
-/**
- * @brief Callback function to handle the "activate" signal of the GtkEntry
- * widgets.
- * @param entry The GtkEntry widget.
- * @param data Pointer to the rotation angle macro to update.
- */
-void on_angle_entry_activate(GtkEntry *entry, gpointer data) {
-  printf("🔄 Activating angle entry\n");
-  double *angle = (double *)data;
-  const char *angle_text = gtk_entry_get_text(entry);
-  *angle = g_ascii_strtod(angle_text, NULL); // Convert string to double
-  printf("📐 New angle: %f\n", *angle);
+static double cubic_interpolate(double p[4], double x)
+{
+  return p[1] + 0.5 * x * (p[2] - p[0] + x * (2.0 * p[0] - 5.0 * p[1] + 4.0 * p[2] - p[3] + x * (3.0 * (p[1] - p[2]) + p[3] - p[0])));
 }
 
-/**
- * @brief Rotates a pixbuf by the specified angle using bi-linear interpolation.
- * @param src_pixbuf The original pixbuf to rotate.
- * @param dst_pixbuf The destination pixbuf to store the rotated image into.
- * @param angle The angle to rotate the image by.
- */
-void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle) {
+static double bicubic_interpolate(double p[4][4], double x, double y)
+{
+  double arr[4];
+  arr[0] = cubic_interpolate(p[0], y);
+  arr[1] = cubic_interpolate(p[1], y);
+  arr[2] = cubic_interpolate(p[2], y);
+  arr[3] = cubic_interpolate(p[3], y);
+  return cubic_interpolate(arr, x);
+}
+
+void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
+{
   printf("🔄 Rotating pixbuf by angle: %f\n", angle);
   int src_width = gdk_pixbuf_get_width(src_pixbuf);
   int src_height = gdk_pixbuf_get_height(src_pixbuf);
@@ -40,22 +36,32 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle) {
   double cos_angle = cos(angle_rad);
   double sin_angle = sin(angle_rad);
 
-  for (int y = 0; y < dst_height; y++) {
-    for (int x = 0; x < dst_width; x++) {
-      int src_x = (int)((x - dst_width / 2) * cos_angle -
-                        (y - dst_height / 2) * sin_angle + src_width / 2);
-      int src_y = (int)((x - dst_width / 2) * sin_angle +
-                        (y - dst_height / 2) * cos_angle + src_height / 2);
+  for (int y = 0; y < dst_height; y++)
+  {
+    for (int x = 0; x < dst_width; x++)
+    {
+      double src_x = (x - dst_width / 2.0) * cos_angle - (y - dst_height / 2.0) * sin_angle + src_width / 2.0;
+      double src_y = (x - dst_width / 2.0) * sin_angle + (y - dst_height / 2.0) * cos_angle + src_height / 2.0;
 
-      if (src_x >= 0 && src_x < src_width && src_y >= 0 && src_y < src_height) {
-        for (int c = 0; c < n_channels; c++) {
-          guchar *src_pixel = gdk_pixbuf_get_pixels(src_pixbuf) +
-                              src_y * gdk_pixbuf_get_rowstride(src_pixbuf) +
-                              src_x * n_channels + c;
+      if (src_x >= 1 && src_x < src_width - 2 && src_y >= 1 && src_y < src_height - 2)
+      {
+        for (int c = 0; c < n_channels; c++)
+        {
+          double p[4][4];
+          for (int m = -1; m <= 2; m++)
+          {
+            for (int n = -1; n <= 2; n++)
+            {
+              guchar *src_pixel = gdk_pixbuf_get_pixels(src_pixbuf) +
+                                  ((int)src_y + m) * gdk_pixbuf_get_rowstride(src_pixbuf) +
+                                  ((int)src_x + n) * n_channels + c;
+              p[m + 1][n + 1] = (double)*src_pixel;
+            }
+          }
           guchar *dst_pixel = gdk_pixbuf_get_pixels(dst_pixbuf) +
                               y * gdk_pixbuf_get_rowstride(dst_pixbuf) +
                               x * n_channels + c;
-          *dst_pixel = *src_pixel;
+          *dst_pixel = (guchar)bicubic_interpolate(p, src_x - (int)src_x, src_y - (int)src_y);
         }
       }
     }
@@ -64,37 +70,36 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle) {
   printf("✅ Rotation done\n");
 }
 
-/**
- * @brief Callback function to rotate the image to the left.
- * @param widget The widget that triggered the function.
- * @param data Pointer to the image widget to be updated.
- */
-void on_rotate_left_clicked(GtkWidget *widget, gpointer data) {
+void on_angle_entry_activate(GtkEntry *entry, gpointer data)
+{
+  printf("🔄 Activating angle entry\n");
+  double *angle = (double *)data;
+  const char *angle_text = gtk_entry_get_text(entry);
+  *angle = g_ascii_strtod(angle_text, NULL); // Convert string to double
+  printf("📐 New angle: %f\n", *angle);
+}
+
+void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
+{
   printf("🔄 Rotating image to the left by %f degrees\n", left_angle);
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   int width = gdk_pixbuf_get_width(pixbuf);
   int height = gdk_pixbuf_get_height(pixbuf);
-  GdkPixbuf *new_pixbuf =
-      gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
+  GdkPixbuf *new_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
   rotate_pixbuf(pixbuf, new_pixbuf, left_angle);
   display_pixbuf(data, new_pixbuf);
   printf("✅ Left rotation done\n");
 }
 
-/**
- * @brief Callback function to rotate the image to the right.
- * @param widget The widget that triggered the function.
- * @param data Pointer to the image widget to be updated.
- */
-void on_rotate_right_clicked(GtkWidget *widget, gpointer data) {
+void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
+{
   printf("🔄 Rotating image to the right by %f degrees\n", right_angle);
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   int width = gdk_pixbuf_get_width(pixbuf);
   int height = gdk_pixbuf_get_height(pixbuf);
-  GdkPixbuf *new_pixbuf =
-      gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
+  GdkPixbuf *new_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
   rotate_pixbuf(pixbuf, new_pixbuf, -right_angle);
   display_pixbuf(data, new_pixbuf);
   printf("✅ Right rotation done\n");
