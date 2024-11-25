@@ -120,23 +120,11 @@ void print_res(double training_inputs[][numInputs],
     }
 }
 
-void train(int numEpochs)
+void train(int numEpochs, double training_inputs[numTrainingSets][numInputs], 
+                double training_output[numTrainingSets][numOutputs])
 {
     const double lr = 0.1f; 
-    double training_inputs[numTrainingSets][numInputs] = {
-		{0.0f, 0.0f},
-		{0.0f, 1.0f},
-		{1.0f, 0.0f},
-		{1.0f, 1.0f}
-	};
-	// a transformer en une liste (A, B, C...)
-	double training_output[numTrainingSets][numOutputs] = {
-		{1.0f},
-		{0.0f},
-		{0.0f},
-		{1.0f}
-	};
-
+    
     for (int epoch = 0; epoch < numEpochs; epoch++)
     {
         for (int i = 0; i < numTrainingSets; i++)
@@ -150,7 +138,21 @@ void train(int numEpochs)
 
 int main(void)
 { 
-	// Init of weights
+	double training_inputs[numTrainingSets][numInputs] = {
+		{0.0f, 0.0f},
+		{0.0f, 1.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f}
+	};
+	// a transformer en une liste (A, B, C...)
+	double training_output[numTrainingSets][numOutputs] = {
+		{1.0f},
+		{0.0f},
+		{0.0f},
+		{1.0f}
+	};
+
+    // Init of weights
     init_weights(numInputs, numHiddenNodes,
                     hiddenWeights);
     init_weights(numHiddenNodes, numOutputs,
@@ -163,6 +165,6 @@ int main(void)
 
 	int numberOfEpochs = 100000;
     
-    train(numberOfEpochs);
+    train(numberOfEpochs, training_inputs, training_output);
     return 0;
 }

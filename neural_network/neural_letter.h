@@ -16,3 +16,19 @@ double sigmoid(double x);
 
 double dSigmoid(double x);
 
+double random_w_b();
+
+void init_weights(int row, int col, double array[row][col]);
+
+void forward(int i, double training_inputs[][numInputs]);
+
+void change_weights(const double lr, double deltaOutput[numOutputs], 
+                        double deltaHidden[numHiddenNodes]);
+
+void backward(int i, const double lr, double training_output[][numOutputs]);
+
+void print_res(double training_inputs[][numInputs], 
+                        double training_output[][numOutputs]);
+
+void train(int numEpochs, double training_inputs[numTrainingSets][numInputs]
+                    double training_output[numTrainingSets][numOutput]);
