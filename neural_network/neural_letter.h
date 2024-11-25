@@ -12,6 +12,8 @@ extern double outputLayerBias[numOutputs];
 extern double hiddenWeights[numInputs][numHiddenNodes];
 extern double outputWeights[numHiddenNodes][numOutputs];
 
+double softmax(int K, double mat[1][K]);
+
 double sigmoid(double x);
 
 double dSigmoid(double x);

@@ -5,7 +5,21 @@
 #include "neural_letter.h"
 
 #define numTrainingSets 4
-// rajouter une fonction softmax ?
+
+// to modify depending on how we're using it
+double softmax(int K, double mat[1][K])
+{
+        double sum = 0;
+        for (int j = 0; j < K; j++)
+        {
+                sum += mat[0][j];
+        }
+        for (int j = 0; j < K; j++)
+        {
+                double ei = exp(mat[0][j]);
+                mat[0][j] = ei / sum;
+        }
+}
 
 double sigmoid(double x)
 {
