@@ -16,10 +16,3 @@ double sigmoid(double x);
 
 double dSigmoid(double x);
 
-double init_weights();
-
-void train();
-
-void forward(int i);
-
-void backward(int i);
