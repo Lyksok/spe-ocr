@@ -38,7 +38,7 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
          "Destination Height: %d, Channels: %d\n",
          src_width, src_height, dst_width, dst_height, n_channels);
 
-  double angle_rad = angle * G_PI / 180.0;
+  double angle_rad = angle * PI / 180.0;
   double cos_angle = cos(angle_rad);
   double sin_angle = sin(angle_rad);
 
