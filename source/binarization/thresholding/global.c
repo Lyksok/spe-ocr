@@ -1,4 +1,4 @@
-#include "global_thresholding.h"
+#include "global.h"
 
 /* Create a histogram for probability distribution  using a grayscale image
  * Takes in parameter the result histogram and the image surface

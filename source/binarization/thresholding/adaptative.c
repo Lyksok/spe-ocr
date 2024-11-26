@@ -1,4 +1,4 @@
-#include "adaptative_thresholding.h"
+#include "adaptative.h"
 
 size_t KERNEL_SIZE = 7;
 

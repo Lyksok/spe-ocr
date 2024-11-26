@@ -11,8 +11,7 @@ Uint8* convert_to_matrix(SDL_Surface* surface)
     Uint8* res = calloc(size, sizeof(Uint8));
     for(size_t i=0; i<size; i++)
     {
-	Uint32 pixel = ((Uint32*)surface->pixels)[i];
-	res[i] = get_grayscale_pixel(surface, pixel);
+	res[i] = get_gpixel_from_array(surface, i);
     }
     return res;
 }
@@ -51,7 +50,7 @@ void compute_sauvola_args(int width, int height,
     *stddev = sqrt((sum_sqrt/(double)area)-(*mean)*(*mean));
 }
 
-void process_sauvola(SDL_Surface* surface)
+void sauvola_thresholding(SDL_Surface* surface)
 {
     int width = surface->w;
     int height = surface->h;
@@ -114,15 +113,3 @@ void process_sauvola(SDL_Surface* surface)
     free(integral_sqrt);
     free(thresholds);
 }
-
-void replace_all_pixels(SDL_Surface* surface)
-{
-    process_sauvola(surface);
-}
-
-
-
-
-
-
-

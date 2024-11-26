@@ -41,7 +41,7 @@ void median_filter(SDL_Surface* surface)
             {
                 for(int x=i-d_w/2; x<i+d_w/2+1; x++)
                 {
-                    if(x<0 || y<0 || x>surface->w || y>surface->h)
+                    if(x<0 || y<0 || x>=surface->w || y>=surface->h)
                     {
                         local_pixels[c] = 255;
                         c++;

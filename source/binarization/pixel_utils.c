@@ -26,3 +26,17 @@ Uint32 get_pixel_from_coord(SDL_Surface *surface, int x, int y)
     Uint32 res = ((Uint32*)surface->pixels)[y*surface->w+x];
     return res;
 }
+
+Uint8 get_gpixel_from_pixel(SDL_Surface* surface, Uint32 pixel)
+{
+    Uint8 res;
+    Uint8 g;
+    Uint8 b;
+    SDL_GetRGB(pixel, surface->format, &res, &g, &b);
+    return res;
+}
+
+Uint8 get_gpixel_from_array(SDL_Surface* surface, int i)
+{
+    return get_gpixel_from_coord(surface, i, 0);
+}
