@@ -4,7 +4,6 @@ void set_gpixel_from_coord(SDL_Surface* surface, int x, int y, Uint8 gcolor)
 {
     SDL_LockSurface(surface);
     
-    Uint8 tmp;
     Uint32 pixel = SDL_MapRGB(surface->format, gcolor, gcolor, gcolor);
 
     ((Uint32*)surface->pixels)[y*surface->w+x] = pixel;
