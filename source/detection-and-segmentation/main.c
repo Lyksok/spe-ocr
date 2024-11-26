@@ -15,11 +15,11 @@ int main(int argc, char **argv) {
         EXIT_FAILURE,
         "Usage: <image-file> <detection/segmentation> <chars/words/list/grid>");
 
-  if (SDL_Init(SDL_INIT_VIDEO) != 0)
+  if (SDL_Init(SDL_INIT_VIDEO))
     errx(EXIT_FAILURE, "%s", SDL_GetError());
 
   SDL_Window *window =
-      SDL_CreateWindow("Surface_to_no_green", 0, 0, 0, 0,
+      SDL_CreateWindow("Word-Search", 0, 0, 0, 0,
                        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
   if (window == NULL)
     errx(EXIT_FAILURE, "%s", SDL_GetError());
