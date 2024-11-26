@@ -10,7 +10,7 @@ DEP = ${SRC:.c=.d}
 TARGET = main.out
 
 $(TARGET): $(OBJ)
-	$(CC) -o $(TARGET) $(SRC) $(FLAGS) $(OPT) $(LIBS)
+	$(CC) -o $(TARGET) $(OBJ) $(FLAGS) $(OPT) $(LIBS)
 
 .PHONY: clean
 
