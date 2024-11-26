@@ -5,6 +5,7 @@
 
 #include "binarizing.h"
 #include "sauvola.h"
+#include "denoising.h"
 
 int main(int argc, char **argv) {
     (void)argc;
@@ -32,9 +33,10 @@ int main(int argc, char **argv) {
   }
 
   convert_to_grayscale(surface);
+  median_filter(surface);
   replace_all_pixels(surface);
   //convert_to_binarized_average(surface);
-  //invert_colors(surface);
+  invert_colors(surface);
 
 
   SDL_SetWindowSize(window, surface->w, surface->h);
