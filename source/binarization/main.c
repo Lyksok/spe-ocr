@@ -33,8 +33,8 @@ int main(int argc, char **argv) {
   }
 
   convert_to_grayscale(surface);
+  sauvola_thresholding(surface);
   median_filter(surface);
-  //replace_all_pixels(surface);
   //convert_to_binarized_average(surface);
   //invert_colors(surface);
 
