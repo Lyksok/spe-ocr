@@ -1,19 +1,25 @@
 CC = gcc
-FLAGS = -Wall -Wextra -Werror
-OPT = -g -fsanitize=address
-LIBS = -lm -lSDL2 -lSDL2_image
+CPFLAGS =
+CFLAGS = -Wall -Wextra
+LDFLAGS =
+LDLIBS = -lm -lSDL2 -lSDL2_image
 
-SOURCEDIR = ./
-SRC := $(shell find $(SOURCEDIR) -name '*.c')
-OBJ = ${SRC:.c=.o}
-DEP = ${SRC:.c=.d}
-TARGET = main.out
+BIN = main.out
 
-$(TARGET): $(OBJ)
-	$(CC) -o $(TARGET) $(OBJ) $(FLAGS) $(OPT) $(LIBS)
+SRC := $(shell find ./ -name '*.c')
+OBJS = ${SRC:.c=.o}
+
+all: $(BIN)
+
+$(BIN): $(OBJS)
+
+debug: CFLAGS += -fsanitize=address -g
+debug: LDFLAGS += -fsanitize=address
+debug: $(OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $(OBJS) -o $(BIN)
 
 .PHONY: clean
 
 clean:
-	$(RM) ${OBJ}
-	$(RM) $(TARGET)
+	$(RM) $(OBJS)
+	$(RM) $(BIN)

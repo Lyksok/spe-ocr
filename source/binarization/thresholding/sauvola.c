@@ -2,7 +2,7 @@
 
 double k = 0.06; // Sensitivity
 double w = 15.0; // Window size	
-double R = 128.0; // Standard deviation
+double R = 125.0; // Standard deviation
 
 Uint8* convert_to_matrix(SDL_Surface* surface)
 {
@@ -46,7 +46,7 @@ void compute_sauvola_args(int width, int height,
 	- (*integral_sqrt)[y1*width+x2]
 	- (*integral_sqrt)[y2*width+x1];
 
-    *mean = sum/(double)area;
+    *mean = sum/((double)w*w);
     *stddev = sqrt((sum_sqrt/(double)area)-(*mean)*(*mean));
 }
 

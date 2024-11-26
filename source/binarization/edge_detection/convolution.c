@@ -15,7 +15,7 @@ void convolve_surface(SDL_Surface* surface, double* mask, int w)
 		for(int x=-w/2; x<=w/2; x++)
 		{
 		    Uint8 pixel;
-		    if(i+x<0 || i+x>surface->w || j+y<0 || j+y>=surface->h)
+		    if(i+x<0 || i+x>=surface->w || j+y<0 || j+y>=surface->h)
 			pixel = 255;
 		    else
 			pixel = pixels[(j+y)*surface->w+i+x];

@@ -6,8 +6,11 @@
 #include "binarizing.h"
 #include "thresholding/sauvola.h"
 #include "denoising.h"
+#include "contrasting.h"
 #include "edge_detection/gaussian.h"
 #include "edge_detection/convolution.h"
+#include "erosion.h"
+#include "pixel_filter.h"
 
 int main(int argc, char **argv) {
     (void)argc;
@@ -35,15 +38,24 @@ int main(int argc, char **argv) {
   }
 
   convert_to_grayscale(surface);
-  //invert_colors(surface);
-  median_filter(surface);
+  //contrast_surface(surface);
+  
+ // median_filter(surface);
   int w;
   double* mask = create_gaussian_mask_5x5(&w);
+  //convolve_surface(surface, mask, w);
+
+  contrast_surface(surface);
   convolve_surface(surface, mask, w);
-  free(mask);
-  
   sauvola_thresholding(surface);
+  invert_colors(surface);
+  //invert_colors(surface);
+  
+  free(mask);
+  //erode_surface(surface);
   //convert_to_binarized_average(surface);
+  //convert_to_binarized_adaptative(surface);
+  //convert_to_binarized_global(surface);
 
 
   SDL_SetWindowSize(window, surface->w, surface->h);
