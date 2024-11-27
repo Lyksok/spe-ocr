@@ -2,7 +2,7 @@
 #define BINARIZING_H
 
 #include <SDL2/SDL.h>
-#include "converting.h"
+#include "../utils/converting.h"
 #include "thresholding/global.h"
 #include "thresholding/adaptative.h"
 #include "thresholding/sauvola.h"

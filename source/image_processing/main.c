@@ -3,14 +3,14 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "binarizing.h"
+#include "binarization/binarizing.h"
 #include "thresholding/sauvola.h"
-#include "denoising.h"
-#include "contrasting.h"
+#include "denoising/denoising.h"
+#include "denoising/contrasting.h"
 #include "edge_detection/gaussian.h"
 #include "edge_detection/convolution.h"
-#include "erosion.h"
-#include "pixel_filter.h"
+#include "denoising/erosion.h"
+#include "denoising/pixel_filter.h"
 
 int main(int argc, char **argv) {
     (void)argc;

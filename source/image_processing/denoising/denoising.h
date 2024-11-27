@@ -2,8 +2,8 @@
 #define DENOISING_H
 
 #include <SDL2/SDL.h>
-#include "helper.h"
-#include "pixel_utils.h"
+#include "../utils/helper.h"
+#include "../utils/pixel_utils.h"
 
 void median_filter(SDL_Surface* surface);
 

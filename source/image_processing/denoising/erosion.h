@@ -2,7 +2,7 @@
 #define EROSION_H 
 
 #include <SDL2/SDL.h>
-#include "pixel_utils.h"
+#include "../utils/pixel_utils.h"
 
 void erode_surface(SDL_Surface* surface);
 
