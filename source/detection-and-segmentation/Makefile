@@ -1,8 +1,8 @@
 CC = gcc
 
-SOURCE = segmentation.c cluster-detection.c bounding-box.c detection.c histograms.c main.c ../binarization/binarizing.c ../binarization/histograms.c ../binarization/global_thresholding.c ../binarization/converting.c ../binarization/local_thresholding.c
+SOURCE = segmentation.c cluster-detection.c bounding-box.c detection.c histograms.c main.c ../binarization/binarizing.c ../binarization/histograms.c ../binarization/global_thresholding.c ../binarization/converting.c ../binarization/adaptative_thresholding.c
 TARGET = det-seg
-OBJECTS = segmentation.o cluster-detection.o bounding-box.o detection.o histograms.o main.o ../binarization/binarizing.o ../binarization/histograms.o ../binarization/global_thresholding.o ../binarization/converting.o ../binarization/local_thresholding.o
+OBJECTS = segmentation.o cluster-detection.o bounding-box.o detection.o histograms.o main.o ../binarization/binarizing.o ../binarization/histograms.o ../binarization/global_thresholding.o ../binarization/converting.o ../binarization/adaptative_thresholding.o
 LIBS = -lSDL2 -lSDL2_image -lm
 FLAGS = -Wall -Wextra -O2 -fsanitize=address
 

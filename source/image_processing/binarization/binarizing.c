@@ -1,7 +1,4 @@
 #include "binarizing.h"
-#include "converting.h"
-#include "global_thresholding.h"
-#include "local_thresholding.h"
 
 /* Convert an image to its grayscale representation
  */
@@ -25,7 +22,7 @@ void convert_to_binarized_global(SDL_Surface *surface) {
 /* Convert an image to its binarized representation
  * This function uses the local thresholding method
  */
-void convert_to_binarized_local(SDL_Surface *surface) {
+void convert_to_binarized_adaptative(SDL_Surface *surface) {
   int *histo = calloc(surface->w * surface->h, sizeof(int));
   get_all_thresholds(surface, &histo);
 
@@ -33,6 +30,11 @@ void convert_to_binarized_local(SDL_Surface *surface) {
     convert_pixel_with_threshold(surface, histo[i], i);
   }
   free(histo);
+}
+
+void convert_to_binarized_sauvola(SDL_Surface* surface)
+{
+    sauvola_thresholding(surface);
 }
 
 /* Invert black and white colors of a binarized image

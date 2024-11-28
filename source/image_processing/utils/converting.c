@@ -1,7 +1,4 @@
 #include "converting.h"
-#include "histograms.h"
-#include <SDL2/SDL_pixels.h>
-#include <SDL2/SDL_surface.h>
 
 /* Convert an image using an external function to reassign
  * each pixel with a different value based on the function

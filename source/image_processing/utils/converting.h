@@ -2,6 +2,7 @@
 #define CONVERTING_H
 
 #include <SDL2/SDL.h>
+#include "histograms.h"
 
 int is_inverted(SDL_Surface *surface);
 void image_to_grayscale(SDL_Surface *surface);
