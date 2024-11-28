@@ -40,3 +40,13 @@ Uint8 get_gpixel_from_array(SDL_Surface* surface, int i)
 {
     return get_gpixel_from_coord(surface, i, 0);
 }
+
+Uint32* get_pixels_from_surface(SDL_Surface* surface)
+{
+    return (Uint32*)surface->pixels;
+}
+
+void set_pixels_on_surface(SDL_Surface* surface, Uint32* pixels)
+{
+    (Uint32*)surface->pixels = pixels;
+}
