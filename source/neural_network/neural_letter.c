@@ -3,8 +3,16 @@
 #include <math.h>
 
 #include "neural_letter.h"
+#include "structures.h"
 
 #define numTrainingSets 4
+/* OK SO DEFINE IS FOR CONSTANT ONLY
+// no idea i'm juste trying to not have errors
+#define training_inputs[numTrainingSets][numInputs]
+#define training_output[numTrainingSets][numOutputs]
+#define deltaOutput[numOutputs]
+#define deltaHidden[numberOfEpochs]
+*/
 // rajouter une fonction softmax ?
 
 double sigmoid(double x)
@@ -19,10 +27,10 @@ double dSigmoid(double x)
 
 double random()
 {
-	return ((double)rand()) / ((double)RAND_MAX);
+	return ((double) rand()) / ((double) RAND_MAX);
 }
 
-void init_weights(double array[row][col])
+void init_weights(int row, int col, double array[row][col])
 {
 
 	for(int i = 0; i < row; i++)
@@ -34,7 +42,7 @@ void init_weights(double array[row][col])
 	}
 }
 
-void forward(int i)
+void forward(int i, double training_inputs[numTrainingSets][numInputs])
 {
     for(int j = 0; j < numHiddenNodes; j++)
     {
@@ -51,13 +59,13 @@ void forward(int i)
 
     for(int j = 0; j < numOutputs; j++)
     {
-        double activation = hiddenLayerBias[j];
-    for(int k = 0; k < numHiddenNodes; k++)
-    {
-    
-        activation += hiddenLayer[k] * outputWeights[k][j];
+	double activation = hiddenLayerBias[j];
+	for(int k = 0; k < numHiddenNodes; k++)
+	{
+		activation += hiddenLayer[k] * outputWeights[k][j];
+	}
+	outputLayer[j] = sigmoid(activation);
     }
-    outputLayer[j] = sigmoid(activation);
 }
 
 void change_weights(const double lr)
@@ -133,8 +141,10 @@ int main(void)
 	};
 
 	// Init of weights
-    init_weight(hiddenWeights[numInputs][numHiddenNodes]);
-    init_weight(outputWeights[numHiddenNodes][numOutputs]);
+    init_weights(numInputs, numHiddenNodes,
+		    hiddenWeights[numInputs][numHiddenNodes]);
+    init_weights(numHiddenNodes, numOutputs,
+		    outputWeights[numHiddenNodes][numOutputs]);
 
     // Init of bias
 	for(int i = 0; i < numOutputs; i++)
