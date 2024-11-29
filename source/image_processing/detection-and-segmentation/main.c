@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../binarization/binarizing.h"
+#include "../image_processing/binarization/binarizing.h"
 #include "bounding-box.h"
 #include "detection.h"
 #include "segmentation.h"
