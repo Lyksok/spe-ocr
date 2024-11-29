@@ -3,9 +3,9 @@
 
 #include <SDL2/SDL.h>
 #include <math.h>
-#include "../converting.h"
-#include "../helper.h"
-#include "../pixel_utils.h"
+#include "../utils/converting.h"
+#include "../utils/helper.h"
+#include "../utils/pixel_utils.h"
 
 void sauvola_thresholding(SDL_Surface* surface);
 

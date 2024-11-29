@@ -2,6 +2,7 @@
 #define HISTOGRAMS_H
 
 #include <SDL2/SDL.h>
+#include "../../detection-and-segmentation/structures.h"
 
 void create_histogram_of_pixel(SDL_Surface *surface, int **histogram,
                                void (*func)(int **, Uint32, SDL_Surface *));
