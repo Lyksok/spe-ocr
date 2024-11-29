@@ -48,5 +48,5 @@ Uint32* get_pixels_from_surface(SDL_Surface* surface)
 
 void set_pixels_on_surface(SDL_Surface* surface, Uint32* pixels)
 {
-    (Uint32*)surface->pixels = pixels;
+    surface->pixels = pixels;
 }

@@ -2,7 +2,7 @@
 #define GLOBAL_H
 
 #include <SDL2/SDL.h>
-#include "../histograms.h"
+#include "../utils/histograms.h"
 
 size_t get_optimal_threshold(SDL_Surface *surface);
 
