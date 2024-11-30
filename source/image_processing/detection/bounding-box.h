@@ -2,18 +2,14 @@
 #define BOUNDING_BOX_H
 
 #include "structures.h"
-#include <SDL2/SDL.h>
-
-typedef struct BoundingBox
-{
-    Point p1;
-    Point p2;
-    long id;
-} BoundingBox;
 
 int box_are_equal(BoundingBox* b1, BoundingBox* b2);
+void box_expand_coord(BoundingBox* box, int x, int y);
+void box_init_coord(BoundingBox* box, int x, int y);
+void box_init_coord_from_box(BoundingBox* src, BoundingBox* dst);
 
 
+/*
 // Structure comparisons
 int are_equal_point(Point p1, Point p2);
 
@@ -33,5 +29,6 @@ int average_box_width(BoundingBox** boxes, int len);
 int is_in_box(BoundingBox* box, Point point);
 int is_in_boxes(BoundingBox** boxes, int len, Point point);
 Point* bounding_box_to_points(BoundingBox** boxes, int len);
+*/
 
 #endif /* BOUNDING_BOX_H */
