@@ -7,7 +7,8 @@ FLAGS = -Wall -Wextra
 CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g
 LIBS = -lSDL2 -lSDL2_image -lm
 
-OBJ = neural_letter.o
+OBJ = neural.o
+OBJ-OLD = neural_letter.o
 OBJECT = convertion.o main.o
 
 all: $(TARGET) $(TEST)

@@ -1,0 +1,2 @@
+output = inputs * weights + bias
+The weights are usually initialized randomly while the bias at 0.
