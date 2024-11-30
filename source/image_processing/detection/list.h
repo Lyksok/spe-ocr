@@ -1,15 +1,11 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include "point.h"
 
-struct list
-{
-    struct list* next;
-    struct list* prev;
-    BoundingBox* box;
-    size_t len;
-}
+#include <stddef.h>
+#include <stdlib.h>
+#include "structures.h"
+#include "bounding-box.h"
 
 // Initialize the sentinel of the list
 void init_list(struct list* list);

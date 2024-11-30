@@ -2,8 +2,12 @@
 #define CLUSTER_DETECTION_H
 
 #include <SDL2/SDL.h>
-#include "structures.h"
+#include <err.h>
+#include "bounding-box.h"
+#include "list.h"
+#include "../utils/pixel_utils.h"
+#include "../utils/helper.h"
 
-void get_bounding_boxes(SDL_Surface* surface, BoundingBox*** boxes);
+// Get all bounding boxes of the grid
 
 #endif /* CLUSTER_DETECTION_H */
