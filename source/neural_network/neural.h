@@ -22,15 +22,11 @@ extern double **hiddenWeights;
 extern double **outputWeights;
 // rows = numHiddenNodes - columns = numOutputs
 
-void softmax(int K, double **mat);
+void Softmax(int K, double **mat);
 
 double sigmoid(double x);
 
 double dSigmoid(double x);
-
-double RandFrom(double min, double max);
-void init_weights(int row, int col, double **array);
-void init_biases(int length, double *array);
 
 void train();
 

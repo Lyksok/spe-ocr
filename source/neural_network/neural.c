@@ -4,22 +4,23 @@
 
 #include "neural.h"
 #include "structures.h"
+#include "setup.h"
 
 #define numTrainingSets 4
 
 // to modify depending on how we're using it
 //void softmax(int K, double mat[1][K])
-void softmax(int K, double **mat)
+void Softmax(int length, double **mat)
 {
         double sum = 0;
-        for (int j = 0; j < K; j++)
+        for (int n = 0; n < length; n++)
         {
-                sum += mat[0][j];
+		mat[0][n] = exp(mat[0][n]);
+                sum += mat[0][n];
         }
-        for (int j = 0; j < K; j++)
+        for (int n = 0; n < length; n++)
         {
-                double ei = exp(mat[0][j]);
-                mat[0][j] = ei / sum;
+                mat[0][n] = mat[0][n] / sum;
         }
 }
 
@@ -31,33 +32,6 @@ double sigmoid(double x)
 double dSigmoid(double x)
 {
         return x * (1 - x);
-}
-
-double RandFrom(double min, double max)
-{
-	double range = max - min;
-	double div = RAND_MAX / range;
-	return min + (rand() / div);
-}
-
-void init_weights(int row, int col, double **array)
-{
-
-        for(int i = 0; i < row; i++)
-        {
-                for(int j = 0; j < col; j++)
-                {
-                        array[i][j] = RandFrom(-1, 1);
-                }
-        }
-}
-
-void init_biases(int length, double *array)
-{
-	for(int i = 0; i < length; i++)
-	{
-		array[i] = 0;
-	}
 }
 
 void forward(int i, double **training_inputs)
@@ -162,7 +136,7 @@ void train(int numEpochs, double **training_inputs,
     print_res(training_inputs, training_output);
 }
 
-int main(void)
+int main()
 {
 	/*
 	double training_inputs[numTrainingSets][numInputs] = {
@@ -183,6 +157,9 @@ int main(void)
 	};
 	*/
 	double **training_output;
+
+	Network network = CreateNet();
+	DestroyNet(network);
 
 	// Init of weights
 	init_weights(numInputs, numHiddenNodes,
