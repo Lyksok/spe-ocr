@@ -10,8 +10,8 @@ void init_list(struct list* list)
 
 struct list* list_new_list()
 {
-    struct list* elm = calloc(1, sizeof(struct lst));
-    elm->id=id++;
+    struct list* elm = calloc(1, sizeof(struct list));
+    elm->box->id=id++;
     return elm;
 }
 
