@@ -50,3 +50,8 @@ void set_pixels_on_surface(SDL_Surface* surface, Uint32* pixels)
 {
     surface->pixels = pixels;
 }
+
+int pixel_is_background_from_coord(SDL_Surface* surface, int x, int y)
+{
+    return get_gpixel_from_coord(surface, x, y)==0 ? 1 : 0;
+}
