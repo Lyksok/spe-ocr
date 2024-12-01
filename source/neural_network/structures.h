@@ -28,8 +28,11 @@ typedef struct Layer {
 
 typedef struct TrainingData {
 	// TODO
+	int size;
 	double **inputs;
-	double *expected;
+	char *expected;
+	// the learning rate
+	double lr;
 } TrainingData;
 
 typedef struct Network {

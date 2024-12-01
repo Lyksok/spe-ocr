@@ -3,6 +3,11 @@
 
 #include "structures.h"
 
+double GetMax(double x, double y)
+{
+	return x > y ? x : y;
+}
+
 double RandFrom(double min, double max)
 {
         double range = max - min;
@@ -76,6 +81,7 @@ Network CreateNet()
 		network.layers[i - 1].next = network.layers[i];
 		network.layers[i].prev = network.layers[i - 1];
         }
+	//network.outputs = calloc(26 * sizeof(double));
 
         return network;
 }
@@ -84,6 +90,7 @@ void DestroyNet(Network network)
 {
         // TODO
 	DestroyLayer(network.layers);
+	//free(network.outputs);
         free(network.layers);
         return;
 }

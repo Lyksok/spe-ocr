@@ -5,6 +5,7 @@
 
 #include "structures.h"
 
+double GetMax(double x, double y);
 double RandFrom(double min, double max);
 void InitWeigths(Layer layer);
 void InitBiases(Layer layer);

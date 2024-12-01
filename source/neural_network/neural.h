@@ -22,7 +22,7 @@ extern double **hiddenWeights;
 extern double **outputWeights;
 // rows = numHiddenNodes - columns = numOutputs
 
-void Softmax(int K, double **mat);
+void Softmax(int K, double *mat);
 
 double sigmoid(double x);
 
@@ -30,10 +30,12 @@ double dSigmoid(double x);
 
 void train();
 
-void forward(int i, double **training_inputs);
-//void forward(int i);
+void Sum(int length, double *inputs, Layer layer);
 
-void backward(int i, const double lr, double **training_output);
-//void backward(int i);
+void Forward(int length, double *inputs);
+
+void Backward(Network net, TrainingData data, int run);
+
+void Result(Network net, TrainingData data, int nbrun);
 
 #endif
