@@ -33,7 +33,7 @@ double* create_gaussian_mask_5x5(int* window)
     for(int i=0; i<w*w; i++)
 	mask[i]=t_mask[i];
     *window=w;
-    print_mask(mask);
+    //print_mask(mask);
     return mask;
 }
 
