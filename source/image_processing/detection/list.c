@@ -11,6 +11,7 @@ void init_list(struct list* list)
 struct list* list_new_list()
 {
     struct list* elm = calloc(1, sizeof(struct list));
+    elm->box = calloc(1, sizeof(BoundingBox));
     elm->box->id=id++;
     return elm;
 }
@@ -41,6 +42,9 @@ void list_push_front(struct list* list, BoundingBox* box)
     if(list_contains(list, box))
         return;
     struct list* elm = list_new_list();
+    box->id=elm->box->id;
+    free(elm->box);
+    elm->box=box;
     struct list* nxt = list->next;
     elm->next = nxt;
     elm->prev = list;
@@ -61,6 +65,7 @@ void list_remove(struct list* list, struct list* elm)
     elm->prev->next = elm->next;
     if(elm->next != NULL)
         elm->next->prev = elm->prev;
+    free(elm->box);
     free(elm);
 }
 
