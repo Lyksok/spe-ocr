@@ -36,3 +36,13 @@ void box_init_coord_from_box(BoundingBox* src, BoundingBox* dst)
     dst->p1 = src->p1;
     dst->p2 = src->p2;
 }
+
+int box_get_height(BoundingBox* box)
+{
+    return box->p2.y-box->p1.y;
+}
+
+int box_get_width(BoundingBox* box)
+{
+    return box->p2.x-box->p1.x;
+}
