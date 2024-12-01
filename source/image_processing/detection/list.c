@@ -47,7 +47,7 @@ void list_push_front(struct list* list, BoundingBox* box)
     if(nxt != NULL)
         nxt->prev = elm;
     list->next = elm;
-    list->len += 1;
+    list->len++;
 }
 
 void list_insert(struct list* list, BoundingBox* box)
@@ -55,9 +55,13 @@ void list_insert(struct list* list, BoundingBox* box)
     // TODO
 }
 
-void list_remove(struct list* list, BoundingBox* box)
+void list_remove(struct list* list, struct list* elm)
 {
-    // TODO
+    list->len--;
+    elm->prev->next = elm->next;
+    if(elm->next != NULL)
+        elm->next->prev = elm->prev;
+    free(elm);
 }
 
 void list_sort(struct list* list)
