@@ -40,10 +40,8 @@ between the actual output vector of the net
 and the desired output vector.
 
 ----- TODOs -----
-TODO: search and understand forward
 TODO: search and understand backward
 TODO: check what is gradient stuff and how to use it
-TODO: check how I can incorporate Loop() into the rest
 TODO: check dSoftMax
 TODO: initialize data (Network, Layer, Neuron, inputs..)
 TODO: finalize the structures (for now I'm changing stuff as I go)

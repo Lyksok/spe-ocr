@@ -11,6 +11,8 @@ void InitWeigths(Layer layer);
 void InitBiases(Layer layer);
 Layer CreateLayer();
 void DestroyLayer(Layer layer);
+TrainingData CreateData();
+void DestroyData(TrainingData data);
 Network CreateNet();
 void DestroyNet(Network network);
 

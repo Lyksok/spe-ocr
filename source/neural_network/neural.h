@@ -32,7 +32,7 @@ void train();
 
 void Sum(int length, double *inputs, Layer layer);
 
-void Forward(int length, double *inputs);
+void Forward(int length, double *inputs, Layer l, double *outputs);
 
 void Backward(Network net, TrainingData data, int run);
 

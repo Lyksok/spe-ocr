@@ -59,40 +59,37 @@ void Sum(int length, double *inputs, Layer layer)
 	return;
 }
 
-void Forward(int length, double *inputs)
+void SumHidden(Layer l1, Layer l2)
 {
-	// TODO
-	// give the inputs to the first layer
-	Sum(length, inputs, firstLayer);
-	// while the next layer is not NULL, do the same ?
-	for (Layer l = firstLayer.next; l != NULL; l = l.next)
+	double *inputs;
+	int length = l1.numNeurons;
+	// foreach output
+	for (int n = 0; n < length; n++)
 	{
-		// get the list of outputs ?
-		// or maybe do a separate function that does the same as Sum
-		// anyway : PROPAGATE
+		inputs[n] = l1.neurons[n].output;
 	}
-    for(int j = 0; j < numHiddenNodes; j++)
-    {
-        double activation = hiddenLayerBias[j];
+	Sum(length, inputs, l2);
+	return;
+}
 
-        for(int k = 0; k < numInputs; k++)
-        {
-            activation += training_inputs[i][k] * hiddenWeights[k][j];
-        }
+void Forward(int length, double *inputs, Layer l, double *outputs)
+{
+	// give the inputs to the first layer
+	Sum(length, inputs, l);
+	// while the next layer is not NULL
+	for (; l.next != NULL; l = l.next[0])
+	{
+		// PROPAGATE
+		SumHidden(l, l.next[0]);
+	}
 
-        hiddenLayer[j] = sigmoid(activation);
-
-    }
-
-    for(int j = 0; j < numOutputs; j++)
-    {
-        double activation = hiddenLayerBias[j];
-        for(int k = 0; k < numHiddenNodes; k++)
-        {
-            activation += hiddenLayer[k] * outputWeights[k][j];
-        }
-        outputLayer[j] = sigmoid(activation);
-    }
+	// we collect the result of the last layer
+	for (int n = 0; n < l.numNeurons; n++)
+	{
+		outputs[n] = l.neurons[n].output;
+	}
+	// then we transform it to probabilities
+	Softmax(l.numNeurons, outputs);
 }
 
 void change_weights(const double lr, double deltaOutput[numOutputs], double deltaHidden[numHiddenNodes])
@@ -176,17 +173,22 @@ void train(int nbrun, Network net, TrainingData data)
 	{
 		for (int i = 0; i < numTrainingSets; i++)
 		{
-		    Forward(data.size, data.inputs[run]);
+		    Forward(data.size, data.inputs[run],
+			net.layers[0], net.outputs[run]);
 		    Backward(net, data, run);
 		}
 	}
 	Result(net, data, nbrun);
 }
 
-int main()
+int main(int argc, char **argv)
 {
-	// Init of Training Data
+	(void) argc;
+	(void) argv;
 
+	// Init of Training Data
+	TrainingData data = CreateData();
+	DestroyData(data);
 
 	// Init of Network
 	Network network = CreateNet();
@@ -194,16 +196,18 @@ int main()
 
 	// Init of weights
 	// --> done in CreateLayer() ?
-	init_weights(numInputs, numHiddenNodes,
-		    hiddenWeights);
-	init_weights(numHiddenNodes, numOutputs,
-		    outputWeights);
+	// weights of input are in the first hidden layer
+	// weigths of output tho are not, may need to do that
+
+
+
 	// Init of bias
 	// --> done in CreateLayer() ?
-	init_biases(numOutputs, outputLayerBias);
+	// biases of layer are created
+	// but not of outputs
+	// but ouputs dont need biases ??
 
 	int nbrun = 100000;
-
 	train(nbrun, network, data);
 
 	return 0;

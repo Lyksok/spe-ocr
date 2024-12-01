@@ -10,25 +10,22 @@ typedef struct Neuron {
 	double output;
 } Neuron;
 
-typedef struct Layer {
+// to avoid struct for prev and next
+typedef struct Layer Layer;
+struct Layer {
 	// TODO
-	/*
-	int numNodesIn;
-	Neuron *nodesIn;
-	int numNodesOut;
-	Neuron *nodesOut;
-	*/
 	int numNeurons;
 	Neuron *neurons;
 	int numWeights;
 	double *weights;
-	struct Layer *prev;
-	struct Layer *next;
-} Layer;
+	Layer *prev;
+	Layer *next;
+};
 
 typedef struct TrainingData {
 	// TODO
 	int size;
+	int nbinputs;
 	double **inputs;
 	char *expected;
 	// the learning rate
