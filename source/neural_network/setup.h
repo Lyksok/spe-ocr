@@ -6,8 +6,8 @@
 #include "structures.h"
 
 double RandFrom(double min, double max);
-void init_weights(int row, int col, double **array);
-void init_biases(int length, double *array);
+void InitWeigths(Layer layer);
+void InitBiases(Layer layer);
 Layer CreateLayer();
 void DestroyLayer(Layer layer);
 Network CreateNet();

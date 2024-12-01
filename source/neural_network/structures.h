@@ -7,17 +7,28 @@ typedef struct Neuron {
 	// TODO
 	double weight;
 	double bias;
+	double output;
 } Neuron;
 
 typedef struct Layer {
 	// TODO
-	int nodesIn;
-	int nodesOut;
+	/*
+	int numNodesIn;
+	Neuron *nodesIn;
+	int numNodesOut;
+	Neuron *nodesOut;
+	*/
+	int numNeurons;
 	Neuron *neurons;
+	int numWeights;
+	double *weights;
+	struct Layer *prev;
+	struct Layer *next;
 } Layer;
 
 typedef struct TrainingData {
 	// TODO
+	double **inputs;
 	double *expected;
 } TrainingData;
 

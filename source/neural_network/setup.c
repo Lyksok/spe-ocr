@@ -10,41 +10,54 @@ double RandFrom(double min, double max)
         return min + (rand() / div);
 }
 
-void init_weights(int row, int col, double **array)
+void InitWeigths(Layer layer)
 {
-
-        for(int i = 0; i < row; i++)
-        {
-                for(int j = 0; j < col; j++)
-                {
-                        array[i][j] = RandFrom(-1, 1);
-                }
-        }
+	for (int l = 0; l < layer.numWeights ; l++)
+	{
+		layer.weights[l] = RandFrom(-1, 1);
+	}
+	return;
 }
 
-void init_biases(int length, double *array)
+void InitBiases(Layer layer)
 {
-        for(int i = 0; i < length; i++)
-        {
-                array[i] = 0;
-        }
+	for (int l = 0; l < layer.numNeurons ; l++)
+	{
+		layer.neurons[j].bias = 0;
+	}
+	return;
 }
 
 Layer CreateLayer()
 {
         // TODO
         Layer layer;
-        layer.nodesIn = 0;
-        layer.nodesOut = 0;
-        layer.neurons = malloc(0);
+	/*
+        layer.numNodesIn = 0;
+        layer.nodesIn = malloc(numNodesIn * sizeof(Neuron));
+        layer.numNodesOut = 0;
+        layer.nodesOut = malloc(numNodesOut * sizeof(Neuron));
+	*/
+	layer.numNeurons = 0;
+        layer.neurons = malloc(numNeurons * sizeof(Neuron));
+	InitBiases(layer);
+	layer.numWeights = 0;
+	InitWeigths(layer);
+	layer.prev = NULL;
+	layer.next = NULL;
         return layer;
 }
 
 void DestroyLayer(Layer layer)
 {
         // TODO
-        free(layer.neurons);
-        return;
+	if (layer == NULL)
+		return;
+	else
+	{
+		free(layer.neurons);
+		DestroyLayer(layer.next);
+	}
 }
 
 Network CreateNet()
@@ -52,10 +65,16 @@ Network CreateNet()
         // TODO
         Network network;
 	network.numLayers = 0;
-        network.layers = malloc(numLayers);
-        for (int i = 0; i < network.numLayers; i++)
+        network.layers = malloc(numLayers * sizeof(Layer));
+	if (network.numLayers)
+	{
+		network.layers[0] = CreateLayer();
+	}
+        for (int i = 1; i < network.numLayers; i++)
         {
                 network.layers[i] = CreateLayer();
+		network.layers[i - 1].next = network.layers[i];
+		network.layers[i].prev = network.layers[i - 1];
         }
 
         return network;
@@ -64,10 +83,7 @@ Network CreateNet()
 void DestroyNet(Network network)
 {
         // TODO
-	for (int i = 0; i < network.numLayers; i++)
-	{
-		DestroyLayer(network.layers[i]);
-	}
+	DestroyLayer(network.layers);
         free(network.layers);
         return;
 }

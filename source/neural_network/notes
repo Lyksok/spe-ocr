@@ -1,2 +1,24 @@
 output = inputs * weights + bias
 The weights are usually initialized randomly while the bias at 0.
+
+ok so the layers are what happens inside the network
+the inputs are not a layer !!
+have to check whether the outputs are one tho, maybe it's compatible
+
+TODO: search and understand forward
+TODO: search and understand backward
+TODO: check what is gradient stuff and how to use it
+TODO: check how I can incorporate Loop() into the rest
+TODO: check dSoftMax
+TODO: get rid of sigmoid and dsigmoid
+TODO: initialize data (Network, Layer, Neuron, inputs..)
+TODO: finalize the structures (for now I'm changing stuff as I go)
+
+TODO: find how to train the network (Louis's script can help)
+TODO: resize images to a certain size (to determine)
+TODO: check wether the transformation from image to list is working correctly
+TODO: actually test stuff
+
+/!\ if a function was completely erased or modified
+it was moved to old/functions.c
+(except maybe if the function was modified little by little)

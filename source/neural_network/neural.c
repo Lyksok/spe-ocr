@@ -34,6 +34,27 @@ double dSigmoid(double x)
         return x * (1 - x);
 }
 
+void Loop(int length, double *inputs, Layer layer)
+{
+	// foreach neurons
+	for (int n = 0; layer.numNeurons; n++)
+	{
+		Neuron neuron = layer.neurons[n];
+		// we initialize the value of the neuron
+		neuron.output = 0;
+		// foreach inputs
+		for (int i = 0; i < length; i++)
+		{
+			double w = layer.weights[i];
+			// we add the value times the weight
+			neuron.output += inputs[i] * w;
+		}
+		// then we add the bias
+		neuron.output += neuron.bias;
+	}
+	return;
+}
+
 void forward(int i, double **training_inputs)
 {
     for(int j = 0; j < numHiddenNodes; j++)
@@ -138,24 +159,7 @@ void train(int numEpochs, double **training_inputs,
 
 int main()
 {
-	/*
-	double training_inputs[numTrainingSets][numInputs] = {
-		{0.0f, 0.0f},
-		{0.0f, 1.0f},
-		{1.0f, 0.0f},
-		{1.0f, 1.0f}
-	};
-	*/
 	double **training_inputs;
-	/*
-	// a transformer en une liste (A, B, C...)
-	double training_output[numTrainingSets][numOutputs] = {
-		{1.0f},
-		{0.0f},
-		{0.0f},
-		{1.0f}
-	};
-	*/
 	double **training_output;
 
 	Network network = CreateNet();
