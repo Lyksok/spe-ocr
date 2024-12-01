@@ -8,7 +8,7 @@
  */
 struct list* detect_characters(struct list* box_list)
 {
-    // TODO
+    filter_wrong_size_boxes_threshold(box_list);
 }
 
 /* Find dimensions of the grid
