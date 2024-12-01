@@ -25,17 +25,17 @@ extern double **outputWeights;
 void Softmax(int K, double *mat);
 
 double sigmoid(double x);
-
 double dSigmoid(double x);
 
-void train();
-
 void Sum(int length, double *inputs, Layer layer);
+void SumHidden(Layer l1, Layer l2);
 
 void Forward(int length, double *inputs, Layer l, double *outputs);
 
 void Backward(Network net, TrainingData data, int run);
 
 void Result(Network net, TrainingData data, int nbrun);
+
+void train(int nbrun, Network net, TrainingData data);
 
 #endif
