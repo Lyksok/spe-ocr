@@ -1,15 +1,18 @@
 #include "cluster-detection.h"
 
-int* eq_table_insert(int table_len, int* table, int a, int b)
+int* eq_table_insert(int* table_len, int* table, int a, int b)
 {
-    int new_len = max(max(a+1,b+1),table_len);
+    int new_len = max(max(a+1,b+1),*table_len);
     // If the new elements are bigger than the length of the table
     // then realloc a new array and initialize all new elements to 0
-    if(table_len<new_len)
+    if(*table_len<new_len)
     {
-        table = realloc(table, new_len);
-        for(int i=table_len; i<new_len; i++)
+        table = realloc(table, new_len*sizeof(int));
+        for(int i=*table_len; i<new_len; i++)
+        {
             table[i]=0;
+        }
+        *table_len = new_len;
     }
     // Check if equivalence already created
     int eq_a = a;
@@ -92,6 +95,7 @@ void compute_bounding_boxes(SDL_Surface *surface, struct list* box_list)
 {
     int* clusters = calloc(surface->w*surface->h, sizeof(int));
     int* eq_table = calloc(1, sizeof(int));
+    int eq_table_len = 1;
     int cluster_id = 1;
     for (int j = 0; j < surface->h; j++)
     {
@@ -105,11 +109,11 @@ void compute_bounding_boxes(SDL_Surface *surface, struct list* box_list)
                 clusters[j*surface->w+i] = clusters[(j-1)*surface->w+i-1];
             // If strictly left or strictly above then same cluster
             // Case above
-            else if(((i>=0 && !clusters[j*surface->w+i-1])||i<0)
+            else if(((i>0 && !clusters[j*surface->w+i-1])||i<=0)
                         && j>0 && clusters[(j-1)*surface->w+i])
                 clusters[j*surface->w+i] = clusters[(j-1)*surface->w+i];
             // Case left
-            else if(((j>=0 && !clusters[(j-1)*surface->w+i])||j<0)
+            else if(((j>0 && !clusters[(j-1)*surface->w+i])||j<=0)
                         && i>0 && clusters[j*surface->w+i-1])
                 clusters[j*surface->w+i] = clusters[j*surface->w+i-1];
             // If both then same cluster + note to equivalence table
@@ -118,7 +122,7 @@ void compute_bounding_boxes(SDL_Surface *surface, struct list* box_list)
                     && clusters[(j-1)*surface->w+i])
             {
                 clusters[j*surface->w+i] = clusters[(j-1)*surface->w+i];
-                eq_table_insert(cluster_id, eq_table,
+                eq_table = eq_table_insert(&eq_table_len, eq_table,
                         clusters[j*surface->w+i-1],
                         clusters[(j-1)*surface->w+i]);
             }
