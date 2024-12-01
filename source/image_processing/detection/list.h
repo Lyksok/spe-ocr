@@ -30,7 +30,7 @@ void list_push_front(struct list* list, BoundingBox* box);
 void list_insert(struct list* list, BoundingBox* box);
 
 // Remove a bounding box in the list
-void list_remove(struct list* list, BoundingBox* box);
+void list_remove(struct list* list, struct list* elm);
 
 // Sort the list boxes by y then x
 void list_sort(struct list* list);
