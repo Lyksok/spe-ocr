@@ -3,10 +3,10 @@
 
 #include "solver.h"
 
-// 1 == TRUE 
+// 1 == TRUE
 // 0 == FALSE
 
-/* 
+/*
  * word : a string, list of caracters
  * Returns the length of the word
  */
@@ -18,7 +18,7 @@ int Length(char word[])
 	return i;
 }
 
-/* 
+/*
  * Returns the max between a and b
  */
 int Max(int a, int b)
@@ -26,7 +26,7 @@ int Max(int a, int b)
 	return a > b ? a : b;
 }
 
-/* 
+/*
  * Returns the min between a and b
  */
 int Min(int a, int b)
@@ -85,9 +85,9 @@ void ToUpper(char word[])
  * ec : a pointer to the column of the last letter
  * Returns True or False if the word is found
  */
-int Search(int row, int col, char **mat, 
-	char word[], int r, int c, int n,
-	int *er, int *ec)
+int Search(int row, int col, char **mat,
+		   char word[], int r, int c, int n,
+		   int *er, int *ec)
 {
 	/*
 	 * we start the ends from the match
@@ -102,8 +102,8 @@ int Search(int row, int col, char **mat,
 	 * y is for the columns
 	 * dir is the index over which we will iterate
 	 */
-	int x[] = { -1, -1, -1, 0, 0, 1, 1, 1 };
-	int y[] = { -1, 0, 1, -1, 1, -1, 0, 1 };
+	int x[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+	int y[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 	int dir = 0;
 
 	/*
@@ -132,7 +132,7 @@ int Search(int row, int col, char **mat,
 		i = 1;
 		// set to True
 		noStop = 1;
-		
+
 		while (i < n && noStop)
 		{
 			*er = ri;
@@ -143,7 +143,7 @@ int Search(int row, int col, char **mat,
 				// set to FALSE
 				noStop = 0;
 			}
-			else if (mat[ri][ci] != word[i]) 
+			else if (mat[ri][ci] != word[i])
 			{
 				// no match :
 				// set to FALSE
@@ -171,22 +171,23 @@ int Search(int row, int col, char **mat,
  * word : the word to search for
  * Returns True or False if the word is found
  */
-int Solver(int row, int col, char **mat, char word[]) {
+int Solver(int row, int col, char **mat, char word[])
+{
 	/*
 	 * len : the length of the word
 	 * max : the max between the numbers of rows and columns
 	 */
-        int len = Length(word);
+	int len = Length(word);
 	int max = Max(row, col);
 
 	// if the word is bigger than what is possible :
 	// return False
-        if (len > max)
+	if (len > max)
 	{
 		printf("Not Found\n");
-                return 0;
+		return 0;
 	}
-        else
+	else
 	{
 		/*
 		 * r : to iterate over rows
@@ -208,7 +209,7 @@ int Solver(int row, int col, char **mat, char word[]) {
 		while (r < row && !found)
 		{
 			c = 0;
-			while ( c < col && !found)
+			while (c < col && !found)
 			{
 				if (mat[r][c] == word[0])
 				{
@@ -217,8 +218,8 @@ int Solver(int row, int col, char **mat, char word[]) {
 					mr = r;
 					mc = c;
 					found = Search(row, col, mat,
-							word, mr, mc, len,
-							er, ec);
+								   word, mr, mc, len,
+								   er, ec);
 				}
 				c++;
 			}
@@ -233,5 +234,5 @@ int Solver(int row, int col, char **mat, char word[]) {
 		free(er);
 		free(ec);
 		return found;
-        }
+	}
 }
