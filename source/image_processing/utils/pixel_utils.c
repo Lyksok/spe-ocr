@@ -4,7 +4,7 @@ void set_gpixel_from_coord(SDL_Surface* surface, int x, int y, Uint8 gcolor)
 {
     SDL_LockSurface(surface);
     
-    Uint32 pixel = SDL_MapRGB(surface->format, gcolor, gcolor, gcolor);
+    Uint32 pixel = SDL_MapRGBA(surface->format, gcolor, gcolor, gcolor, 255);
 
     ((Uint32*)surface->pixels)[y*surface->w+x] = pixel;
 
@@ -17,7 +17,8 @@ Uint8 get_gpixel_from_coord(SDL_Surface *surface, int x, int y)
     Uint8 res;
     Uint8 g;
     Uint8 b;
-    SDL_GetRGB(pixel, surface->format, &res, &g, &b);
+    Uint8 a;
+    SDL_GetRGBA(pixel, surface->format, &res, &g, &b, &a);
     return res;
 }
 
@@ -32,7 +33,8 @@ Uint8 get_gpixel_from_pixel(SDL_Surface* surface, Uint32 pixel)
     Uint8 res;
     Uint8 g;
     Uint8 b;
-    SDL_GetRGB(pixel, surface->format, &res, &g, &b);
+    Uint8 a;
+    SDL_GetRGBA(pixel, surface->format, &res, &g, &b, &a);
     return res;
 }
 
