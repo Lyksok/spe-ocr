@@ -6,10 +6,10 @@ void draw_rect(SDL_Surface* surface, SDL_Renderer *renderer, BoundingBox* box,
     if(SDL_SetRenderDrawColor(renderer, 0, 255, 0, SDL_ALPHA_OPAQUE))
         errx(EXIT_FAILURE, "Failed to set render draw color: %s", SDL_GetError());
     SDL_Rect r;
-    int x1 = (int)ceil(((double)box->p1.x / (double)surface->w * (double)width));
-    int y1 = (int)ceil(((double)box->p1.y / (double)surface->h * (double)height));
-    int x2 = (int)ceil(((double)box->p2.x / (double)surface->w * (double)width));
-    int y2 = (int)ceil(((double)box->p2.y / (double)surface->h * (double)height));
+    int x1 = max(0,-10+(int)ceil(((double)box->p1.x / (double)surface->w * (double)width)));
+    int y1 = max(0,-10+(int)ceil(((double)box->p1.y / (double)surface->h * (double)height)));
+    int x2 = min(width-1,10+(int)ceil(((double)box->p2.x / (double)surface->w * (double)width)));
+    int y2 = min(height-1,10+(int)ceil(((double)box->p2.y / (double)surface->h * (double)height)));
     r.x = x1;
     r.y = y1;
     r.w = x2-x1;
