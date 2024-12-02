@@ -49,8 +49,8 @@ int box_get_width(BoundingBox* box)
 
 Point box_get_center(BoundingBox* box)
 {
-    int x = (b->p1.x + b->p2.x) / 2;
-    int y = (b->p1.y + b->p2.y) / 2;
+    int x = (box->p1.x + box->p2.x) / 2;
+    int y = (box->p1.y + box->p2.y) / 2;
     Point res = {x, y};
     return res;
 }
