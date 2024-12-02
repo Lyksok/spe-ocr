@@ -14,6 +14,7 @@ typedef struct BoundingBox
     Point p1;
     Point p2;
     long id;
+    Point start;
 } BoundingBox;
 
 struct list

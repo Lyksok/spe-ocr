@@ -10,7 +10,7 @@ int are_equal_box(BoundingBox b1, BoundingBox b2);
 
 // Heap representation operations
 int add_box(BoundingBox box, BoundingBox*** boxes, int len);
-int remove_box(BoundingBox box, BoundingBox*** boxes, int len);
+//int remove_box(BoundingBox box, BoundingBox*** boxes, int len);
 
 // General array representation operations
 void free_boxes(BoundingBox** boxes, int len);

@@ -11,18 +11,6 @@
 #include "histograms.h"
 #include "structures.h"
 
-void draw_rects(SDL_Renderer *renderer, int rect[][4], size_t len) {
-  for (size_t i = 0; i < len; i++) {
-    draw_rect(renderer, rect[i]);
-  }
-}
-
-Point get_bounding_box_center(BoundingBox *b) {
-  int x = (b->p1.x + b->p2.x) / 2;
-  int y = (b->p1.y + b->p2.y) / 2;
-  Point res = {x, y};
-  return res;
-}
 
 Point get_points_average(Point p1, Point p2) {
   return (Point){(p1.x + p2.x) / 2, (p1.y + p2.y) / 2};
