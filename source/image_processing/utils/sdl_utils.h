@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <err.h>
 #include <math.h>
+#include "helper.h"
 #include "../detection/bounding-box.h"
 #include "../detection/point.h"
 
