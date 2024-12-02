@@ -37,6 +37,21 @@ double* create_gaussian_mask_5x5(int* window)
     return mask;
 }
 
+double* create_gaussian_mask_3x3(int* window)
+{
+    double* mask = calloc(3*3, sizeof(double));
+    double t_mask[] = {
+        1.0/16.0, 1.0/8.0, 1.0/16.0,
+        1.0/8.0, 1.0/4.0, 1.0/8.0,
+        1.0/16.0, 1.0/8.0, 1.0/16.0
+    };
+    for(int i=0; i<3*3; i++)
+	    mask[i]=t_mask[i];
+    *window=3;
+    //print_mask(mask);
+    return mask;
+}
+
 void print_mask(double* mask)
 {
     for(int j=0; j<w; j++)
