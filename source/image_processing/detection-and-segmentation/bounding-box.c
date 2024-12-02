@@ -34,6 +34,7 @@ int are_equal_box(BoundingBox b1, BoundingBox b2) {
     return 0;
 }
 
+/*
 int remove_box(BoundingBox box, BoundingBox ***boxes, int len) {
   for (int i = 0; i < len; i++) {
     if (are_equal_box(*(*boxes)[i], box)) {
@@ -44,6 +45,7 @@ int remove_box(BoundingBox box, BoundingBox ***boxes, int len) {
   }
   return 1;
 }
+*/
 
 void free_boxes(BoundingBox **boxes, int len) {
   for (int i = 0; i < len; i++) {
