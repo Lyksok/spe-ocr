@@ -11,43 +11,6 @@
 #include "histograms.h"
 #include "structures.h"
 
-void draw_rect(SDL_Renderer *renderer, int rect[4]) {
-  if (SDL_SetRenderDrawColor(renderer, 0, 255, 0, SDL_ALPHA_OPAQUE))
-    errx(EXIT_FAILURE, "Failed to set render draw color: %s", SDL_GetError());
-  SDL_Rect r;
-  r.x = rect[0];
-  r.y = rect[1];
-  r.w = rect[2];
-  r.h = rect[3];
-  if (SDL_RenderDrawRect(renderer, &r))
-    errx(EXIT_FAILURE, "Failed to fill the rectangle: %s", SDL_GetError());
-}
-
-void draw_rects(SDL_Renderer *renderer, int rect[][4], size_t len) {
-  for (size_t i = 0; i < len; i++) {
-    draw_rect(renderer, rect[i]);
-  }
-}
-
-void draw_line(SDL_Renderer *renderer, Point p1, Point p2) {
-  if (SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE))
-    errx(EXIT_FAILURE, "Failed to set render draw color: %s", SDL_GetError());
-  if (SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y))
-    errx(EXIT_FAILURE, "Failed to draw line: %s", SDL_GetError());
-}
-
-void draw_lines(SDL_Renderer *renderer, Point *src, Point *dest, int len) {
-  for (int i = 0; i < len; i++) {
-    draw_line(renderer, src[i], dest[i]);
-  }
-}
-
-Point get_bounding_box_center(BoundingBox *b) {
-  int x = (b->p1.x + b->p2.x) / 2;
-  int y = (b->p1.y + b->p2.y) / 2;
-  Point res = {x, y};
-  return res;
-}
 
 Point get_points_average(Point p1, Point p2) {
   return (Point){(p1.x + p2.x) / 2, (p1.y + p2.y) / 2};

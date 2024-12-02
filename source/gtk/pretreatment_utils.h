@@ -2,12 +2,12 @@
 #define PRETREATMENT_UTILS_H
 
 #include "main.h"
-#include "../binarization/binarizing.h"
+#include "../image_processing/binarization/binarizing.h"
 #include "conversion_utils.h"
 #include "image_utils.h"
 #include "pretreatment_utils.h"
 #include "rotation_utils.h"
-#include "../binarization/converting.h"
+#include "../image_processing/utils/converting.h"
 
 void on_grayscale_clicked(GtkWidget *widget, gpointer data);
 void on_binarize_clicked(GtkWidget *widget, gpointer data);

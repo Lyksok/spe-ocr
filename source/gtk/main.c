@@ -78,11 +78,6 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
   gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item), file_menu);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file_menu_item);
 
-  solver_menu = gtk_menu_new();
-  solver_menu_item = gtk_menu_item_new_with_label("🧩 Solver");
-  gtk_menu_item_set_submenu(GTK_MENU_ITEM(solver_menu_item), solver_menu);
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), solver_menu_item);
-
   // Creates load menu item => file_menu
   load_menu_item = gtk_menu_item_new_with_label("Load Image");
   g_signal_connect(load_menu_item, "activate", G_CALLBACK(on_change_image),
@@ -95,6 +90,11 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
                    image_widget);
   gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save_menu_item);
 
+  solver_menu = gtk_menu_new();
+  solver_menu_item = gtk_menu_item_new_with_label("🧩 Solver");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(solver_menu_item), solver_menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), solver_menu_item);
+
   // Creates solver menu item => solver_menu
   solver_menu_item = gtk_menu_item_new_with_label("Solver");
   g_signal_connect(solver_menu_item, "activate", G_CALLBACK(create_solver_window), NULL);
@@ -102,7 +102,7 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
 
   // Grayscale processing menu
   GtkWidget *grayscale_menu = gtk_menu_new();
-  GtkWidget *grayscale_menu_item = gtk_menu_item_new_with_label("Grayscale Processing");
+  GtkWidget *grayscale_menu_item = gtk_menu_item_new_with_label("🌑 Grayscale Processing");
   gtk_menu_item_set_submenu(GTK_MENU_ITEM(grayscale_menu_item), grayscale_menu);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), grayscale_menu_item);
 
@@ -142,7 +142,7 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
 
   // B&W processing menu
   GtkWidget *bw_processing_menu = gtk_menu_new();
-  GtkWidget *bw_processing_menu_item = gtk_menu_item_new_with_label("B&W Processing");
+  GtkWidget *bw_processing_menu_item = gtk_menu_item_new_with_label("Grayscale Processing");
   gtk_menu_item_set_submenu(GTK_MENU_ITEM(bw_processing_menu_item), bw_processing_menu);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), bw_processing_menu_item);
 

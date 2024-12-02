@@ -3,9 +3,9 @@
 
 #include <SDL2/SDL.h>
 #include "../utils/converting.h"
-#include "thresholding/global.h"
-#include "thresholding/adaptative.h"
-#include "thresholding/sauvola.h"
+#include "../thresholding/global.h"
+#include "../thresholding/adaptative.h"
+#include "../thresholding/sauvola.h"
 
 void convert_to_grayscale(SDL_Surface *surface);
 void convert_to_binarized_average(SDL_Surface *surface);
