@@ -128,7 +128,11 @@ void compute_bounding_boxes(SDL_Surface *surface, struct list* box_list)
             }
             // Else new cluster
             else
+            {
+                eq_table = eq_table_insert(&eq_table_len, eq_table,
+                        cluster_id, 0);
                 clusters[j*surface->w+i] = cluster_id++;
+            }
         }
     }
     if(cluster_id==1)
@@ -138,7 +142,7 @@ void compute_bounding_boxes(SDL_Surface *surface, struct list* box_list)
     }
     
     // Compute final equivalences
-    compute_equivalences(cluster_id, &eq_table);
+    compute_equivalences(eq_table_len, &eq_table);
 
     // Resolve equivalences
     for(int i=0; i<surface->w*surface->h; i++)
@@ -160,12 +164,13 @@ void compute_bounding_boxes(SDL_Surface *surface, struct list* box_list)
         for (int i = 0; i < surface->w; i++)
         {
             id = clusters[j*surface->w+i];
-            if(!id)
+            if(!id || eq_table[id]!=0)
                 continue;
             if(!seen[id])
             {
                 seen[id] = 1;
                 box_init_coord(boxes[id], i, j);
+                boxes[id]->start = (Point){i,j};
             }
             else
             {
@@ -177,7 +182,10 @@ void compute_bounding_boxes(SDL_Surface *surface, struct list* box_list)
 
     // Construct struct list* box_list
     for(int i=1; i<cluster_id; i++)
-        list_push_front(box_list, boxes[i]);
+    {
+        if(eq_table[i]==0)
+            list_push_front(box_list, boxes[i]);
+    }
     free(boxes);
 }
 
