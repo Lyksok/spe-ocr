@@ -6,9 +6,9 @@
  * using their height and their width to find non-characters
  * Returns a new list with characters' boxes
  */
-struct list* detect_characters(struct list* box_list)
+struct list* detect_characters(SDL_Surface* surface, struct list* box_list)
 {
-    filter_wrong_size_boxes_threshold(box_list);
+    filter_wrong_size_boxes_threshold(surface, box_list);
 }
 
 /* Find dimensions of the grid

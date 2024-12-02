@@ -79,8 +79,9 @@ Uint32 to_grayscale(SDL_PixelFormat *format, Uint32 pixel) {
     if (b < min)
       min = b;
   }
-  // Uint8 grayscale = 0.299*r+0.587*g+0.114*b;
-  Uint8 grayscale = (min + max) / 2;
+  //Uint8 grayscale = 0.299*r+0.587*g+0.114*b;
+  //Uint8 grayscale = (min + max) / 2;
+  Uint8 grayscale = (r+g+b)/3;
   return SDL_MapRGBA(format, grayscale, grayscale, grayscale, a);
 }
 
@@ -161,4 +162,24 @@ void invert_binarized_colors(SDL_Surface *surface) {
       }
     }
   }
+}
+
+static int xdir[4] = {0, 1, 0, -1};
+static int ydir[4] = {-1, 0, 1, 0};
+
+void aux_remove_box(SDL_Surface* surface, int x, int y)
+{
+    if(get_gpixel_from_coord(surface, x, y))
+    {
+        set_gpixel_from_coord(surface, x, y, 0);
+        for(int i=0; i<4; i++)
+        {
+            aux_remove_box(surface, x+xdir[i], y+ydir[i]);
+        }
+    }
+}
+
+void remove_box(SDL_Surface* surface, BoundingBox* box)
+{
+    aux_remove_box(surface, box->start.x, box->start.y);
 }

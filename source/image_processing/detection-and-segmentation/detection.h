@@ -4,12 +4,6 @@
 #include <SDL2/SDL.h>
 #include "structures.h"
 
-// Visual debugging
-void draw_rect(SDL_Renderer *renderer, int rect[4]);
-void draw_rects(SDL_Renderer* renderer, int rect[][4], size_t len);
-void draw_line(SDL_Renderer *renderer, Point p1, Point p2);
-void draw_lines(SDL_Renderer* renderer, Point* src, Point* dest, int len);
-
 // Useful bounding box and point operations
 Point get_bounding_box_center(BoundingBox* b);
 Point get_points_average(Point p1, Point p2);
