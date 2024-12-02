@@ -5,9 +5,8 @@
 
 typedef struct Neuron {
 	// TODO
-	double weight;
 	double bias;
-	double output;
+	double value;
 } Neuron;
 
 // to avoid struct for prev and next
@@ -16,8 +15,12 @@ struct Layer {
 	// TODO
 	int numNeurons;
 	Neuron *neurons;
+	// equivalent to the number of inputs
 	int numWeights;
-	double *weights;
+	// a matrice where each row
+	// is the weigths given to one neuron
+	// it has dimension numNeurons * numWeights
+	double **weights;
 	Layer *prev;
 	Layer *next;
 };

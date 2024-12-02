@@ -41,20 +41,18 @@ void Sum(int length, double *inputs, Layer layer)
 	{
 		Neuron neuron = layer.neurons[n];
 		// we initialize the value of the neuron
-		//neuron.output = 0;
 		double sum = 0;
 		// foreach inputs
 		for (int i = 0; i < length; i++)
 		{
-			double w = layer.weights[i];
+			double w = layer.weights[n][i];
 			// we add the value times the weight
-			//neuron.output += inputs[i] * w;
 			sum += inputs[i] * w;
 		}
 		// then we add the bias
-		//neuron.output += neuron.bias;
 		sum += neuron.bias;
-		neuron.output = sigmoid(sum);
+		// and apply the activation function
+		neuron.value = sigmoid(sum);
 	}
 	return;
 }
@@ -66,8 +64,9 @@ void SumHidden(Layer l1, Layer l2)
 	// foreach output
 	for (int n = 0; n < length; n++)
 	{
-		inputs[n] = l1.neurons[n].output;
+		inputs[n] = l1.neurons[n].value;
 	}
+	// then we call Sum with the "inputs"
 	Sum(length, inputs, l2);
 	return;
 }
@@ -86,7 +85,7 @@ void Forward(int length, double *inputs, Layer l, double *outputs)
 	// we collect the result of the last layer
 	for (int n = 0; n < l.numNeurons; n++)
 	{
-		outputs[n] = l.neurons[n].output;
+		outputs[n] = l.neurons[n].value;
 	}
 	// then we transform it to probabilities
 	Softmax(l.numNeurons, outputs);

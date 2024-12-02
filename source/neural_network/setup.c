@@ -17,18 +17,19 @@ double RandFrom(double min, double max)
 
 void InitWeigths(Layer layer)
 {
-	for (int l = 0; l < layer.numWeights ; l++)
+	for (int n = 0; n < layer.numNeurons ; n++)
+	for (int w = 0; w < layer.numWeights ; w++)
 	{
-		layer.weights[l] = RandFrom(-1, 1);
+		layer.weights[n][w] = RandFrom(-1, 1);
 	}
 	return;
 }
 
 void InitBiases(Layer layer)
 {
-	for (int l = 0; l < layer.numNeurons ; l++)
+	for (int n = 0; n < layer.numNeurons ; n++)
 	{
-		layer.neurons[j].bias = 0;
+		layer.neurons[n].bias = 0;
 	}
 	return;
 }
@@ -127,7 +128,7 @@ Network CreateNet()
 void DestroyNet(Network network)
 {
         // TODO
-	DestroyLayer(network.layers);
+	DestroyLayer(network.layers[0]);
         free(network.layers);
         return;
 }
