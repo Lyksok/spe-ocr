@@ -8,6 +8,7 @@
 #include "rotation_utils.h"
 #include "pretreatment_utils.h"
 #include "splash_screen.h"
+#include "integration_solver.h"
 
 // CONSTANTS
 #define MAX_WIDTH 1000

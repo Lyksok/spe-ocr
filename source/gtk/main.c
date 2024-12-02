@@ -5,7 +5,8 @@
  * @param widget The widget to be destroyed.
  * @return gboolean Always returns FALSE to stop the timeout.
  */
-gboolean destroy_widget(gpointer widget) {
+gboolean destroy_widget(gpointer widget)
+{
   /**
    * TODO : this forcing method to free is not working, thus the leaks are
    * relative to the libpango as side effect of gtk
@@ -14,11 +15,13 @@ gboolean destroy_widget(gpointer widget) {
    * 3. Ultimatly destroys the widget
    * 01/11/24
    */
-  if (GTK_IS_WIDGET(widget)) {
+  if (GTK_IS_WIDGET(widget))
+  {
     GList *children, *p;
     // p pointer to current element
     children = gtk_container_get_children(GTK_CONTAINER(widget)); // list
-    for (p = children; p != NULL; p = g_list_next(p)) {
+    for (p = children; p != NULL; p = g_list_next(p))
+    {
       gtk_widget_destroy(GTK_WIDGET(p->data));
     }
     g_list_free(children);                  // free the handy list
@@ -38,7 +41,8 @@ gboolean destroy_widget(gpointer widget) {
  * @param data A gpointer to any additional data needed for the callback.
  * @return A pointer to the new GtkButton.
  */
-GtkWidget *init_button(const char *label, GCallback callback, gpointer data) {
+GtkWidget *init_button(const char *label, GCallback callback, gpointer data)
+{
   GtkWidget *button = gtk_button_new_with_label(label);
   if (callback != NULL)
     // connects the "clicked" signal to the callback function
@@ -61,17 +65,23 @@ GtkWidget *init_button(const char *label, GCallback callback, gpointer data) {
  * @param image_widget The image widget to be updated when clicking on the
  * submenus.
  */
-GtkWidget *init_menu_bar(GtkWidget *image_widget) {
+GtkWidget *init_menu_bar(GtkWidget *image_widget)
+{
   GtkWidget *menu_bar, *file_menu, *file_menu_item, *load_menu_item,
-      *save_menu_item;
+      *save_menu_item, *solver_menu_item;
 
   // Creates a menu bar
   menu_bar = gtk_menu_bar_new();
-  // Creates a file menu => menu bar
+  // Creates the menus
   file_menu = gtk_menu_new();
   file_menu_item = gtk_menu_item_new_with_label("📁 File");
   gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item), file_menu);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file_menu_item);
+
+  solver_menu = gtk_menu_new();
+  solver_menu_item = gtk_menu_item_new_with_label("🧩 Solver")
+      gtk_menu_item_set_submenu(GTK_MENU_ITEM(solver_menu_item), solver_menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), solver_menu_item);
 
   // Creates load menu item => file_menu
   load_menu_item = gtk_menu_item_new_with_label("Load Image");
@@ -85,6 +95,11 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget) {
                    image_widget);
   gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save_menu_item);
 
+  // Creates solver menu item => solver_menu
+  solver_menu_item = gtk_menu_item_new_with_label("Solver");
+  g_signal_connect(solver_menu_item, "activate", G_CALLBACK(create_solver_window), NULL);
+  gtk_menu_shell_append(GTK_MENU_SHELL(solver_menu), solver_menu_item);
+
   return menu_bar;
 }
 
@@ -93,7 +108,8 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget) {
  * the signals.
  * @param app A pointer to the GtkApplication instance.
  */
-static void activate(GtkApplication *app, gpointer user_data) {
+static void activate(GtkApplication *app, gpointer user_data)
+{
   GtkWidget *window;
   GtkWidget *main_box;
   GtkWidget *menu_bar;
@@ -136,10 +152,13 @@ static void activate(GtkApplication *app, gpointer user_data) {
 
   // Load a sample image
   GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(SAMPLE_IMAGE_PATH, NULL);
-  if (pixbuf) {
+  if (pixbuf)
+  {
     process_and_display_image(image_widget, pixbuf);
     g_object_unref(pixbuf);
-  } else {
+  }
+  else
+  {
     printf("Failed to load image from %s\n", SAMPLE_IMAGE_PATH);
   }
 
@@ -176,23 +195,33 @@ static void activate(GtkApplication *app, gpointer user_data) {
   const char *button_labels[] = {"Grayscale", "Binarize", "Invert colors",
                                  "Rotate left", "Rotate right"};
   for (long unsigned int i = 0;
-       i < sizeof(button_labels) / sizeof(button_labels[0]); i++) {
+       i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
+  {
     button = init_button(button_labels[i], NULL, image_widget);
     gtk_box_pack_start(GTK_BOX(vbox_buttons), button, FALSE, FALSE, 0);
     // Connect the buttons to their respective effects
-    if (strcmp(button_labels[i], "Grayscale") == 0) {
+    if (strcmp(button_labels[i], "Grayscale") == 0)
+    {
       g_signal_connect(button, "clicked", G_CALLBACK(on_grayscale_clicked),
                        image_widget);
-    } else if (strcmp(button_labels[i], "Binarize") == 0) {
+    }
+    else if (strcmp(button_labels[i], "Binarize") == 0)
+    {
       g_signal_connect(button, "clicked", G_CALLBACK(on_binarize_clicked),
                        image_widget);
-    } else if (strcmp(button_labels[i], "Rotate left") == 0) {
+    }
+    else if (strcmp(button_labels[i], "Rotate left") == 0)
+    {
       g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_left_clicked),
                        image_widget);
-    } else if (strcmp(button_labels[i], "Rotate right") == 0) {
+    }
+    else if (strcmp(button_labels[i], "Rotate right") == 0)
+    {
       g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_right_clicked),
                        image_widget);
-    } else if (strcmp(button_labels[i], "Invert colors") == 0) {
+    }
+    else if (strcmp(button_labels[i], "Invert colors") == 0)
+    {
       g_signal_connect(button, "clicked", G_CALLBACK(on_invert_colors_clicked),
                        image_widget);
     }
@@ -223,7 +252,8 @@ static void activate(GtkApplication *app, gpointer user_data) {
  * @param argv Argument vector.
  * @return int Status code.
  */
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 
   GtkApplication *app;
   int status;
