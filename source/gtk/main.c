@@ -79,8 +79,8 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
   gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file_menu_item);
 
   solver_menu = gtk_menu_new();
-  solver_menu_item = gtk_menu_item_new_with_label("🧩 Solver")
-      gtk_menu_item_set_submenu(GTK_MENU_ITEM(solver_menu_item), solver_menu);
+  solver_menu_item = gtk_menu_item_new_with_label("🧩 Solver");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(solver_menu_item), solver_menu);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), solver_menu_item);
 
   // Creates load menu item => file_menu
@@ -99,6 +99,110 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
   solver_menu_item = gtk_menu_item_new_with_label("Solver");
   g_signal_connect(solver_menu_item, "activate", G_CALLBACK(create_solver_window), NULL);
   gtk_menu_shell_append(GTK_MENU_SHELL(solver_menu), solver_menu_item);
+
+  // Grayscale processing menu
+  GtkWidget *grayscale_menu = gtk_menu_new();
+  GtkWidget *grayscale_menu_item = gtk_menu_item_new_with_label("Grayscale Processing");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(grayscale_menu_item), grayscale_menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), grayscale_menu_item);
+
+  GtkWidget *grayscale_item = gtk_menu_item_new_with_label("Grayscale");
+  g_signal_connect(grayscale_item, "activate", G_CALLBACK(on_grayscale_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(grayscale_menu), grayscale_item);
+
+  GtkWidget *contrast_item = gtk_menu_item_new_with_label("Contrast Amplification");
+  g_signal_connect(contrast_item, "activate", G_CALLBACK(on_contrast_amplification_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(grayscale_menu), contrast_item);
+
+  GtkWidget *median_filter_item = gtk_menu_item_new_with_label("Median Filter");
+  g_signal_connect(median_filter_item, "activate", G_CALLBACK(on_median_filter_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(grayscale_menu), median_filter_item);
+
+  GtkWidget *gaussian_filter_item = gtk_menu_item_new_with_label("Gaussian Filter");
+  g_signal_connect(gaussian_filter_item, "activate", G_CALLBACK(on_gaussian_filter_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(grayscale_menu), gaussian_filter_item);
+
+  // Thresholding menu
+  GtkWidget *thresholding_menu = gtk_menu_new();
+  GtkWidget *thresholding_menu_item = gtk_menu_item_new_with_label("Thresholding");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(thresholding_menu_item), thresholding_menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), thresholding_menu_item);
+
+  GtkWidget *average_item = gtk_menu_item_new_with_label("Average");
+  g_signal_connect(average_item, "activate", G_CALLBACK(on_average_thresholding_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(thresholding_menu), average_item);
+
+  GtkWidget *adaptive_item = gtk_menu_item_new_with_label("Adaptive (Local)");
+  g_signal_connect(adaptive_item, "activate", G_CALLBACK(on_adaptive_thresholding_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(thresholding_menu), adaptive_item);
+
+  GtkWidget *otsu_item = gtk_menu_item_new_with_label("Otsu (Global)");
+  g_signal_connect(otsu_item, "activate", G_CALLBACK(on_otsu_thresholding_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(thresholding_menu), otsu_item);
+
+  // B&W processing menu
+  GtkWidget *bw_processing_menu = gtk_menu_new();
+  GtkWidget *bw_processing_menu_item = gtk_menu_item_new_with_label("B&W Processing");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(bw_processing_menu_item), bw_processing_menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), bw_processing_menu_item);
+
+  GtkWidget *bw_median_filter_item = gtk_menu_item_new_with_label("Median Filter");
+  g_signal_connect(bw_median_filter_item, "activate", G_CALLBACK(on_bw_median_filter_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(bw_processing_menu), bw_median_filter_item);
+
+  GtkWidget *bw_gaussian_filter_item = gtk_menu_item_new_with_label("Gaussian Filter");
+  g_signal_connect(bw_gaussian_filter_item, "activate", G_CALLBACK(on_bw_gaussian_filter_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(bw_processing_menu), bw_gaussian_filter_item);
+
+  // Detection menu
+  GtkWidget *detection_menu = gtk_menu_new();
+  GtkWidget *detection_menu_item = gtk_menu_item_new_with_label("Detection");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(detection_menu_item), detection_menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), detection_menu_item);
+
+  GtkWidget *detect_characters_item = gtk_menu_item_new_with_label("Detect Characters");
+  g_signal_connect(detect_characters_item, "activate", G_CALLBACK(on_detect_characters_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(detection_menu), detect_characters_item);
+
+  GtkWidget *detect_grid_item = gtk_menu_item_new_with_label("Detect Grid");
+  g_signal_connect(detect_grid_item, "activate", G_CALLBACK(on_detect_grid_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(detection_menu), detect_grid_item);
+
+  GtkWidget *detect_word_list_item = gtk_menu_item_new_with_label("Detect Word List");
+  g_signal_connect(detect_word_list_item, "activate", G_CALLBACK(on_detect_word_list_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(detection_menu), detect_word_list_item);
+
+  GtkWidget *detect_words_item = gtk_menu_item_new_with_label("Detect Words");
+  g_signal_connect(detect_words_item, "activate", G_CALLBACK(on_detect_words_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(detection_menu), detect_words_item);
+
+  // Segmentation menu
+  GtkWidget *segmentation_menu = gtk_menu_new();
+  GtkWidget *segmentation_menu_item = gtk_menu_item_new_with_label("Segmentation");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(segmentation_menu_item), segmentation_menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), segmentation_menu_item);
+
+  GtkWidget *segment_grid_item = gtk_menu_item_new_with_label("Segment Grid");
+  g_signal_connect(segment_grid_item, "activate", G_CALLBACK(on_segment_grid_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(segmentation_menu), segment_grid_item);
+
+  GtkWidget *segment_words_item = gtk_menu_item_new_with_label("Segment Words");
+  g_signal_connect(segment_words_item, "activate", G_CALLBACK(on_segment_words_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(segmentation_menu), segment_words_item);
+
+  // Manual mode menu
+  GtkWidget *manual_mode_menu = gtk_menu_new();
+  GtkWidget *manual_mode_menu_item = gtk_menu_item_new_with_label("Manual Mode");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(manual_mode_menu_item), manual_mode_menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), manual_mode_menu_item);
+
+  GtkWidget *select_box_item = gtk_menu_item_new_with_label("Select Box");
+  g_signal_connect(select_box_item, "activate", G_CALLBACK(on_select_box_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(manual_mode_menu), select_box_item);
+
+  GtkWidget *segment_selected_item = gtk_menu_item_new_with_label("Segment Selected");
+  g_signal_connect(segment_selected_item, "activate", G_CALLBACK(on_segment_selected_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(manual_mode_menu), segment_selected_item);
 
   return menu_bar;
 }
