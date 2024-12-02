@@ -7,14 +7,14 @@ int box_are_equal(BoundingBox* b1, BoundingBox* b2)
 
 void box_expand_coord(BoundingBox* box, int x, int y)
 {
-    if(x>0)
+    if(x>=0)
     {
         if(box->p2.x<x)
             box->p2.x = x;
         else if(box->p1.x>x)
             box->p1.x = x;
     }
-    if(y>0)
+    if(y>=0)
     {
         if(box->p2.y<y)
             box->p2.y = y;
@@ -45,4 +45,12 @@ int box_get_height(BoundingBox* box)
 int box_get_width(BoundingBox* box)
 {
     return box->p2.x-box->p1.x;
+}
+
+Point box_get_center(BoundingBox* box)
+{
+    int x = (b->p1.x + b->p2.x) / 2;
+    int y = (b->p1.y + b->p2.y) / 2;
+    Point res = {x, y};
+    return res;
 }
