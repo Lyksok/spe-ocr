@@ -69,9 +69,42 @@ void list_remove(struct list* list, struct list* elm)
     free(elm);
 }
 
-void list_sort(struct list* list)
+void list_swap(struct list* l1, struct list* l2)
 {
-    // TODO
+    l1->next=l2->next;
+    l2->next=l1;
+    l2->prev=l1->prev;
+    l1->prev=l2;
+}
+
+void list_sort(struct list* list, int tolerance)
+{
+    int swapped;
+    struct list* p = list->next;
+    size_t len = list->len;
+    for(int i=0; i<len-1; i++)
+    {
+        swapped = 0;
+        for(int j=0; j<len-i-1; j++)
+        {
+            struct list* l1 = p;
+            struct list* l2 = p->next;
+            BoundingBox* b1 = l1->box;
+            BoundingBox* b2 = l2->box;
+
+            // Check if b2 is not greater than b1
+            Point p1 = box_get_center(b1);
+            Point p2 = box_get_center(b2);
+            if(!(abs(p1.y-p2.y)<=tolerance && p1.x<=p2.x))
+            {
+                list_swap(l1, l2);
+                swapped = 1;
+            }
+            p=p->next;
+        }
+        if(!swapped)
+            return;
+    }
 }
 
 void list_free(struct list* list)
