@@ -3,7 +3,7 @@ FLAGS = -Wall -Wextra -fsanitize=address
 
 
 # Imported packages
-PKGS = `pkg-config --cflags --libs gtk+-3.0`
+PKGS = `pkg-config --cflags --libs gtk+-3.4`
 LIBS = -lSDL2 -lSDL2_image -lm
 
 # Source files
