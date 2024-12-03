@@ -240,24 +240,29 @@ static void activate(GtkApplication *app, gpointer user_data)
   gtk_box_pack_start(GTK_BOX(vbox_buttons), right_angle_entry, FALSE, FALSE, 0);
 
   // Add buttons to the vertical box
-  const char *button_labels[] = {"Grayscale", "Binarize", "Invert colors",
+  const char *button_labels[] = {"Run",
                                  "Rotate left", "Rotate right"};
   for (long unsigned int i = 0;
        i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
   {
     button = init_button(button_labels[i], NULL, image_widget);
     gtk_box_pack_start(GTK_BOX(vbox_buttons), button, FALSE, FALSE, 0);
-    // Connect the buttons to their respective effects
-    if (strcmp(button_labels[i], "Grayscale") == 0)
+    // Connect the buttons to their respective callbacks
+    if (strcmp(button_labels[i], "Run") == 0)
     {
-      g_signal_connect(button, "clicked", G_CALLBACK(on_grayscale_clicked),
+      g_signal_connect(button, "clicked", G_CALLBACK(on_run_clicked),
                        image_widget);
     }
-    else if (strcmp(button_labels[i], "Binarize") == 0)
-    {
-      g_signal_connect(button, "clicked", G_CALLBACK(on_binarize_clicked),
-                       image_widget);
-    }
+    // if (strcmp(button_labels[i], "Grayscale") == 0)
+    // {
+    //   g_signal_connect(button, "clicked", G_CALLBACK(on_grayscale_clicked),
+    //                    image_widget);
+    // }
+    // else if (strcmp(button_labels[i], "Binarize") == 0)
+    // {
+    //   g_signal_connect(button, "clicked", G_CALLBACK(on_binarize_clicked),
+    //                    image_widget);
+    // }
     else if (strcmp(button_labels[i], "Rotate left") == 0)
     {
       g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_left_clicked),
@@ -268,23 +273,11 @@ static void activate(GtkApplication *app, gpointer user_data)
       g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_right_clicked),
                        image_widget);
     }
-    else if (strcmp(button_labels[i], "Invert colors") == 0)
-    {
-      g_signal_connect(button, "clicked", G_CALLBACK(on_invert_colors_clicked),
-                       image_widget);
-    }
-    /**
-    else if (strcmp(button_labels[i], "Detect") == 0)
-    {
-      g_signal_connect(button, "clicked", G_CALLBACK(on_detect_clicked),
-                       image_widget);
-    }
-    else if (strcmp(button_labels[i], "Segment) == 0)
-    {
-      g_signal_connect(button, "clicked", G_CALLBACK(on_segment_clicked),
-                       image_widget);
-    }
-    */
+    // else if (strcmp(button_labels[i], "Invert colors") == 0)
+    // {
+    //   g_signal_connect(button, "clicked", G_CALLBACK(on_invert_colors_clicked),
+    //                    image_widget);
+    // }
   }
 
   // Show all widgets in the window

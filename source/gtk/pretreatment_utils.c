@@ -1,5 +1,15 @@
 #include "pretreatment_utils.h"
-
+/***************************************************************
+ *   MULTIPURPOSE BUTTON "RUN" FOR PIPELINE DEMONSTRATION
+ ***************************************************************/
+void on_run_clicked(GtkWidget *button, gpointer data)
+{
+  GtkWidget *image_widget = GTK_WIDGET(data);
+  printf("🚀 Running the image processing pipeline\n");
+  on_grayscale_clicked(button, image_widget);
+  on_binarize_clicked(button, image_widget);
+  on_invert_colors_clicked(button, image_widget);
+}
 /***************************************************************
  *   ESSENTIAL PRETREATMENT FUNCTIONS
  *            shown in defense 1     *

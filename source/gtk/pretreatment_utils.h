@@ -20,11 +20,14 @@
 #include "../image_processing/utils/sdl_utils.h"
 #include "../image_processing/utils/converting.h"
 
+// MULTIPURPOSE BUTTON "RUN" FOR PIPELINE DEMONSTRATION
+void on_run_clicked(GtkWidget *button, gpointer data);
+// ESSENTIAL PRETREATMENT FUNCTIONS
 void on_grayscale_clicked(GtkWidget *widget, gpointer data);
 void on_binarize_clicked(GtkWidget *widget, gpointer data);
 void invert_binarized_colors_dupe(SDL_Surface *surface);
 void on_invert_colors_clicked(GtkWidget *widget, gpointer data);
-
+// EXTRA DEMONSTRATION PRETREATMENT FUNCTIONS
 void on_contrast_amplification_clicked(GtkWidget *widget, gpointer data);
 void on_median_filter_clicked(GtkWidget *widget, gpointer data);
 void on_gaussian_filter_clicked(GtkWidget *widget, gpointer data);
