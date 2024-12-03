@@ -5,9 +5,11 @@ CC = gcc
 
 FLAGS = -Wall -Wextra
 CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g
+PKGS = `pkg-config --cflags --libs gtk+-3.0`
 LIBS = -lSDL2 -lSDL2_image -lm
 
-OBJ = neural_letter.o
+OBJ = neural.o setup.o
+OBJ-OLD = neural_letter.o
 OBJECT = convertion.o main.o
 
 all: $(TARGET) $(TEST)
@@ -16,7 +18,7 @@ $(TARGET): $(OBJ)
 	$(CC) -o $@ $(OBJ) $(CFLAGS) $(LIBS)
 
 $(TEST): $(OBJECT)
-	$(CC) -o $@ $(OBJECT) $(CFLAGS) $(LIBS)
+	$(CC) -o $@ $(OBJECT) $(CFLAGS) $(LIBS) $(PKGS)
 
 %.o: %.c
 	$(CC) -c $< $(CFLAGS) -o $@

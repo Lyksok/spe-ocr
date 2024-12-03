@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 
 #include "convertion.h"
+#include "structures.h"
 
 int main()
 {

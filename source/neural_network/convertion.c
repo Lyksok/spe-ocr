@@ -2,6 +2,8 @@
 #include <SDL2/SDL_image.h>
 
 #include "convertion.h"
+#include "../gtk/conversion_utils.h"
+#include "../gtk/image_utils.h"
 
 // RGB WHITE = 255, 255, 255
 // RGB BLACK = 0, 0, 0
@@ -9,6 +11,11 @@
 /*
  * path : a path to a png image
  * returns : a surface from the image
+ * TODO
+ * use SDL_CreateSoftwareRenderer and SDL_RenderCopy()
+ * need to pass by a texture / renderer to resize the surface
+ * search for more information too
+ * add a size parameter ? need to fix one maybe
  * */
 SDL_Surface *toSDL(char *path)
 {
@@ -32,6 +39,18 @@ SDL_Surface *toSDL(char *path)
 		printf("%s", SDL_GetError());
 	}
 	SDL_ClearError();
+
+	/*
+	GdkPixbuf *sdl_surface_to_gdk_pixbuf(SDL_Surface *surface);
+	GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int new_width, int new_height);
+	SDL_Surface *gdk_pixbuf_to_sdl_surface(GdkPixbuf *pixbuf);
+	*/
+	int width;
+	int height;
+	GdkPixbuf *pix = sdl_surface_to_gdk_pixbuf(new);
+	pix = resize_pixbuf(pix, width, height);
+	new = gdk_pixbuf_to_sdl_surface(pix);
+
 	return new;
 }
 
@@ -41,6 +60,11 @@ SDL_Surface *toSDL(char *path)
  * list : a pointer to a list, to be filled with 0 and 1
  * len : the length of the list
  * returns : build in place the list
+ * TODO
+ * check if it's actually working
+ * currently tested with a new surface
+ * no idea wether said surface is black or white
+ * thus need further ckecks
  * */
 void SDL_to_list(SDL_Surface *surface, int len, int **list)
 {
