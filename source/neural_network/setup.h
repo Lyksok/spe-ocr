@@ -9,11 +9,13 @@ double GetMax(double x, double y);
 double RandFrom(double min, double max);
 void InitWeigths(Layer layer);
 void InitBiases(Layer layer);
-Layer CreateLayer();
+void PrintData(Network net);
+Layer CreateFirstLayer(int len, int nn);
+Layer CreateLayer(Layer *l, int nn);
 void DestroyLayer(Layer layer);
-TrainingData CreateData();
+TrainingData CreateData(int dim, int ni);
 void DestroyData(TrainingData data);
-Network CreateNet();
+Network CreateNet(int numLayers, int len);
 void DestroyNet(Network network);
 
 #endif

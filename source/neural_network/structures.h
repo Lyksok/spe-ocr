@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 typedef struct Neuron {
-	// TODO
 	double bias;
 	double value;
 } Neuron;
@@ -12,11 +11,12 @@ typedef struct Neuron {
 // to avoid struct for prev and next
 typedef struct Layer Layer;
 struct Layer {
-	// TODO
 	int numNeurons;
 	Neuron *neurons;
 	// equivalent to the number of inputs
 	int numWeights;
+	// every inputs
+	double *inputs;
 	// a matrice where each row
 	// is the weigths given to one neuron
 	// it has dimension numNeurons * numWeights
@@ -26,21 +26,20 @@ struct Layer {
 };
 
 typedef struct TrainingData {
-	// TODO
 	int size;
 	int nbinputs;
 	double **inputs;
+	double **outputs;
 	char *expected;
-	// the learning rate
 	double lr;
 } TrainingData;
 
 typedef struct Network {
-	// TODO
-	int numLayers;
-	Layer *layers;
-	double **inputs;
-	double **outputs;
+	// pointer to the first layer of the network
+	Layer layers;
+	double *outputs;
+	int nbsuccess;
+	int nbruns;
 } Network;
 
 #endif /* STRUCTURES_H */

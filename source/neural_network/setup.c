@@ -34,57 +34,90 @@ void InitBiases(Layer layer)
 	return;
 }
 
-Layer CreateLayer()
+void PrintData(Network net) {
+	Layer l = net.layers;
+	int nl = 0;
+	for (; l.next != NULL; l = l.next[0])
+	{
+		nl++;
+		printf("Weigths of layer %i :\n", nl);
+		for (int i = 0; i < l.numWeights; i++)
+		{
+			for (int n = 0; n < l.numNeurons; n++)
+			{
+				// each weigths
+				printf("%f ", l.weights[i][n]);
+			}
+			printf("\n");
+		}
+		printf("Biases of layer %i :\n", nl);
+		for (int n = 0; n < l.numNeurons; n++)
+		{
+			// each biases
+			printf("%f ", l.neurons[n].bias);
+		}
+		printf("\n");
+	}
+	return;
+}
+
+Layer CreateFirstLayer(int len, int nn)
 {
-        // TODO
         Layer layer;
-	// the number of neurons of the layer
-	layer.numNeurons = 0;
-	// the list of said neurons
-        layer.neurons = malloc(numNeurons * sizeof(Neuron));
-	// the bias of each neuron
+	layer.numNeurons = nn;
+        layer.neurons = malloc(nn * sizeof(Neuron));
+	layer.inputs = calloc(len, sizeof(double));
 	InitBiases(layer);
-	// the number of weights given to the layer
-	layer.numWeights = 0;
-	// the list of weigth given to the layer
+	layer.numWeights = len;
 	InitWeigths(layer);
 	layer.prev = NULL;
 	layer.next = NULL;
         return layer;
 }
 
+Layer *CreateLayer(Layer *l, int nn)
+{
+	int len = l->numNeurons;
+        Layer temp = CreateFirstLayer(len, nn);
+	Layer *layer = &temp;
+	layer->prev = l;
+	l->next = layer;
+	layer->next = NULL;
+        return layer;
+}
+
 void DestroyLayer(Layer layer)
 {
-        // TODO
-	if (layer == NULL)
+	free(layer.neurons);
+	free(layer.inputs);
+	if (layer.next == NULL)	
 		return;
 	else
 	{
-		free(layer.neurons);
-		DestroyLayer(layer.next);
+		DestroyLayer(layer.next[0]);
 	}
 }
 
-TrainingData CreateData()
+TrainingData CreateData(int dim, int ni)
 {
 	// TODO
 	TrainingData data;
 	// the size of the list
 	// that is the dimensions of the image
 	// eg : if image is of 13x13, then size = 13 * 13
-	data.size = 0;
+	data.size = dim * dim;
 	// the number of inputs we have
-	data.nbinputs = 0;
+	data.nbinputs = ni;
 	// the list of inputs
-	data.inputs = malloc(nbinputs * sizeof(double*));
-	for (int i = 0; i < data.nbinputs; i++)
+	data.inputs = malloc(ni * sizeof(double*));
+	for (int i = 0; i < ni; i++)
 	{
 		// each input
 		// one input = a list of 0 and 1
-		data.inputs[i] = calloc(size, sizeof(double));
+		data.inputs[i] = calloc(data.size, sizeof(double));
 	}
 	// what is the expected result (as a character)
-	data.expected = calloc(nbinputs * sizeof(char));
+	data.expected = calloc(ni, sizeof(char));
 	return data;
 }
 
@@ -96,30 +129,22 @@ void DestroyData(TrainingData data)
 		free(data.inputs[i]);
 	}
 	free(data.inputs);
+	free(data.expected);
 	return;
 }
 
-Network CreateNet()
+Network CreateNet(int numLayers, int len)
 {
-        // TODO
         Network network;
-	// the number of LAYERS inside the network
-	// at least one layer (>= 1)
-	network.numLayers = 1;
-	// list of said layers
-        network.layers = malloc(numLayers * sizeof(Layer));
-	if (network.numLayers)
-	{
-		// first hidden layer is created
-		network.layers[0] = CreateLayer();
-	}
-        for (int i = 1; i < network.numLayers; i++)
+	network.nbsuccess = 0;
+	network.nbruns = 0;
+	// nn : number of neurons inside the layers
+	int nn = 0;
+	network.layers = CreateFirstLayer(len, nn);
+	Layer *l = &(network.layers);
+        for (int i = 1; i < numLayers; i++)
         {
-		// each layer is created
-		// and linked with the previous one
-                network.layers[i] = CreateLayer();
-		network.layers[i - 1].next = network.layers[i];
-		network.layers[i].prev = network.layers[i - 1];
+		l = CreateLayer(l, nn);
         }
 
         return network;
@@ -127,8 +152,6 @@ Network CreateNet()
 
 void DestroyNet(Network network)
 {
-        // TODO
-	DestroyLayer(network.layers[0]);
-        free(network.layers);
+	DestroyLayer(network.layers);
         return;
 }

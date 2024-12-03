@@ -5,9 +5,9 @@
 
 #include "structures.h"
 
-#define numInputs 2
-#define numHiddenNodes 3
-#define numOutputs 1
+#define nLayers 2
+#define dimensions 13
+#define nTrainingSets 4
 
 extern double *hiddenLayer;
 // length = numHiddenNodes
@@ -22,20 +22,12 @@ extern double **hiddenWeights;
 extern double **outputWeights;
 // rows = numHiddenNodes - columns = numOutputs
 
-void Softmax(int K, double *mat);
-
-double sigmoid(double x);
-double dSigmoid(double x);
-
-void Sum(int length, double *inputs, Layer layer);
-void SumHidden(Layer l1, Layer l2);
-
-void Forward(int length, double *inputs, Layer l, double *outputs);
+void Forward(int length, Layer l, Network net);
 
 void Backward(Network net, TrainingData data, int run);
 
 void Result(Network net, TrainingData data, int nbrun);
 
-void train(int nbrun, Network net, TrainingData data);
+void Train(int nbrun, Network net, TrainingData data);
 
 #endif

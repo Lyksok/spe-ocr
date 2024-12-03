@@ -107,6 +107,36 @@ void backward(int i, const double lr, double **training_output)
     change_weights(lr, deltaOutput, deltaHidden);
 }
 
+void change_weights(const double lr,
+		double deltaOutput[numOutputs],
+		double deltaHidden[numHiddenNodes]);
+
+void change_weights(const double lr,
+		double deltaOutput[numOutputs],
+		double deltaHidden[numHiddenNodes])
+{
+
+    for(int j = 0; j < numOutputs; j++)
+    {
+        outputLayerBias[j] += deltaOutput[j] * lr;
+        for(int k = 0; k < numHiddenNodes; k++)
+        {
+            outputWeights[k][j] += hiddenLayer[k] *
+                    deltaOutput[j] * lr;
+        }
+    }
+
+    for(int j = 0; j < numHiddenNodes; j++)
+    {
+        hiddenLayerBias[j] += deltaHidden[j] * lr;
+        for(int k = 0; k < numInputs; k++)
+        {
+            hiddenWeights[k][j] += hiddenLayer[k] *
+                    deltaHidden[j] * lr;
+        }
+    }
+}
+
 void print_res(double **training_inputs,
                 double **training_output);
 

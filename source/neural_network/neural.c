@@ -1,25 +1,23 @@
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
+#include <string.h>
 
 #include "neural.h"
-#include "structures.h"
 #include "setup.h"
+#include "structures.h"
 
-#define numTrainingSets 4
-
-// to modify depending on how we're using it
-void Softmax(int length, double *mat)
+void Softmax(int length, double **mat)
 {
         double sum = 0;
         for (int n = 0; n < length; n++)
         {
-		mat[n] = exp(mat[n]);
-                sum += mat[n];
+		*mat[n] = exp(*mat[n]);
+                sum += *mat[n];
         }
         for (int n = 0; n < length; n++)
         {
-                mat[n] = mat[n] / sum;
+                *mat[n] = (*mat[n]) / sum;
         }
 }
 
@@ -28,14 +26,14 @@ double sigmoid(double x)
         return 1 / (1 + exp(-x));
 }
 
-// careful with the Vanishing gradient problem
 double dSigmoid(double x)
 {
         return x * (1 - x);
 }
 
-void Sum(int length, double *inputs, Layer layer)
+void Sum(int length, Layer layer)
 {
+	double *inputs = layer.inputs;
 	// foreach neurons
 	for (int n = 0; layer.numNeurons; n++)
 	{
@@ -59,22 +57,18 @@ void Sum(int length, double *inputs, Layer layer)
 
 void SumHidden(Layer l1, Layer l2)
 {
-	double *inputs;
 	int length = l1.numNeurons;
-	// foreach output
 	for (int n = 0; n < length; n++)
 	{
-		inputs[n] = l1.neurons[n].value;
+		l2.inputs[n] = l1.neurons[n].value;
 	}
-	// then we call Sum with the "inputs"
-	Sum(length, inputs, l2);
+	Sum(length, l2);
 	return;
 }
 
-void Forward(int length, double *inputs, Layer l, double *outputs)
+void Forward(int length, Layer l, Network net)
 {
-	// give the inputs to the first layer
-	Sum(length, inputs, l);
+	Sum(length, l);
 	// while the next layer is not NULL
 	for (; l.next != NULL; l = l.next[0])
 	{
@@ -85,72 +79,93 @@ void Forward(int length, double *inputs, Layer l, double *outputs)
 	// we collect the result of the last layer
 	for (int n = 0; n < l.numNeurons; n++)
 	{
-		outputs[n] = l.neurons[n].value;
+		net.outputs[n] = l.neurons[n].value;
 	}
 	// then we transform it to probabilities
-	Softmax(l.numNeurons, outputs);
+	Softmax(l.numNeurons, &net.outputs);
 }
 
-void change_weights(const double lr, double deltaOutput[numOutputs], double deltaHidden[numHiddenNodes])
-{
+void Update(Layer l, double *errors, int lr) {
+	for (int n = 0; n < l.numNeurons; n++)
+	{
+		double e = errors[n];
+		for (int i = 0; i < l.numWeights; i++)
+		{
+			double w = l.weights[n][i];
+			double in = l.inputs[i];
+			l.weights[n][i] = w - lr * e * in;
+		}
+		double b = l.neurons[n].bias;
+		l.neurons[n].bias = b - lr * e;
+	}
+	return;
+}
 
-    for(int j = 0; j < numOutputs; j++)
-    {
-        outputLayerBias[j] += deltaOutput[j] * lr;
-        for(int k = 0; k < numHiddenNodes; k++)
-        {
-            outputWeights[k][j] += hiddenLayer[k] *
-                    deltaOutput[j] * lr;
-        }
-    }
+double Cost(double a, double b) {
+	double c = a - b;
+	return c * c;
+}
 
-    for(int j = 0; j < numHiddenNodes; j++)
-    {
-        hiddenLayerBias[j] += deltaHidden[j] * lr;
-        for(int k = 0; k < numInputs; k++)
-        {
-            hiddenWeights[k][j] += hiddenLayer[k] *
-                    deltaHidden[j] * lr;
-        }
-    }
+double dCost(double a, double b) {
+	double c = a - b;
+	return 2 * c;
 }
 
 void Backward(Network net, TrainingData data, int run)
 {
-	// TODO
-    double deltaOutput[numOutputs];
-    for(int j = 0; j < numOutputs; j++)
-    {
-        double error = (training_output[i][j] - outputLayer[j]);
-            deltaOutput[j] = error * dSigmoid(outputLayer[j]);
-    }
+	Layer *l = &(net.layers);
+	for (; l->next != NULL; l = l->next)
+	{}
 
-    //Compute change in hidden weights
-    double deltaHidden[numHiddenNodes];
-    for(int j = 0; j < numHiddenNodes; j++)
-    {
-        double error = 0.0f;
-        for(int k = 0; k < numOutputs; k++)
-        {
-            error += deltaOutput[k] * outputWeights[j][k];
-        }
-        deltaHidden[j] = error * dSigmoid(hiddenLayer[j]);
-    }
-    change_weights(lr, deltaOutput, deltaHidden);
-    (void)data;
-    (void)net;
-    (void)run;
+	double *errors = calloc(26, sizeof(double));
+	if (errors == NULL)
+	{
+		printf("Backward() -> Calloc()\n");
+		return;
+	}
+	for (int n = 0; n < 26; n++)
+	{
+		double r = (data.expected[run] - 'A' == n) ? 1 : 0;
+		errors[n] += Cost(data.outputs[run][n], r);
+	}
+	for (; l != NULL; l = l->prev)
+	{
+		int nb = l->numNeurons;
+		double *err = calloc(nb, sizeof(double));
+		if (err == NULL)
+		{
+			printf("Backward() -> Calloc()\n");
+			return;
+		}
+		for (int n = 0; n < nb; n++)
+		{
+			double nerr = 0;
+			for (int x = 0; x < l->numWeights; x++)
+			{
+				double w = l->weights[x][n];
+				nerr += err[n] * w;
+			}
+			double v = l->neurons[n].value;
+			nerr *= dSigmoid(v);
+			err[n] += nerr;
+		}
+		Update(l[0], errors, data.lr);
+		free(errors);
+		errors = err;
+	}
+	free(errors);
 }
 
 void Result(Network net, TrainingData data, int nbrun)
 {
+	int succ = 0;
 	for (int run = 0; run < nbrun; run++)
 	{
-		double r = net.outputs[run][0];
+		double r = data.outputs[run][0];
 		char res = 0;
 		for (char i = 1; i < 26; i++)
 		{
-			double rr = GetMax(r, net.outputs[run][(int)i]);
+			double rr = GetMax(r, data.outputs[run][(int)i]);
 			if (r != rr)
 				res = i;
 			r = rr;
@@ -158,23 +173,42 @@ void Result(Network net, TrainingData data, int nbrun)
 		char *got = "Predicted Output =";
 		char *want = "Expected Output =";
 		res += 'A';
+		char eres = data.expected[run];
 		printf("Run %i : %s %c | %s %c\n",
-			run, got, res, want, data.expected[run]);
+			run, got, res, want, eres);
+		if (res == eres)
+			succ += 1;
 	}
+	net.nbsuccess += succ;
+	net.nbruns += nbrun;
+	double acc = (double) succ/nbrun;
+	double tacc = (double) net.nbsuccess/net.nbruns;
+	printf("Accuracy for this set : %f\n", acc);
+	printf("Total accuracy : %f\n", tacc);
 }
 
-void train(int nbrun, Network net, TrainingData data)
+void Copy(int len, double *src, double **dest) {
+	for (int l = 0; l < len; l++)
+	{
+		*dest[l] = src[l];
+	}
+	return;
+}
+
+void Train(int nbrun, Network net, TrainingData data)
 {
 	// learning rate
 	data.lr = 0.1f;
 
 	for (int run = 0; run < nbrun; run++)
 	{
-		for (int i = 0; i < numTrainingSets; i++)
+		for (int i = 0; i < data.nbinputs; i++)
 		{
-		    Forward(data.size, data.inputs[run],
-			net.layers[0], net.outputs[run]);
-		    Backward(net, data, run);
+			int len = data.size;
+			Copy(len, data.inputs[run], &(net.layers.inputs));
+			Forward(len, net.layers, net);
+			Copy(26, net.outputs, &(data.outputs[i]));
+			Backward(net, data, run);
 		}
 	}
 	Result(net, data, nbrun);
@@ -184,30 +218,37 @@ int main(int argc, char **argv)
 {
 	(void) argc;
 	(void) argv;
+	if (argc < 2)
+	{
+		printf("Expected more arguments\n");
+		return 1;
+	}
+	if (!(strcmp(argv[1], "train")))
+	{
+		printf("Training new network\n");
+		// Init of Training Data
+		TrainingData data = CreateData(dimensions, nTrainingSets);
+		// TODO
+		// actually create the data
 
-	// Init of Training Data
-	TrainingData data = CreateData();
-	DestroyData(data);
+		// Init of Network
+		Network network = CreateNet(nLayers, data.size);
 
-	// Init of Network
-	Network network = CreateNet();
-	DestroyNet(network);
+		int nbrun = 100000;
+		Train(nbrun, network, data);
 
-	// Init of weights
-	// --> done in CreateLayer() ?
-	// weights of input are in the first hidden layer
-	// weigths of output tho are not, may need to do that
-
-
-
-	// Init of bias
-	// --> done in CreateLayer() ?
-	// biases of layer are created
-	// but not of outputs
-	// but ouputs dont need biases ??
-
-	int nbrun = 100000;
-	train(nbrun, network, data);
+		DestroyData(data);
+		PrintData(network);
+		DestroyNet(network);
+		// we train
+		return 0;
+	}
+	else
+	{
+		printf("Using current network\n");
+		// we want an actual answer
+		return 0;
+	}
 
 	return 0;
 }

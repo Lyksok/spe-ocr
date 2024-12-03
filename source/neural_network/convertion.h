@@ -4,8 +4,8 @@
 #include <SDL2/SDL.h>
 
 #include "convertion.h"
-#include "../convertion_utils.h"
-#include "../image_utils.h"
+#include "../gtk/conversion_utils.h"
+#include "../gtk/image_utils.h"
 #include "structures.h"
 
 SDL_Surface *toSDL(char *path);

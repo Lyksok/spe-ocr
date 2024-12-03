@@ -2,8 +2,8 @@
 #include <SDL2/SDL_image.h>
 
 #include "convertion.h"
-#include "../convertion_utils.h"
-#include "../image_utils.h"
+#include "../gtk/conversion_utils.h"
+#include "../gtk/image_utils.h"
 
 // RGB WHITE = 255, 255, 255
 // RGB BLACK = 0, 0, 0
