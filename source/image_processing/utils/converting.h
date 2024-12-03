@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 #include "histograms.h"
+#include "pixel_utils.h"
+#include "../detection/bounding-box.h"
 
 int is_inverted(SDL_Surface *surface);
 void image_to_grayscale(SDL_Surface *surface);
@@ -14,5 +16,6 @@ void convert_image_with_threshold(SDL_Surface *surface, size_t threshold,
 void convert_pixel_with_threshold(SDL_Surface *surface, int threshold,
 								  size_t i);
 void invert_binarized_colors(SDL_Surface *surface);
+void remove_box(SDL_Surface* surface, BoundingBox* box);
 
 #endif /* CONVERTING_H */

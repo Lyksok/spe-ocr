@@ -22,7 +22,7 @@ float get_sauvola_threshold(double mean, double stddev, double k, double R)
 }
 
 void compute_sauvola_args(int width, int height,
-	int** integral, int** integral_sqrt,
+	int** integral, int** integral_sq,
 	int x, int y, double* mean, double* stddev)
 {
     // w = win_size
@@ -41,13 +41,13 @@ void compute_sauvola_args(int width, int height,
 	- (*integral)[y1*width+x2]
 	- (*integral)[y2*width+x1];
 
-    double sum_sqrt = (*integral_sqrt)[y2*width+x2]
-	+ (*integral_sqrt)[y1*width+x1]
-	- (*integral_sqrt)[y1*width+x2]
-	- (*integral_sqrt)[y2*width+x1];
+    double sum_sq = (*integral_sq)[y2*width+x2]
+	+ (*integral_sq)[y1*width+x1]
+	- (*integral_sq)[y1*width+x2]
+	- (*integral_sq)[y2*width+x1];
 
     *mean = sum/((double)w*w);
-    *stddev = sqrt((sum_sqrt/(double)area)-(*mean)*(*mean));
+    *stddev = sqrt((sum_sq/(double)area)-(*mean)*(*mean));
 }
 
 void sauvola_thresholding(SDL_Surface* surface)
@@ -56,7 +56,7 @@ void sauvola_thresholding(SDL_Surface* surface)
     int height = surface->h;
     int* integral = calloc(width*height, sizeof(double));
 
-    int* integral_sqrt = calloc(width*height, sizeof(double));
+    int* integral_sq = calloc(width*height, sizeof(double));
     
     int* thresholds = calloc(width*height, sizeof(double));
 
@@ -73,10 +73,10 @@ void sauvola_thresholding(SDL_Surface* surface)
 			       + (j>0 ? integral[(j-1)*width+i] : 0)
 			       - (i>0 && j>0 ? integral[(j-1)*width+i-1] : 0);
 
-	    integral_sqrt[j*width+i] = value* value
-			       + (i>0 ? integral_sqrt[j*width+i-1] : 0)
-			       + (j>0 ? integral_sqrt[(j-1)*width+i] : 0)
-			       - (i>0 && j>0 ? integral_sqrt[(j-1)*width+i-1] : 0);
+	    integral_sq[j*width+i] = value* value
+			       + (i>0 ? integral_sq[j*width+i-1] : 0)
+			       + (j>0 ? integral_sq[(j-1)*width+i] : 0)
+			       - (i>0 && j>0 ? integral_sq[(j-1)*width+i-1] : 0);
 	}
     }
 
@@ -87,7 +87,7 @@ void sauvola_thresholding(SDL_Surface* surface)
 	{
 	    double mean;
 	    double stddev;
-	    compute_sauvola_args(width, height, &integral, &integral_sqrt,
+	    compute_sauvola_args(width, height, &integral, &integral_sq,
 		    i, j, &mean, &stddev);
 	    thresholds[j*width+i] = get_sauvola_threshold(mean, stddev, k, R);
 	    convert_pixel_with_threshold(surface, thresholds[j*width+i],
@@ -110,6 +110,6 @@ void sauvola_thresholding(SDL_Surface* surface)
 
     free(input);
     free(integral);
-    free(integral_sqrt);
+    free(integral_sq);
     free(thresholds);
 }

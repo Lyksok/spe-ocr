@@ -1,5 +1,5 @@
 CC = gcc
-FLAGS = -Wall -Wextra -O2 -fsanitize=address
+FLAGS = -Wall -Wextra -fsanitize=address
 
 
 # Imported packages
@@ -7,8 +7,9 @@ PKGS = `pkg-config --cflags --libs gtk+-3.0`
 LIBS = -lSDL2 -lSDL2_image -lm
 
 # Source files
+IGNORE = %/image_processing.c %/main.c $(wildcard source/image_processing/detection-and-segmentation/*)
 SRC_APP = source/gtk/*.c
-SRC_BIN = $(filter-out source/binarization/main.c, $(wildcard source/binarization/*.c))
+SRC_BIN := $(filter-out $(IGNORE), $(wildcard source/image_processing/*/*.c))
 
 # Output executable
 TARGET = app_launcher
@@ -16,7 +17,7 @@ TARGET = app_launcher
 
 all: $(TARGET)
 
-$(TARGET): $(SRC)
+$(TARGET): $(SRC_BIN) $(SRC_APP)
 	$(CC) $(SRC_APP) $(SRC_BIN) -o $(TARGET) $(PKGS) $(LIBS) $(FLAGS)
 
 clean:

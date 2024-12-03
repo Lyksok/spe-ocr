@@ -52,6 +52,8 @@ void get_bounding_box_freq_histograms(SDL_Surface* surface,
 	{
     	for (int i = 0; i < surface->w; i++)
 		{
+            BoundingBox* box = boxes[j*surface->w+i];
+            Point point = (Point){i,j};
 			if(box->p2.x >= point.x && box->p1.x <= point.x 
 					&& box->p2.y >= point.y && box->p1.y <= point.y)
 			{

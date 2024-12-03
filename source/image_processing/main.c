@@ -11,6 +11,24 @@
 #include "edge_detection/convolution.h"
 #include "denoising/erosion.h"
 #include "denoising/pixel_filter.h"
+#include "detection/detection.h"
+#include "detection/cluster-detection.h"
+#include "detection/list.h"
+#include "utils/sdl_utils.h"
+#include "utils/converting.h"
+
+void level_2_image_2(SDL_Surface* surface)
+{
+  convert_to_grayscale(surface);
+  //contrast_surface(surface);
+  int w;
+  double* mask = create_gaussian_mask_3x3(&w);
+  convolve_surface(surface, mask, w);
+  sauvola_thresholding(surface);
+  invert_colors(surface);
+  //erode_surface(surface);
+  free(mask);
+}
 
 int main(int argc, char **argv) {
     (void)argc;
@@ -37,21 +55,36 @@ int main(int argc, char **argv) {
     errx(EXIT_FAILURE, "%s", SDL_GetError());
   }
 
-  convert_to_grayscale(surface);
+  int detecting = 0;
+  //int w;
+  //double* mask = create_gaussian_mask_5x5(&w);
+  //convert_to_grayscale(surface);
   //contrast_surface(surface);
+  //convolve_surface(surface, mask, w);
+  //sauvola_thresholding(surface);
+  //convert_to_binarized_average(surface);
+  //sauvola_thresholding(surface);
+  //invert_colors(surface);
+  level_2_image_2(surface);
+
+  struct list* box_list;
+  if(detecting)
+  {
+        box_list = list_new_list();
+        init_list(box_list);
+        compute_bounding_boxes(surface, box_list);
+        detect_characters(surface, box_list);
+        printf("box-len=%zu\n", box_list->len);
+  }
+  
   
  // median_filter(surface);
-  int w;
-  double* mask = create_gaussian_mask_5x5(&w);
-  //convolve_surface(surface, mask, w);
 
-  contrast_surface(surface);
-  convolve_surface(surface, mask, w);
-  sauvola_thresholding(surface);
-  invert_colors(surface);
+  //contrast_surface(surface);
+  //convolve_surface(surface, mask, w);
   //invert_colors(surface);
   
-  free(mask);
+  //free(mask);
   //erode_surface(surface);
   //convert_to_binarized_average(surface);
   //convert_to_binarized_adaptative(surface);
@@ -61,11 +94,24 @@ int main(int argc, char **argv) {
   SDL_SetWindowSize(window, surface->w, surface->h);
   SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
 
+
   SDL_RenderCopy(renderer, texture, NULL, NULL);
   SDL_RenderPresent(renderer);
 
   SDL_Event event;
+  int WIDTH;
+  int HEIGHT;
   while (1) {
+      if(detecting)
+      {
+      SDL_GetWindowSize(window, &WIDTH, &HEIGHT);
+      for(struct list* p=box_list->next; p!=NULL; p=p->next)
+      {
+          draw_rect(surface, renderer, p->box, WIDTH, HEIGHT);
+      }
+      SDL_RenderPresent(renderer);
+      }
+
     SDL_WaitEvent(&event);
     switch (event.type) {
     case SDL_QUIT:
