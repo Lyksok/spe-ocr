@@ -158,45 +158,42 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
  */
 static void activate(GtkApplication *app, gpointer user_data)
 {
+  GtkBuilder *builder;
   GtkWidget *window;
-  GtkWidget *main_box;
-  GtkWidget *menu_bar;
-  GtkWidget *grid;
-  GtkWidget *image_container;
-  GtkWidget *image_widget;
-  GtkWidget *vbox_buttons;
-  GtkWidget *button;
+  GtkCssProvider *css_provider;
+  GError *error = NULL;
 
-  (void)user_data; // Unused parameter removed warning
-  // Create a new window
-  window = gtk_application_window_new(app);
-  gtk_window_set_title(GTK_WINDOW(window),
-                       "Organized Chaotic Results software");
-  gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
+  builder = gtk_builder_new();
+  if (!gtk_builder_add_from_file(builder, "source/gtk/layout/layout.ui", &error))
+  {
+    g_warning("%s", error->message);
+    g_clear_error(&error);
+    return;
+  }
 
-  // Create a main box to hold the menu bar and the grid
-  main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-  gtk_container_add(GTK_CONTAINER(window), main_box);
+  window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
+  gtk_window_set_application(GTK_WINDOW(window), app);
 
-  // Create an image widget
-  image_widget = gtk_image_new();
+  // Load CSS
+  css_provider = gtk_css_provider_new();
+  gtk_css_provider_load_from_path(css_provider, "source/gtk/style/style.css", NULL);
+  gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+                                            GTK_STYLE_PROVIDER(css_provider),
+                                            GTK_STYLE_PROVIDER_PRIORITY_USER);
 
-  // Initialize the menu bar
-  menu_bar = init_menu_bar(image_widget);
-  gtk_box_pack_start(GTK_BOX(main_box), menu_bar, FALSE, FALSE, 0);
+  // Connect signals
+  g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-  // Create a grid container for the main content
-  grid = gtk_grid_new();
-  gtk_container_set_border_width(GTK_CONTAINER(grid), 10);
-  gtk_box_pack_start(GTK_BOX(main_box), grid, TRUE, TRUE, 0);
+  // Get references to other widgets
+  GtkWidget *main_box = GTK_WIDGET(gtk_builder_get_object(builder, "main_box"));
 
-  // Create an image container
-  image_container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-  gtk_widget_set_halign(image_container, GTK_ALIGN_CENTER);
-  gtk_widget_set_valign(image_container, GTK_ALIGN_CENTER);
-  gtk_grid_attach(GTK_GRID(grid), image_container, 0, 0, 1, 1);
+  // Initialize the menu bar and add it as the first child of main_box
+  GtkWidget *menu_bar_initialized = init_menu_bar(NULL);
+  gtk_box_pack_start(GTK_BOX(main_box), menu_bar_initialized, FALSE, FALSE, 0);
 
-  gtk_container_add(GTK_CONTAINER(image_container), image_widget);
+  // Get references to other widgets
+  GtkWidget *image_widget = GTK_WIDGET(gtk_builder_get_object(builder, "image_widget"));
+  GtkWidget *hbox_buttons = GTK_WIDGET(gtk_builder_get_object(builder, "hbox_buttons"));
 
   // Load a sample image
   GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(SAMPLE_IMAGE_PATH, NULL);
@@ -209,105 +206,41 @@ static void activate(GtkApplication *app, gpointer user_data)
   {
     printf("Failed to load image from %s\n", SAMPLE_IMAGE_PATH);
   }
-
-  // Create a vertical box for buttons
-  vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-  gtk_grid_attach(GTK_GRID(grid), vbox_buttons, 1, 0, 1, 1);
-
-  // Manage entry buttons for the rotation
-  // Update angle values according to user input
-  GtkWidget *left_angle_entry = gtk_entry_new();
-  GtkWidget *right_angle_entry = gtk_entry_new();
-  char *left_angle_text = g_strdup_printf("%.2f", DEFAULT_LEFT_ANGLE);
-  gtk_entry_set_text(GTK_ENTRY(left_angle_entry), left_angle_text);
-  g_free(left_angle_text);
-
-  char *right_angle_text = g_strdup_printf("%.2f", DEFAULT_RIGHT_ANGLE);
-  gtk_entry_set_text(GTK_ENTRY(right_angle_entry), right_angle_text);
-  g_free(right_angle_text);
-
-  g_signal_connect(left_angle_entry, "activate",
-                   G_CALLBACK(on_angle_entry_activate), &left_angle);
-  // updates when the user presses enter
-  g_signal_connect(right_angle_entry, "activate",
-                   G_CALLBACK(on_angle_entry_activate), &right_angle);
-  // updates when the user presses enter
-  gtk_box_pack_start(GTK_BOX(vbox_buttons), gtk_label_new("Left angle:"), FALSE,
-                     FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(vbox_buttons), left_angle_entry, FALSE, FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(vbox_buttons), gtk_label_new("Right angle:"),
-                     FALSE, FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(vbox_buttons), right_angle_entry, FALSE, FALSE, 0);
-
-  // Add buttons to the vertical box
-  const char *button_labels[] = {"Run",
-                                 "Rotate left", "Rotate right"};
-  for (long unsigned int i = 0;
-       i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
+  // Add buttons to the hbox
+  const char *button_labels[] = {"Run", "Rotate left", "Rotate right"};
+  for (size_t i = 0; i < sizeof(button_labels) / sizeof(button_labels[0]); i++)
   {
-    button = init_button(button_labels[i], NULL, image_widget);
-    gtk_box_pack_start(GTK_BOX(vbox_buttons), button, FALSE, FALSE, 0);
+    GtkWidget *button = init_button(button_labels[i], NULL, image_widget);
+    gtk_box_pack_start(GTK_BOX(hbox_buttons), button, FALSE, FALSE, 0);
+
     // Connect the buttons to their respective callbacks
     if (strcmp(button_labels[i], "Run") == 0)
     {
-      g_signal_connect(button, "clicked", G_CALLBACK(on_run_clicked),
-                       image_widget);
+      g_signal_connect(button, "clicked", G_CALLBACK(on_run_clicked), image_widget);
     }
-    // if (strcmp(button_labels[i], "Grayscale") == 0)
-    // {
-    //   g_signal_connect(button, "clicked", G_CALLBACK(on_grayscale_clicked),
-    //                    image_widget);
-    // }
-    // else if (strcmp(button_labels[i], "Binarize") == 0)
-    // {
-    //   g_signal_connect(button, "clicked", G_CALLBACK(on_binarize_clicked),
-    //                    image_widget);
-    // }
     else if (strcmp(button_labels[i], "Rotate left") == 0)
     {
-      g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_left_clicked),
-                       image_widget);
+      g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_left_clicked), image_widget);
     }
     else if (strcmp(button_labels[i], "Rotate right") == 0)
     {
-      g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_right_clicked),
-                       image_widget);
+      g_signal_connect(button, "clicked", G_CALLBACK(on_rotate_right_clicked), image_widget);
     }
-    // else if (strcmp(button_labels[i], "Invert colors") == 0)
-    // {
-    //   g_signal_connect(button, "clicked", G_CALLBACK(on_invert_colors_clicked),
-    //                    image_widget);
-    // }
   }
 
   // Show all widgets in the window
   gtk_widget_show_all(window);
-
-  // Show the splash screen
-  // show_splash_screen(app);
 }
 
-/**
- * @brief Main function to run the GTK application.
- * @param argc Argument count.
- * @param argv Argument vector.
- * @return int Status code.
- */
 int main(int argc, char **argv)
 {
-
   GtkApplication *app;
   int status;
-  /*  Window creation  */
-  // gtk_init() called in gtk_application_new '
+
   app = gtk_application_new("org.app.OCR", G_APPLICATION_DEFAULT_FLAGS);
-
-  /*  Signal connections */
-  // "activate" signal connection
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
-  /*  Run event loop  */
-  status = g_application_run(G_APPLICATION(app), argc, argv);
 
+  status = g_application_run(G_APPLICATION(app), argc, argv);
   g_object_unref(app);
 
   return status;

@@ -1,121 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- Main Window -->
-  <object class="GtkApplicationWindow" id="main_window">
+  <requires lib="gtk+" version="3.0"/>
+  <object class="GtkApplicationWindow" id="window">
     <property name="title">Organized Chaotic Results software</property>
     <property name="default-width">800</property>
     <property name="default-height">600</property>
-
-    <!-- Main Box -->
     <child>
       <object class="GtkBox" id="main_box">
         <property name="orientation">vertical</property>
-        <property name="spacing">0</property>
-
-        <!-- Menu Bar -->
         <child>
-          <object class="GtkMenuBar" id="menu_bar">
+          <object class="GtkBox" id="menu_box">
+            <property name="orientation">horizontal</property>
             <child>
-              <object class="GtkMenuItem" id="file_menu_item">
-                <property name="label">📁 File</property>
-                <child type="submenu">
-                  <object class="GtkMenu" id="file_menu">
-                    <child>
-                      <object class="GtkMenuItem" id="load_menu_item">
-                        <property name="label">Load Image</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkMenuItem" id="save_menu_item">
-                        <property name="label">Save Image</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
+              <object class="GtkMenuBar" id="menu_bar"/>
             </child>
           </object>
         </child>
-
-        <!-- Main Grid -->
         <child>
-          <object class="GtkGrid" id="main_grid">
-            <property name="margin">10</property>
-
-            <!-- Image Container -->
+          <object class="GtkBox" id="content_box">
+            <property name="orientation">vertical</property>
+            <property name="spacing">10</property>
             <child>
-              <object class="GtkBox" id="image_container">
-                <property name="orientation">vertical</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <child>
-                  <object class="GtkImage" id="image_widget"/>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">0</property>
-              </packing>
+              <object class="GtkImage" id="image_widget"/>
             </child>
-
-            <!-- Button and Entry Box -->
-            <child>
-              <object class="GtkBox" id="vbox_buttons">
-                <property name="orientation">vertical</property>
-                <property name="spacing">10</property>
-
-                <!-- Left Angle Entry -->
-                <child>
-                  <object class="GtkLabel" id="left_angle_label">
-                    <property name="label">Left angle:</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="left_angle_entry"/>
-                </child>
-
-                <!-- Right Angle Entry -->
-                <child>
-                  <object class="GtkLabel" id="right_angle_label">
-                    <property name="label">Right angle:</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="right_angle_entry"/>
-                </child>
-
-                <!-- Action Buttons -->
-                <child>
-                  <object class="GtkButton" id="button_grayscale">
-                    <property name="label">Grayscale</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="button_binarize">
-                    <property name="label">Binarize</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="button_invert_colors">
-                    <property name="label">Invert colors</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="button_rotate_left">
-                    <property name="label">Rotate left</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="button_rotate_right">
-                    <property name="label">Rotate right</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">0</property>
-              </packing>
-            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="hbox_buttons">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">10</property>
+            <property name="valign">center</property>
+            <property name="halign">center</property>
           </object>
         </child>
       </object>
