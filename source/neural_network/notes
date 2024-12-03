@@ -3,12 +3,6 @@ sum = inputs * weights + bias
 output = activation(sum)
 The weights are usually initialized randomly while the bias at 0.
 
----
-ok so the layers are what happens inside the network
-the inputs are not a layer !!
-have to check whether the outputs are one tho, maybe it's compatible
----
-
 ----- INFO -----
 Softmax:
 Softmax is typically used in the output layer of a neural network
@@ -40,16 +34,10 @@ between the actual output vector of the net
 and the desired output vector.
 
 ----- TODOs -----
-TODO: search and understand backward
-TODO: check what is gradient stuff and how to use it
-TODO: check dSoftMax
-TODO: initialize data (Network, Layer, Neuron, inputs..)
-TODO: finalize the structures (for now I'm changing stuff as I go)
-
 TODO: find how to train the network (Louis's script can help)
-TODO: resize images to a certain size (to determine)
 TODO: check wether the transformation from image to list is working correctly
 TODO: actually test stuff
+TODO: search how to store the "old" network (to reuse)
 
 ----- NB -----
 /!\ if a function was completely erased or modified
