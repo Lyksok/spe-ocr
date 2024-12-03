@@ -291,7 +291,7 @@ static void activate(GtkApplication *app, gpointer user_data)
   gtk_widget_show_all(window);
 
   // Show the splash screen
-  show_splash_screen(app);
+  // show_splash_screen(app);
 }
 
 /**
