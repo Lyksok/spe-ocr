@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "solver.h"
 #include "read.h"
@@ -34,24 +35,34 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	char *file = argv[1];
+	int to_print = 0;
+	if (!strcmp(file, "print"))
+	{
+		file = argv[2];
+		to_print = 1;
+	}
+
 	/*
 	 * row : pointer to the number of rows
 	 * col : pointer to the number of columns
 	 * grid : our matrix we want to search in
 	 */
-	int *row = calloc(1, sizeof(int));
-	int *col = calloc(1, sizeof(int));
-	if (row == NULL || col == NULL)
-	{
-		printf("Memory allocation failed (row/col)\n");
-		return 2;
-	}
+	int row = 0;
+	int col = 0;
 
-	char **grid = ReadFile(argv[1], row, col);
+	char **grid = ReadFile(file, &row, &col);
 	if (grid == NULL)
 	{
 		printf("Could not create the grid\n");
 		return 3;
+	}
+
+	if (to_print)
+	{
+		PrintMat(row, col, grid);
+		FreeMat(grid, row);
+		return 0;
 	}
 
 	/*
@@ -60,21 +71,22 @@ int main(int argc, char* argv[])
 	 */
 	if (NotJustLetters(argv[2]))
 	{
-		FreeMat(grid, *row);
-		free(row);
-		free(col);
+		FreeMat(grid, row);
 		return 4;
 	}
 
 	/* FOR TESTING PURPOSE
-	PrintMat(*row, *col, grid);
+	PrintMat(row, col, grid);
 	PrintWord(argv[2]);
 	*/
 
-	Solver(*row, *col, grid, argv[2]);
+	int srow = 0;
+	int scol = 0;
+	int erow = 0;
+	int ecol = 0;
+	Solver(row, col, grid, argv[2], &srow, &scol, &erow, &ecol);
+	// word is starting from (scol, srow) and ends at (ecol, erow)
 
-	FreeMat(grid, *row);
-	free(row);
-	free(col);
+	FreeMat(grid, row);
 	return 0;
 }

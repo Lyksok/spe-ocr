@@ -169,9 +169,12 @@ int Search(int row, int col, char **mat,
 /*
  * mat : a matrice of characters
  * word : the word to search for
+ * sr and sc : starting row and column of the word
+ * er and ec : ending row and column of the word
  * Returns True or False if the word is found
  */
-int Solver(int row, int col, char **mat, char word[]) {
+int Solver(int row, int col, char **mat, char word[],
+		int *sr, int *sc, int *er, int *ec) {
 	/*
 	 * len : the length of the word
 	 * max : the max between the numbers of rows and columns
@@ -192,18 +195,18 @@ int Solver(int row, int col, char **mat, char word[]) {
 		 * r : to iterate over rows
 		 * c : to iterate over columns
 		 * found : boolean, have we found it, set to False
-		 * mr : last row if match
-		 * mc : last column if match
+		 * sr : last starting row if match
+		 * sc : last starting column if match
 		 * er : ending row if it exists
 		 * ec : ending column if it exists
 		 */
 		int r = 0;
 		int c = 0;
 		char found = 0;
-		int mr = 0;
-		int mc = 0;
-		int *er = calloc(1, sizeof(int));
-		int *ec = calloc(1, sizeof(int));
+		*sr = 0;
+		*sc = 0;
+		*er = 0;
+		*ec = 0;
 
 		while (r < row && !found)
 		{
@@ -214,10 +217,10 @@ int Solver(int row, int col, char **mat, char word[]) {
 				{
 					// the first letter of the word match
 					// we check for the rest
-					mr = r;
-					mc = c;
+					*sr = r;
+					*sc = c;
 					found = Search(row, col, mat,
-							word, mr, mc, len,
+							word, *sr, *sc, len,
 							er, ec);
 				}
 				c++;
@@ -226,12 +229,10 @@ int Solver(int row, int col, char **mat, char word[]) {
 		}
 
 		if (found)
-			printf("(%i,%i)(%i,%i)\n", mc, mr, *ec, *er);
+			printf("(%i,%i)(%i,%i)\n", *sc, *sr, *ec, *er);
 		else
 			printf("Not Found\n");
 
-		free(er);
-		free(ec);
 		return found;
         }
 }
