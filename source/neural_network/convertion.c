@@ -2,6 +2,8 @@
 #include <SDL2/SDL_image.h>
 
 #include "convertion.h"
+#include "../convertion_utils.h"
+#include "../image_utils.h"
 
 // RGB WHITE = 255, 255, 255
 // RGB BLACK = 0, 0, 0
@@ -37,6 +39,18 @@ SDL_Surface *toSDL(char *path)
 		printf("%s", SDL_GetError());
 	}
 	SDL_ClearError();
+
+	/*
+	GdkPixbuf *sdl_surface_to_gdk_pixbuf(SDL_Surface *surface);
+	GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int new_width, int new_height);
+	SDL_Surface *gdk_pixbuf_to_sdl_surface(GdkPixbuf *pixbuf);
+	*/
+	int width;
+	int height;
+	GdkPixbuf *pix = sdl_surface_to_gdk_pixbuf(new);
+	pix = resize_pixbuf(pix, width, height);
+	new = gdk_pixbuf_to_sdl_surface(pix);
+
 	return new;
 }
 
