@@ -67,7 +67,7 @@ GtkWidget *init_button(const char *label, GCallback callback, gpointer data)
  */
 GtkWidget *init_menu_bar(GtkWidget *image_widget)
 {
-  GtkWidget *menu_bar, *file_menu, *file_menu_item, *load_menu_item,
+  GtkWidget *menu_bar, *file_menu, *solver_menu, *file_menu_item, *load_menu_item,
       *save_menu_item, *solver_menu_item;
 
   // Creates a menu bar
@@ -124,7 +124,7 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
 
   // Thresholding menu
   GtkWidget *thresholding_menu = gtk_menu_new();
-  GtkWidget *thresholding_menu_item = gtk_menu_item_new_with_label("Thresholding");
+  GtkWidget *thresholding_menu_item = gtk_menu_item_new_with_label("📈 Thresholding");
   gtk_menu_item_set_submenu(GTK_MENU_ITEM(thresholding_menu_item), thresholding_menu);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), thresholding_menu_item);
 
@@ -140,70 +140,14 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
   g_signal_connect(otsu_item, "activate", G_CALLBACK(on_otsu_thresholding_clicked), image_widget);
   gtk_menu_shell_append(GTK_MENU_SHELL(thresholding_menu), otsu_item);
 
-  // B&W processing menu
-  GtkWidget *bw_processing_menu = gtk_menu_new();
-  GtkWidget *bw_processing_menu_item = gtk_menu_item_new_with_label("Grayscale Processing");
-  gtk_menu_item_set_submenu(GTK_MENU_ITEM(bw_processing_menu_item), bw_processing_menu);
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), bw_processing_menu_item);
-
-  GtkWidget *bw_median_filter_item = gtk_menu_item_new_with_label("Median Filter");
-  g_signal_connect(bw_median_filter_item, "activate", G_CALLBACK(on_bw_median_filter_clicked), image_widget);
-  gtk_menu_shell_append(GTK_MENU_SHELL(bw_processing_menu), bw_median_filter_item);
-
-  GtkWidget *bw_gaussian_filter_item = gtk_menu_item_new_with_label("Gaussian Filter");
-  g_signal_connect(bw_gaussian_filter_item, "activate", G_CALLBACK(on_bw_gaussian_filter_clicked), image_widget);
-  gtk_menu_shell_append(GTK_MENU_SHELL(bw_processing_menu), bw_gaussian_filter_item);
-
   // Detection menu
-  GtkWidget *detection_menu = gtk_menu_new();
-  GtkWidget *detection_menu_item = gtk_menu_item_new_with_label("Detection");
-  gtk_menu_item_set_submenu(GTK_MENU_ITEM(detection_menu_item), detection_menu);
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), detection_menu_item);
-
-  GtkWidget *detect_characters_item = gtk_menu_item_new_with_label("Detect Characters");
-  g_signal_connect(detect_characters_item, "activate", G_CALLBACK(on_detect_characters_clicked), image_widget);
-  gtk_menu_shell_append(GTK_MENU_SHELL(detection_menu), detect_characters_item);
-
-  GtkWidget *detect_grid_item = gtk_menu_item_new_with_label("Detect Grid");
-  g_signal_connect(detect_grid_item, "activate", G_CALLBACK(on_detect_grid_clicked), image_widget);
-  gtk_menu_shell_append(GTK_MENU_SHELL(detection_menu), detect_grid_item);
-
-  GtkWidget *detect_word_list_item = gtk_menu_item_new_with_label("Detect Word List");
-  g_signal_connect(detect_word_list_item, "activate", G_CALLBACK(on_detect_word_list_clicked), image_widget);
-  gtk_menu_shell_append(GTK_MENU_SHELL(detection_menu), detect_word_list_item);
-
-  GtkWidget *detect_words_item = gtk_menu_item_new_with_label("Detect Words");
-  g_signal_connect(detect_words_item, "activate", G_CALLBACK(on_detect_words_clicked), image_widget);
-  gtk_menu_shell_append(GTK_MENU_SHELL(detection_menu), detect_words_item);
+  // TODO
 
   // Segmentation menu
-  GtkWidget *segmentation_menu = gtk_menu_new();
-  GtkWidget *segmentation_menu_item = gtk_menu_item_new_with_label("Segmentation");
-  gtk_menu_item_set_submenu(GTK_MENU_ITEM(segmentation_menu_item), segmentation_menu);
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), segmentation_menu_item);
-
-  GtkWidget *segment_grid_item = gtk_menu_item_new_with_label("Segment Grid");
-  g_signal_connect(segment_grid_item, "activate", G_CALLBACK(on_segment_grid_clicked), image_widget);
-  gtk_menu_shell_append(GTK_MENU_SHELL(segmentation_menu), segment_grid_item);
-
-  GtkWidget *segment_words_item = gtk_menu_item_new_with_label("Segment Words");
-  g_signal_connect(segment_words_item, "activate", G_CALLBACK(on_segment_words_clicked), image_widget);
-  gtk_menu_shell_append(GTK_MENU_SHELL(segmentation_menu), segment_words_item);
+  // TODO
 
   // Manual mode menu
-  GtkWidget *manual_mode_menu = gtk_menu_new();
-  GtkWidget *manual_mode_menu_item = gtk_menu_item_new_with_label("Manual Mode");
-  gtk_menu_item_set_submenu(GTK_MENU_ITEM(manual_mode_menu_item), manual_mode_menu);
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), manual_mode_menu_item);
-
-  GtkWidget *select_box_item = gtk_menu_item_new_with_label("Select Box");
-  g_signal_connect(select_box_item, "activate", G_CALLBACK(on_select_box_clicked), image_widget);
-  gtk_menu_shell_append(GTK_MENU_SHELL(manual_mode_menu), select_box_item);
-
-  GtkWidget *segment_selected_item = gtk_menu_item_new_with_label("Segment Selected");
-  g_signal_connect(segment_selected_item, "activate", G_CALLBACK(on_segment_selected_clicked), image_widget);
-  gtk_menu_shell_append(GTK_MENU_SHELL(manual_mode_menu), segment_selected_item);
-
+  // TODO think about it
   return menu_bar;
 }
 

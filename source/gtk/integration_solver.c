@@ -2,43 +2,43 @@
 #include "../solver/solver.h"
 #include "../solver/read.h"
 
-// Callback function to handle the solver
-void on_solve_button_clicked(GtkWidget *widget, gpointer data)
-{
-    GtkWidget **widgets = (GtkWidget **)data;
-    GtkEntry *grid_entry = GTK_ENTRY(widgets[0]);
-    GtkEntry *word_entry = GTK_ENTRY(widgets[1]);
-    GtkTextView *text_view = GTK_TEXT_VIEW(widgets[2]);
+// // Callback function to handle the solver
+// void on_solve_button_clicked(GtkWidget *widget, gpointer data)
+// {
+//     GtkWidget **widgets = (GtkWidget **)data;
+//     GtkEntry *grid_entry = GTK_ENTRY(widgets[0]);
+//     GtkEntry *word_entry = GTK_ENTRY(widgets[1]);
+//     GtkTextView *text_view = GTK_TEXT_VIEW(widgets[2]);
 
-    const char *grid_text = gtk_entry_get_text(grid_entry);
-    const char *word = gtk_entry_get_text(word_entry);
+//     const char *grid_text = gtk_entry_get_text(grid_entry);
+//     const char *word = gtk_entry_get_text(word_entry);
 
-    if (grid_text == NULL || strlen(grid_text) == 0 || word == NULL || strlen(word) == 0)
-    {
-        return;
-    }
+//     if (grid_text == NULL || strlen(grid_text) == 0 || word == NULL || strlen(word) == 0)
+//     {
+//         return;
+//     }
 
-    // Parse the grid text into a 2D array
-    int row = 8;  // Example row count
-    int col = 10; // Example column count
-    char **grid = ReadFile(grid_text, &row, &col);
+//     // Parse the grid text into a 2D array
+//     int row = 8;  // Example row count
+//     int col = 10; // Example column count
+//     char **grid = ReadFile(grid_text, &row, &col);
 
-    if (grid == NULL)
-    {
-        gtk_text_buffer_set_text(gtk_text_view_get_buffer(text_view), "Invalid grid input", -1);
-        return;
-    }
+//     if (grid == NULL)
+//     {
+//         gtk_text_buffer_set_text(gtk_text_view_get_buffer(text_view), "Invalid grid input", -1);
+//         return;
+//     }
 
-    // Call the solver function
-    int found = Solver(row, col, grid, word);
+//     // Call the solver function
+//     int found = Solver(row, col, grid, word);
 
-    // Display the results in the text view
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer(text_view);
-    gtk_text_buffer_set_text(buffer, found ? "Word found !" : "Word not found !", -1);
+//     // Display the results in the text view
+//     GtkTextBuffer *buffer = gtk_text_view_get_buffer(text_view);
+//     gtk_text_buffer_set_text(buffer, found ? "Word found !" : "Word not found !", -1);
 
-    // Free the grid memory
-    FreeMat(grid, row);
-}
+//     // Free the grid memory
+//     FreeMat(grid, row);
+// }
 
 void create_solver_window(GtkWidget *widget, gpointer data)
 {
@@ -75,7 +75,7 @@ void create_solver_window(GtkWidget *widget, gpointer data)
     widgets[0] = grid_entry;
     widgets[1] = word_entry;
     widgets[2] = text_view;
-    g_signal_connect(solve_button, "clicked", G_CALLBACK(on_solve_button_clicked), widgets);
+    //  g_signal_connect(solve_button, "clicked", G_CALLBACK(on_solve_button_clicked), widgets);
 
     gtk_widget_show_all(window);
 }

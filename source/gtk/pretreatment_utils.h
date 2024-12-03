@@ -12,7 +12,7 @@
 #include "../image_processing/denoising/contrasting.h"
 #include "../image_processing/edge_detection/gaussian.h"
 #include "../image_processing/edge_detection/convolution.h"
-#include "../image_processing/denoising/erosion.h"
+// #include "../image_processing/denoising/erosion.h" // Excluded due to errors
 #include "../image_processing/denoising/pixel_filter.h"
 #include "../image_processing/detection/detection.h"
 #include "../image_processing/detection/cluster-detection.h"
@@ -24,5 +24,14 @@ void on_grayscale_clicked(GtkWidget *widget, gpointer data);
 void on_binarize_clicked(GtkWidget *widget, gpointer data);
 void invert_binarized_colors_dupe(SDL_Surface *surface);
 void on_invert_colors_clicked(GtkWidget *widget, gpointer data);
+
+void on_contrast_amplification_clicked(GtkWidget *widget, gpointer data);
+void on_median_filter_clicked(GtkWidget *widget, gpointer data);
+void on_gaussian_filter_clicked(GtkWidget *widget, gpointer data);
+void on_average_thresholding_clicked(GtkWidget *widget, gpointer data);
+void on_adaptive_thresholding_clicked(GtkWidget *widget, gpointer data);
+void on_otsu_thresholding_clicked(GtkWidget *widget, gpointer data);
+void on_bw_median_filter_clicked(GtkWidget *widget, gpointer data);
+void on_bw_gaussian_filter_clicked(GtkWidget *widget, gpointer data);
 
 #endif // PRETREATMENT_UTILS_H

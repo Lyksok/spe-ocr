@@ -112,3 +112,100 @@ void on_invert_colors_clicked(GtkWidget *widget, gpointer data)
  *   EXTRA DEMONSTRATION PRETREATMENT FUNCTIONS
  *            for complete demonstration of research    *
  ***************************************************************/
+
+void on_contrast_amplification_clicked(GtkWidget *widget, gpointer data)
+{
+  printf("🔧 Applying contrast amplification\n");
+  (void)widget; // Remove unused parameter warning
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
+  contrast_surface(surface);
+  GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  display_pixbuf(data, new_pixbuf);
+  printf("✅ Contrast amplification done\n");
+  SDL_FreeSurface(surface); // Free the surface
+}
+
+void on_median_filter_clicked(GtkWidget *widget, gpointer data)
+{
+  printf("🔧 Applying median filter\n");
+  (void)widget; // Remove unused parameter warning
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
+  median_filter(surface);
+  GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  display_pixbuf(data, new_pixbuf);
+  printf("✅ Median filter done\n");
+  SDL_FreeSurface(surface); // Free the surface
+}
+
+void on_gaussian_filter_clicked(GtkWidget *widget, gpointer data)
+{
+  printf("🔧 Applying gaussian filter\n");
+  (void)widget; // Remove unused parameter warning
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
+  int w;
+  double *mask = create_gaussian_mask_5x5(&w);
+  convolve_surface(surface, mask, w);
+  GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  display_pixbuf(data, new_pixbuf);
+  printf("✅ Gaussian filter done\n");
+  SDL_FreeSurface(surface); // Free the surface
+  free(mask);               // Free the mask
+}
+
+void on_average_thresholding_clicked(GtkWidget *widget, gpointer data)
+{
+  printf("🔧 Applying average thresholding\n");
+  (void)widget; // Remove unused parameter warning
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
+  convert_to_binarized_average(surface);
+  GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  display_pixbuf(data, new_pixbuf);
+  printf("✅ Average thresholding done\n");
+  SDL_FreeSurface(surface); // Free the surface
+}
+
+void on_adaptive_thresholding_clicked(GtkWidget *widget, gpointer data)
+{
+  printf("🔧 Applying adaptive thresholding\n");
+  (void)widget; // Remove unused parameter warning
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
+  convert_to_binarized_adaptative(surface);
+  GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  display_pixbuf(data, new_pixbuf);
+  printf("✅ Adaptive thresholding done\n");
+  SDL_FreeSurface(surface); // Free the surface
+}
+
+void on_otsu_thresholding_clicked(GtkWidget *widget, gpointer data)
+{
+  printf("🔧 Applying Otsu thresholding\n");
+  (void)widget; // Remove unused parameter warning
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
+  convert_to_binarized_global(surface);
+  GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  display_pixbuf(data, new_pixbuf);
+  printf("✅ Otsu thresholding done\n");
+  SDL_FreeSurface(surface); // Free the surface
+}
+
+void on_bw_gaussian_filter_clicked(GtkWidget *widget, gpointer data)
+{
+  printf("🔧 Applying B&W gaussian filter\n");
+  (void)widget; // Remove unused parameter warning
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
+  int w;
+  double *mask = create_gaussian_mask_5x5(&w);
+  convolve_surface(surface, mask, w);
+  GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  display_pixbuf(data, new_pixbuf);
+  printf("✅ B&W gaussian filter done\n");
+  SDL_FreeSurface(surface); // Free the surface
+  free(mask);               // Free the mask
+}
