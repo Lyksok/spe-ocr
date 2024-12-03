@@ -1,0 +1,45 @@
+----- NOTES FOR BUILDING A NEURAL NETWORK -----
+sum = inputs * weights + bias
+output = activation(sum)
+The weights are usually initialized randomly while the bias at 0.
+
+----- INFO -----
+Softmax:
+Softmax is typically used in the output layer of a neural network
+when the task involves classifying an input
+into one of several (more than two)
+possible categories (multi-class classification).
+
+Although both sigmoid and tanh face vanishing gradient issue,
+tanh is zero centered,
+and the gradients are not restricted to move in a certain direction.
+Therefore, in practice,
+tanh nonlinearity is always preferred to sigmoid nonlinearity.
+
+All hidden layers usually use the same activation function.
+However, the output layer will typically use a different
+activation function from the hidden layers.
+The choice depends on the goal or type of prediction made by the model.
+
+Feedforward Propagation:
+the flow of information occurs in the forward direction.
+The input is used to calculate
+some intermediate function in the hidden layer,
+which is then used to calculate an output.
+
+Backpropagation:
+the weights of the network connections
+are repeatedly adjusted to minimize the difference
+between the actual output vector of the net
+and the desired output vector.
+
+----- TODOs -----
+TODO: find how to train the network (Louis's script can help)
+TODO: check wether the transformation from image to list is working correctly
+TODO: actually test stuff
+TODO: search how to store the "old" network (to reuse)
+
+----- NB -----
+/!\ if a function was completely erased or modified
+it was moved to old/functions.c
+(except maybe if the function was modified little by little)

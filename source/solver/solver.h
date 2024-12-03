@@ -11,6 +11,7 @@ int Search(
 	char word[], int r, int c, int n,
 	int *er, int *ec
 	);
-int Solver(int row, int col, char **mat, char word[]);
+int Solver(int row, int col, char **mat, char word[],
+		int *sr, int *sc, int *er, int *ec);
 
 #endif
