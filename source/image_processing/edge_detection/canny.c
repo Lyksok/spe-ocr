@@ -110,6 +110,58 @@ void double_threshold(SDL_Surface *magnitude)
         }
     }
 }
+void __edge_tracking_by_hysteresis(SDL_Surface *magnitude, int x, int y, int width, int height)
+{
+    for (int dy = -1; dy <= 1; dy++)
+    {
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            if (dx == 0 && dy == 0)
+                continue;
+            int nx = x + dx;
+            int ny = y + dy;
+            if (is_within_bounds(nx, ny, width, height))
+            {
+                Uint8 neighbor_pixel = get_gpixel_from_coord(magnitude, nx, ny);
+                if (neighbor_pixel == 128)
+                {
+                    set_gpixel_from_coord(magnitude, nx, ny, 255);                   // Becomes to strong edge!
+                    __edge_tracking_by_hysteresis(magnitude, nx, ny, width, height); // Recursive call
+                }
+            }
+        }
+    }
+}
+void edge_tracking_by_hysteresis(SDL_Surface *magnitude)
+{
+    int width = magnitude->w;
+    int height = magnitude->h;
+
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            Uint8 pixel = get_gpixel_from_coord(magnitude, x, y);
+            if (pixel == 255)
+            { // Strong edge
+                __edge_tracking_by_hysteresis(magnitude, x, y, width, height);
+            }
+        }
+    }
+
+    // Suppress remaining weak edges
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            Uint8 pixel = get_gpixel_from_coord(magnitude, x, y);
+            if (pixel == 128)
+            {
+                set_gpixel_from_coord(magnitude, x, y, 0); // Suppress weak edge
+            }
+        }
+    }
+}
 
 void canny_edge_detection(SDL_Surface *surface)
 {
@@ -150,13 +202,13 @@ void canny_edge_detection(SDL_Surface *surface)
         }
     // STEP 4 : Non-maximum suppression
     /**
-     * Non maximum suppression without interpolation requires us to divide the 3x3 grid of pixels into 8 sections. Ie. if the gradient direction falls in between the angle -22.5 and 22.5, then we use the pixels that fall between this angle (r and q) as the value to compare with pixel p. USES
+     * Non maximum suppression without interpolation requires us to divide the 3x3 grid of pixels into 8 sections. For example, if the gradient direction falls in between the angle -22.5 and 22.5, then we use the pixels that fall between this angle (r and q) as the value to compare with pixel p. USES
      */
     non_maximum_suppression(magnitude_gradient, direction_gradient);
     // STEP 5 : Double threshold for edge tracking
     double_threshold(magnitude_gradient);
     // STEP 6 : Edge tracking by hysteresis
-    // TODO
+    edge_tracking_by_hysteresis(magnitude_gradient);
 
     SDL_FreeSurface(gradient_x);
     SDL_FreeSurface(gradient_y);
