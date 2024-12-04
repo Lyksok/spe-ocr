@@ -6,7 +6,8 @@ LDLIBS = -lm -lSDL2 -lSDL2_image
 
 BIN = main.out
 
-SRC := $(shell find ./ -name '*.c')
+IGNORE := $(shell find ./detection-and-segmentation/ -name '*.c')
+SRC := $(filter-out $(IGNORE),$(shell find ./ -name '*.c'))
 OBJS = ${SRC:.c=.o}
 
 all: $(BIN)
