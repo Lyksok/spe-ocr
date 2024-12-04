@@ -1,0 +1,7 @@
+STEPS
+Image preprocessing
+Gradient calculation
+Non-max suppression
+Double thresholding
+Edge tracking by Hysteresis
+
