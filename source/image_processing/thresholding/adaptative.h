@@ -6,6 +6,7 @@
 #include <math.h>
 #include "../utils/histograms.h"
 #include "../parameters.h"
+#include "../utils/converting.h"
 
 void adaptative_thresholding(SDL_Surface* surface, struct parameters* param);
 

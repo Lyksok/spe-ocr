@@ -6,9 +6,9 @@
  * using their height and their width to find non-characters
  * Returns a new list with characters' boxes
  */
-struct list* detect_characters(SDL_Surface* surface, struct list* box_list)
+struct list* detect_characters(SDL_Surface* surface, struct list* box_list, struct parameters* param)
 {
-    filter_wrong_size_boxes_threshold(surface, box_list);
+    filter_wrong_size_boxes_threshold(surface, box_list, param);
     return list_hard_copy(box_list);
 }
 
@@ -141,7 +141,7 @@ int _refine_grid_size(SDL_Surface* surface, struct list* char_list,
  * Else return NULL
  */
 BoundingBox** detect_grid(SDL_Surface* surface, struct list* char_list,
-        int* width, int* height)
+        int* width, int* height, struct parameters* param)
 {
     int tolerance = 5;
     list_squarify_boxes(surface, char_list);

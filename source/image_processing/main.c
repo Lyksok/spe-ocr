@@ -18,6 +18,9 @@
 #include "utils/converting.h"
 #include "parameters.h"
 
+static int pixel_filter_dir_x[] = {0, 0, -1, 1}; // (int*)
+static int pixel_filter_dir_y[] = {-1, 1, 0, 0}; // (int*)
+
 static struct parameters param =
 {
     // grayscale
@@ -33,8 +36,8 @@ static struct parameters param =
     // pixel_filter.c
     .pixel_filter_max = 40, // (int)
     .pixel_filter_dir_nb = 4,  // (int) 
-    .pixel_filter_dir_x = {0, 0, -1, 1}, // (int*)
-    .pixel_filter_dir_y = {-1, 1, 0, 0}, // (int*)
+    .pixel_filter_dir_x = pixel_filter_dir_x, // (int*)
+    .pixel_filter_dir_y = pixel_filter_dir_y, // (int*)
 
     // filtering.c
     .filtering_t1 = 10, 	//         (int)	      Threshold min
@@ -48,9 +51,9 @@ static struct parameters param =
     .adaptative_w = 7, 	// (size_t)	Kernel size
 
     // sauvola.c
-    .sauvola_k = 0.06,  // (double) Sensitivity
-    .sauvola_w = 25.0,  // (double) Window size	
-    .sauvola_R = 128.0, // (double) Standard deviation
+    .sauvola_k = 0.34,  // (double) Sensitivity
+    .sauvola_w = 15.0,  // (double) Window size	
+    .sauvola_R = 125.0, // (double) Standard deviation
 
     /* UTILS */
     // sdl_utils.c
@@ -120,7 +123,7 @@ int main(int argc, char **argv) {
   convolve_surface(surface, mask, w);
   free(mask);
 
-  contrast_surface(surface);
+  //contrast_surface(surface);
   sauvola_thresholding(surface, &param);
   //convert_to_binarized_average(surface);
   //sauvola_thresholding(surface);
@@ -133,12 +136,12 @@ int main(int argc, char **argv) {
         box_list = list_new_list();
         init_list(box_list);
         compute_bounding_boxes(surface, box_list);
-        struct list* chars = detect_characters(surface, box_list);
+        struct list* chars = detect_characters(surface, box_list, &param);
         int grid_width;
         int grid_height;
         struct list* grid_boxes = list_hard_copy(chars);
         BoundingBox** grid = detect_grid(surface, grid_boxes,
-                &grid_width, &grid_height);
+                &grid_width, &grid_height, &param);
         if(grid!=NULL)
             printf("Grid is %ix%i\n", grid_width, grid_height);
         else

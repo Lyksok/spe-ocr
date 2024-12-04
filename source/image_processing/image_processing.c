@@ -7,18 +7,18 @@ void reset_surface(SDL_Surface* surface, Uint32* pixels)
 }
 
 /* Main procedure for image processing and detection */
-void start_procedure(SDL_Surface* surface)
+void start_procedure(SDL_Surface* surface, struct parameters* param)
 {
     Uint32* base_pixels = get_pixels_from_surface(surface);
     Uint32* grayscale_surface;
     Uint32* sauvola_surface;
 
     // Grayscale
-    image_to_grayscale(surface);
+    image_to_grayscale(surface, param);
     grayscale_surface = get_pixels_from_surface(surface);
 
     // Try sauvola
-    sauvola_thresholding(surface);
+    sauvola_thresholding(surface, param);
     sauvola_surface = get_pixels_from_surface(surface);
     // Check detection
     // If detecting exit
