@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <string.h>
 
 #include "convertion.h"
 #include "../gtk/conversion_utils.h"
@@ -11,11 +12,6 @@
 /*
  * path : a path to a png image
  * returns : a surface from the image
- * TODO
- * use SDL_CreateSoftwareRenderer and SDL_RenderCopy()
- * need to pass by a texture / renderer to resize the surface
- * search for more information too
- * add a size parameter ? need to fix one maybe
  * */
 SDL_Surface *toSDL(char *path)
 {
@@ -25,6 +21,19 @@ SDL_Surface *toSDL(char *path)
 		printf("Failure to create the surface : ");
 		printf("%s", SDL_GetError());
 	}
+
+	/*
+	 * GdkPixbuf *sdl_surface_to_gdk_pixbuf(SDL_Surface *surface);
+	 * GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf,
+				int new_width,
+				int new_height);
+	 * SDL_Surface *gdk_pixbuf_to_sdl_surface(GdkPixbuf *pixbuf);
+	 * */
+	int d = dimension;
+	GdkPixbuf *pix = sdl_surface_to_gdk_pixbuf(temp);
+	pix = resize_pixbuf(pix, d, d);
+	temp = gdk_pixbuf_to_sdl_surface(pix);
+
 	SDL_Surface *new;
 	new = SDL_ConvertSurfaceFormat(temp, SDL_PIXELFORMAT_INDEX8, 0);
 	/*
@@ -39,17 +48,6 @@ SDL_Surface *toSDL(char *path)
 		printf("%s", SDL_GetError());
 	}
 	SDL_ClearError();
-
-	/*
-	GdkPixbuf *sdl_surface_to_gdk_pixbuf(SDL_Surface *surface);
-	GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int new_width, int new_height);
-	SDL_Surface *gdk_pixbuf_to_sdl_surface(GdkPixbuf *pixbuf);
-	*/
-	int width;
-	int height;
-	GdkPixbuf *pix = sdl_surface_to_gdk_pixbuf(new);
-	pix = resize_pixbuf(pix, width, height);
-	new = gdk_pixbuf_to_sdl_surface(pix);
 
 	return new;
 }

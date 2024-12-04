@@ -19,7 +19,7 @@ struct Layer {
 	double *inputs;
 	// a matrice where each row
 	// is the weigths given to one neuron
-	// it has dimension numNeurons * numWeights
+	// it has dim numNeurons * numWeights
 	double **weights;
 	Layer *prev;
 	Layer *next;
@@ -38,8 +38,6 @@ typedef struct Network {
 	// pointer to the first layer of the network
 	Layer layers;
 	double *outputs;
-	int nbsuccess;
-	int nbruns;
 } Network;
 
 #endif /* STRUCTURES_H */

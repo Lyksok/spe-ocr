@@ -3,8 +3,9 @@ TEST = convertion
 
 CC = gcc
 
-FLAGS = -Wall -Wextra
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g
+#FLAGS = -Wall -Wextra
+#BFLAGS = -Wall -Wextra -Werror -fsanitize=address -g
+CFLAGS = -Wall -Wextra -fsanitize=address -g
 PKGS = `pkg-config --cflags --libs gtk+-3.0`
 LIBS = -lSDL2 -lSDL2_image -lm
 
@@ -15,13 +16,13 @@ OBJECT = convertion.o main.o
 all: $(TARGET) $(TEST)
 
 $(TARGET): $(OBJ)
-	$(CC) -o $@ $(OBJ) $(CFLAGS) $(LIBS)
+	$(CC) -o $@ $(OBJ) $(CFLAGS) $(LIBS) $(PKGS)
 
 $(TEST): $(OBJECT)
 	$(CC) -o $@ $(OBJECT) $(CFLAGS) $(LIBS) $(PKGS)
 
 %.o: %.c
-	$(CC) -c $< $(CFLAGS) -o $@
+	$(CC) -c $< $(CFLAGS) -o $@ $(LIBS) $(PKGS)
 
 clean:
 	rm -f $(TARGET) $(TEST) $(OBJ) $(OBJECT)

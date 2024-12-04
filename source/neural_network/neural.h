@@ -3,24 +3,9 @@
 
 #include <stddef.h>
 
+#include "convertion.h"
 #include "structures.h"
-
-#define nLayers 2
-#define dimensions 13
-#define nTrainingSets 4
-
-extern double *hiddenLayer;
-// length = numHiddenNodes
-extern double *outputLayer;
-// length = numOutputs
-extern double *hiddenLayerBias;
-// length = numHiddenNodes
-extern double *outputLayerBias;
-// length = numOutputs
-extern double **hiddenWeights;
-// rows = numInputs - columns = numHiddenNodes
-extern double **outputWeights;
-// rows = numHiddenNodes - columns = numOutputs
+#include "setup.h"
 
 void Forward(int length, Layer l, Network net);
 

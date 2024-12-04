@@ -25,11 +25,28 @@ void InitWeigths(Layer layer)
 	return;
 }
 
+void RecoverWeigths(Layer l, int rows, int cols, double mat[rows][cols]) {
+	for (int r = 0; r < rows ; r++)
+	for (int c = 0; c < layer ; w++)
+	{
+		l.weights[r][c] = mat[r][c];
+	}
+	return;
+}
+
 void InitBiases(Layer layer)
 {
 	for (int n = 0; n < layer.numNeurons ; n++)
 	{
 		layer.neurons[n].bias = 0;
+	}
+	return;
+}
+
+void RecoverBiases(Layer l, int nodes, double arr[nodes]) {
+	for (int n = 0; n < nodes ; n++)
+	{
+		l.neurons[n].bias = arr[n];
 	}
 	return;
 }
@@ -59,6 +76,48 @@ void PrintData(Network net) {
 		printf("\n");
 	}
 	return;
+}
+
+Layer RecoverFirstLayer()
+{
+	/*
+	 * double HiddenBias[nNodes] = {};
+	 * double HiddenWeight[nNodes][nInputs] = {};
+	 * */
+	/*
+	 * RecoverWeigths(int rows, int cols, double mat[rows][cols])
+	 * RecoverBiases(int nodes, double arr[nodes])
+	 * */
+        Layer layer;
+	layer.numNeurons = nNodes;
+        layer.neurons = malloc(nNodes * sizeof(Neuron));
+	layer.inputs = calloc(nInputs, sizeof(double));
+	RecoverBiases(layer, nNodes, nInputs, HiddenWeight);
+	layer.numWeights = nInputs;
+	RecoverWeigths(layer, nNodes, HiddenBias);
+	layer.prev = NULL;
+	layer.next = NULL;
+        return layer;
+}
+
+void RecoverSecondLayer(Layer *l)
+{
+	/*
+	 * double OutputBias[nOut] = {};
+	 * double OutputWeight[nOut][nNodes] = {};
+	 * */
+        Layer *layer;
+	layer->numNeurons = nOut;
+        layer->neurons = malloc(nOut * sizeof(Neuron));
+	layer->inputs = calloc(nNodes, sizeof(double));
+	layer->numWeights = nNodes;
+	RecoverBiases(layer, nOut, nNodes, OutputWeight);
+	RecoverWeigths(layer, nOut, OutputBias);
+
+	layer->prev = l;
+	l->next = layer;
+	layer->next = NULL;
+        return;
 }
 
 Layer CreateFirstLayer(int len, int nn)
@@ -136,8 +195,6 @@ void DestroyData(TrainingData data)
 Network CreateNet(int numLayers, int len)
 {
         Network network;
-	network.nbsuccess = 0;
-	network.nbruns = 0;
 	// nn : number of neurons inside the layers
 	int nn = 0;
 	network.layers = CreateFirstLayer(len, nn);
@@ -148,6 +205,13 @@ Network CreateNet(int numLayers, int len)
         }
 
         return network;
+}
+
+Network RecoverNet() {
+        Network net;
+        network.layers = RecoverFirstLayer();
+	RecoverSecondLayer(&(net.layers));
+        return net;
 }
 
 void DestroyNet(Network network)

@@ -179,12 +179,8 @@ void Result(Network net, TrainingData data, int nbrun)
 		if (res == eres)
 			succ += 1;
 	}
-	net.nbsuccess += succ;
-	net.nbruns += nbrun;
 	double acc = (double) succ/nbrun;
-	double tacc = (double) net.nbsuccess/net.nbruns;
 	printf("Accuracy for this set : %f\n", acc);
-	printf("Total accuracy : %f\n", tacc);
 }
 
 void Copy(int len, double *src, double **dest) {
@@ -225,6 +221,7 @@ int main(int argc, char **argv)
 	}
 	if (!(strcmp(argv[1], "train")))
 	{
+		// we train
 		printf("Training new network\n");
 		// Init of Training Data
 		TrainingData data = CreateData(dimensions, nTrainingSets);
@@ -240,13 +237,14 @@ int main(int argc, char **argv)
 		DestroyData(data);
 		PrintData(network);
 		DestroyNet(network);
-		// we train
 		return 0;
 	}
 	else
 	{
-		printf("Using current network\n");
 		// we want an actual answer
+		printf("Using current network\n");
+		Network network = RecoverNet();
+		DestroyNet(network);
 		return 0;
 	}
 
