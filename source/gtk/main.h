@@ -11,8 +11,8 @@
 #include "integration_solver.h"
 
 // CONSTANTS
-#define MAX_WIDTH 1000
-#define MAX_HEIGHT 1000
+#define MAX_WIDTH 800
+#define MAX_HEIGHT 800
 #define SAMPLE_IMAGE_PATH "images/abstract_background.jpg"
 
 GtkWidget *init_button(const char *label, GCallback callback, gpointer data);

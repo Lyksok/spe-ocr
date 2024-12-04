@@ -29,7 +29,12 @@ void on_grayscale_clicked(GtkWidget *widget, gpointer data)
 {
   printf("🌗 Converting to grayscale\n");
   (void)widget; // Remove unused parameter warning
-  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+
+  // Get the GdkPixbuf from the image widget
+  GdkPixbuf *pixbuf = gtk_image_get_pixbuf(GTK_IMAGE(data));
+  if (!pixbuf)
+    printf("Failed to get pixbuf from image widget\n");
+
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
   convert_to_grayscale(surface);
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);

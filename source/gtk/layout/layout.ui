@@ -2,11 +2,78 @@
 <!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.4"/>
-  <object class="GtkApplicationWindow" id="window">
+  <object class="GtkMenu">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+  </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image10">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image11">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image12">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image13">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image3">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image4">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image5">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image6">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image7">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image8">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image9">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkApplicationWindow" id="window_main">
     <property name="can-focus">False</property>
     <property name="title">Organized Chaotic Results software</property>
-    <property name="default-width">800</property>
-    <property name="default-height">600</property>
     <property name="icon">../../../images/Logo_OCR_WS_fanette.png</property>
     <child>
       <object class="GtkBox" id="main_box">
@@ -23,58 +90,31 @@
                 <property name="label" translatable="yes">_📁 File</property>
                 <property name="use-underline">True</property>
                 <child type="submenu">
-                  <object class="GtkMenu">
+                  <object class="GtkMenu" id="menu_file_sub">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-new</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="use-underline">True</property>
-                        <property name="use-stock">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem">
+                      <object class="GtkImageMenuItem" id="open_image">
                         <property name="label">gtk-open</property>
+                        <property name="name">open_image</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="use-underline">True</property>
                         <property name="use-stock">True</property>
+                        <property name="always-show-image">True</property>
+                        <signal name="activate" handler="on_change_image" object="image_widget" swapped="no"/>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem">
+                      <object class="GtkImageMenuItem" id="save_image">
                         <property name="label">gtk-save</property>
+                        <property name="name">save_image</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="use-underline">True</property>
                         <property name="use-stock">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-save-as</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="use-underline">True</property>
-                        <property name="use-stock">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkSeparatorMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-quit</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="use-underline">True</property>
-                        <property name="use-stock">True</property>
+                        <property name="always-show-image">True</property>
+                        <signal name="activate" handler="on_save_image" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -82,49 +122,158 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="menu_solver">
+              <object class="GtkMenuItem" id="menu_grayscale">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">🧩 Solver</property>
+                <property name="label" translatable="yes">_🌑 Grayscale Processing</property>
                 <property name="use-underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-cut</property>
+                      <object class="GtkImageMenuItem" id="grayscale">
+                        <property name="label">Grayscale</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="use-underline">True</property>
-                        <property name="use-stock">True</property>
+                        <property name="image">image1</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_grayscale_clicked" swapped="no"/>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-copy</property>
+                      <object class="GtkImageMenuItem" id="constrast_amplification">
+                        <property name="label">Contrast amplification</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="use-underline">True</property>
-                        <property name="use-stock">True</property>
+                        <property name="image">image2</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_contrast_amplification_clicked" swapped="no"/>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-paste</property>
+                      <object class="GtkImageMenuItem" id="median_filter">
+                        <property name="label">Median filter</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="use-underline">True</property>
-                        <property name="use-stock">True</property>
+                        <property name="image">image3</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_median_filter_clicked" swapped="no"/>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-delete</property>
+                      <object class="GtkImageMenuItem" id="gaussian_filter">
+                        <property name="label">Gaussian filter</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="use-underline">True</property>
-                        <property name="use-stock">True</property>
+                        <property name="image">image4</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_gaussian_filter_clicked" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menu_thresholding">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">📈 Thresholding</property>
+                <property name="use-underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="average_thresholding">
+                        <property name="label">Average thresholding</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image5</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_average_thresholding_clicked" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="adaptive_thresholding">
+                        <property name="label">Adaptive (local) thresholding</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image6</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_adaptive_thresholding_clicked" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="otsu_thresholding">
+                        <property name="label">Otsu (global) thresholding</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image7</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_otsu_thresholding_clicked" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menu_det_seg">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">_🔎Detection&amp;Segmentation</property>
+                <property name="use-underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="detect_grid">
+                        <property name="label">Detect grid</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image8</property>
+                        <property name="use-stock">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="detect_letters">
+                        <property name="label">Detect letters</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image9</property>
+                        <property name="use-stock">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="detect_word_list">
+                        <property name="label">Detect word list</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image10</property>
+                        <property name="use-stock">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="segment_grid">
+                        <property name="label">Segment on grid</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image11</property>
+                        <property name="use-stock">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="segment_letters">
+                        <property name="label">Segment on letters</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image12</property>
+                        <property name="use-stock">False</property>
                       </object>
                     </child>
                   </object>
@@ -140,22 +289,23 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="menu_help">
+              <object class="GtkMenuItem" id="menu_solver">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">_User manual</property>
+                <property name="label" translatable="yes">🧩 Solver</property>
                 <property name="use-underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-about</property>
+                      <object class="GtkImageMenuItem" id="solver_open_window">
+                        <property name="label">Open solver</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="use-underline">True</property>
-                        <property name="use-stock">True</property>
+                        <property name="image">image13</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="create_solver_window" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -163,10 +313,10 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="menu_about">
+              <object class="GtkMenuItem" id="menu_documentation">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">_About</property>
+                <property name="label" translatable="yes">_Documentation</property>
                 <property name="use-underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
@@ -179,6 +329,7 @@
                         <property name="can-focus">False</property>
                         <property name="use-underline">True</property>
                         <property name="use-stock">True</property>
+                        <property name="always-show-image">True</property>
                       </object>
                     </child>
                   </object>
@@ -199,13 +350,13 @@
             <property name="orientation">vertical</property>
             <property name="spacing">10</property>
             <child>
-              <object class="GtkImage">
+              <object class="GtkImage" id="image_widget">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">20</property>
-                <property name="margin-right">20</property>
-                <property name="margin-top">20</property>
-                <property name="margin-bottom">20</property>
+                <property name="margin-left">50</property>
+                <property name="margin-right">50</property>
+                <property name="margin-top">50</property>
+                <property name="margin-bottom">50</property>
                 <property name="pixbuf">../../../images/Logo_OCR_WS_fanette.png</property>
               </object>
               <packing>
@@ -215,24 +366,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkTextView" id="notifier">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkButtonBox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="margin-left">100</property>
                 <property name="margin-right">100</property>
-                <property name="margin-bottom">20</property>
+                <property name="margin-top">20</property>
+                <property name="margin-bottom">50</property>
                 <property name="spacing">10</property>
+                <property name="baseline-position">bottom</property>
                 <child>
                   <object class="GtkButton" id="run">
                     <property name="label" translatable="yes">_RUN</property>
@@ -280,6 +422,109 @@
                 <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="padding">1</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkApplicationWindow" id="window_solver">
+    <property name="can-focus">False</property>
+    <property name="title">Organized Chaotic Results software</property>
+    <property name="default-width">960</property>
+    <property name="default-height">540</property>
+    <property name="destroy-with-parent">True</property>
+    <property name="icon">../../../images/Logo_OCR_WS_fanette.png</property>
+    <child>
+      <object class="GtkBox" id="main_box1">
+        <property name="can-focus">False</property>
+        <property name="margin-left">10</property>
+        <property name="margin-right">10</property>
+        <property name="margin-top">10</property>
+        <property name="margin-bottom">10</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkBox" id="display_and_controls1">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkBox" id="solver_viewer">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <child>
+                  <object class="GtkTextView" id="word_grid">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="controls">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkEntry" id="TextEntry_ListWords">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="placeholder-text" translatable="yes">Solve for a list of words (separated by ',')</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="Button_SendToSolver">
+                        <property name="label" translatable="yes">Solve for a list of words</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">The words are not in the grid</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
               </packing>
             </child>
           </object>
