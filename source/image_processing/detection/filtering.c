@@ -1,11 +1,11 @@
 #include "filtering.h"
 
 static int t1 = 10;
-static int t2 = 300;
+static int t2 = 75;
 
 void filter_wrong_size_boxes(SDL_Surface* surface, struct list* box_list)
 {
-    // Frequency analysis on height and width of boxes (histograms)
+    // Frequency analysis on diagonal of boxes (histograms)
     // Get two higher peeks in both height and width
     // Remove all boxes that are not in the height or width peeks
 }
@@ -21,9 +21,9 @@ void filter_wrong_size_boxes_threshold(SDL_Surface* surface, struct list* box_li
         int height = box_get_height(box);
         int width = box_get_width(box);
         //printf("h=%i w=%i (%i/%zu)\n", height, width, i++, box_list->len);
-        if((height < t1 && width < t1) || (height > t2 && width > t2))
+        if((height < t1 && width < t1) || (height > t2 || width > t2))
         {
-            remove_box(surface, p->next->box);
+            remove_box_pixels(surface, p->next->box);
             list_remove(box_list, p->next);
         }
         else
@@ -31,4 +31,13 @@ void filter_wrong_size_boxes_threshold(SDL_Surface* surface, struct list* box_li
             p=p->next;
         }
     }
+}
+
+struct list* filter_probable_grid_boxes(struct list* box_list, int wanted_nb)
+{
+    // Compute closest links
+    // Remove boxes that are not within the median value (with error margin)
+    // while the nb of boxes is above wanted_nb
+
+    // Return the corrected box_list
 }
