@@ -37,8 +37,8 @@ static struct parameters param =
     .pixel_filter_dir_y = {-1, 1, 0, 0}, // (int*)
 
     // filtering.c
-    .t1 = 10, 	//         (int)	      Threshold min
-    .t2 = 150,	//         (int)	      Threshold max
+    .filtering_t1 = 10, 	//         (int)	      Threshold min
+    .filtering_t2 = 150,	//         (int)	      Threshold max
 
     /* THRESHOLDING */
     // average
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
     errx(EXIT_FAILURE, "%s", SDL_GetError());
   }
 
-  int detecting = 1;
+  int detecting = 0;
   int w;
   double* mask = create_gaussian_mask_3x3(&w);
   convert_to_grayscale(surface, &param);
