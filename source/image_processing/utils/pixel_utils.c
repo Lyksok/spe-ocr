@@ -11,6 +11,51 @@ void set_gpixel_from_coord(SDL_Surface* surface, int x, int y, Uint8 gcolor)
     SDL_UnlockSurface(surface);
 }
 
+void set_pixelRGB_from_coord(SDL_Surface* surface, int x, int y,
+	Uint8 r, Uint8 g, Uint8 b)
+{
+    SDL_LockSurface(surface);
+    
+    Uint32 pixel = SDL_MapRGBA(surface->format, r, g, b, 255);
+
+    ((Uint32*)surface->pixels)[y*surface->w+x] = pixel;
+
+    SDL_UnlockSurface(surface);
+}
+
+Uint8 get_pixelR_from_coord(SDL_Surface* surface, int x, int y)
+{
+    Uint32 pixel = ((Uint32*)surface->pixels)[y*surface->w+x];
+    Uint8 r;
+    Uint8 g;
+    Uint8 b;
+    Uint8 a;
+    SDL_GetRGBA(pixel, surface->format, &r, &g, &b, &a);
+    return r;
+}
+
+Uint8 get_pixelG_from_coord(SDL_Surface* surface, int x, int y)
+{
+    Uint32 pixel = ((Uint32*)surface->pixels)[y*surface->w+x];
+    Uint8 r;
+    Uint8 g;
+    Uint8 b;
+    Uint8 a;
+    SDL_GetRGBA(pixel, surface->format, &r, &g, &b, &a);
+    return g;
+}
+
+Uint8 get_pixelB_from_coord(SDL_Surface* surface, int x, int y)
+{
+    Uint32 pixel = ((Uint32*)surface->pixels)[y*surface->w+x];
+    Uint8 r;
+    Uint8 g;
+    Uint8 b;
+    Uint8 a;
+    SDL_GetRGBA(pixel, surface->format, &r, &g, &b, &a);
+    return b;
+}
+
 Uint8 get_gpixel_from_coord(SDL_Surface *surface, int x, int y)
 {
     Uint32 pixel = ((Uint32*)surface->pixels)[y*surface->w+x];

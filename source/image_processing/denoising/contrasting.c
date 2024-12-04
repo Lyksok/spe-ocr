@@ -29,6 +29,7 @@ void contrast_surface(SDL_Surface* surface)
 
 void contrast_surface(SDL_Surface* surface)
 {
+    
     int pixel_nb = surface->w*surface->h;
     int* freq = calloc(256, sizeof(int));
     histogram_of_pixels(surface, &freq);
