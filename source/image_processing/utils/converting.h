@@ -5,9 +5,10 @@
 #include "histograms.h"
 #include "pixel_utils.h"
 #include "../detection/bounding-box.h"
+#include "../parameters.h"
 
 int is_inverted(SDL_Surface *surface);
-void image_to_grayscale(SDL_Surface *surface);
+void image_to_grayscale(SDL_Surface *surface, struct parameters* param);
 void image_to_binarized(SDL_Surface *surface, size_t threshold);
 void convert_image(SDL_Surface *surface,
 				   Uint32 (*func)(SDL_PixelFormat *, Uint32));

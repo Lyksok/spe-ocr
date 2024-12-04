@@ -16,11 +16,51 @@
 #include "detection/list.h"
 #include "utils/sdl_utils.h"
 #include "utils/converting.h"
+#include "parameters.h"
+
+static struct parameters param =
+{
+    // grayscale
+    .grayscale_m = 0, // (int) 0=human, 1=min-max, 2=average
+
+    /* DENOISING */
+    // denoising.c
+    .denoising_w = 3, // (int) window
+
+    // erosion.c
+    .erosion_w = 3, // (int) window
+
+    // pixel_filter.c
+    .pixel_filter_max = 40, // (int)
+    .pixel_filter_dir_nb = 4,  // (int) 
+    .pixel_filter_dir_x = {0, 0, -1, 1}, // (int*)
+    .pixel_filter_dir_y = {-1, 1, 0, 0}, // (int*)
+
+    // filtering.c
+    .t1 = 10, 	//         (int)	      Threshold min
+    .t2 = 150,	//         (int)	      Threshold max
+
+    /* THRESHOLDING */
+    // average
+    .average_t = 128,   // (int)    threshold
+
+    // adaptative.c
+    .adaptative_w = 7, 	// (size_t)	Kernel size
+
+    // sauvola.c
+    .sauvola_k = 0.06,  // (double) Sensitivity
+    .sauvola_w = 25.0,  // (double) Window size	
+    .sauvola_R = 128.0, // (double) Standard deviation
+
+    /* UTILS */
+    // sdl_utils.c
+    .sdl_utils_p = 0, // (int) box padding
+};
 
 void level_1_image_1(SDL_Surface* surface)
 {
-  convert_to_grayscale(surface);
-  convert_to_binarized_average(surface);
+  convert_to_grayscale(surface, &param);
+  convert_to_binarized_average(surface, &param);
   invert_colors(surface);
 }
 void level_2_image_2(SDL_Surface* surface)
@@ -28,21 +68,21 @@ void level_2_image_2(SDL_Surface* surface)
   int w;
   double* mask = create_gaussian_mask_3x3(&w);
   convolve_surface(surface, mask, w);
-  convert_to_grayscale(surface);
+  convert_to_grayscale(surface, &param);
   //contrast_surface(surface);
-  sauvola_thresholding(surface);
+  sauvola_thresholding(surface, &param);
   invert_colors(surface);
   //erode_surface(surface);
   free(mask);
 }
 void level_2_image_3(SDL_Surface* surface)
 {
-  convert_to_grayscale(surface);
+  convert_to_grayscale(surface, &param);
   //contrast_surface(surface);
   int w;
   double* mask = create_gaussian_mask_3x3(&w);
   //convolve_surface(surface, mask, w);
-  sauvola_thresholding(surface);
+  sauvola_thresholding(surface, &param);
   invert_colors(surface);
   //erode_surface(surface);
   free(mask);
@@ -74,16 +114,18 @@ int main(int argc, char **argv) {
   }
 
   int detecting = 1;
-  //int w;
-  //double* mask = create_gaussian_mask_5x5(&w);
-  //convert_to_grayscale(surface);
-  //contrast_surface(surface);
-  //convolve_surface(surface, mask, w);
-  //sauvola_thresholding(surface);
+  int w;
+  double* mask = create_gaussian_mask_3x3(&w);
+  convert_to_grayscale(surface, &param);
+  convolve_surface(surface, mask, w);
+  free(mask);
+
+  contrast_surface(surface);
+  sauvola_thresholding(surface, &param);
   //convert_to_binarized_average(surface);
   //sauvola_thresholding(surface);
-  //invert_colors(surface);
-  level_2_image_2(surface);
+  invert_colors(surface);
+  //level_2_image_2(surface);
 
   struct list* box_list;
   if(detecting)
@@ -133,7 +175,7 @@ int main(int argc, char **argv) {
       SDL_GetWindowSize(window, &WIDTH, &HEIGHT);
       for(struct list* p=box_list->next; p!=NULL; p=p->next)
       {
-          draw_rect(surface, renderer, p->box, WIDTH, HEIGHT);
+          draw_rect(surface, renderer, p->box, WIDTH, HEIGHT, &param);
       }
       SDL_RenderPresent(renderer);
       }

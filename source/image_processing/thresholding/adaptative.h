@@ -5,7 +5,8 @@
 #include <SDL2/SDL.h>
 #include <math.h>
 #include "../utils/histograms.h"
+#include "../parameters.h"
 
-void get_all_thresholds(SDL_Surface *surface, int **histogram);
+void adaptative_thresholding(SDL_Surface* surface, struct parameters* param);
 
 #endif /* ADAPTATIVE_H */
