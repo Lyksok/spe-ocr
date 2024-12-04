@@ -68,4 +68,10 @@ void canny_edge_detection(SDL_Surface *surface, double threshold_low, double thr
     // TODO
     // STEP 6 : Edge tracking by hysteresis
     // TODO
+
+    SDL_FreeSurface(gradient_x);
+    SDL_FreeSurface(gradient_y);
+    SDL_FreeSurface(magnitude_gradient);
+    SDL_FreeSurface(direction_gradient);
+}
 }
