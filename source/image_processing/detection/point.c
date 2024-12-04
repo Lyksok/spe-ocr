@@ -20,6 +20,24 @@ int point_is_in_box(Point point, BoundingBox* box)
     return 0;
 }
 
+int point_is_in_box_width(Point point, BoundingBox* box)
+{
+    if (box->p2.x >= point.x && box->p1.x <= point.x)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+int point_is_in_box_height(Point point, BoundingBox* box)
+{
+    if (box->p2.y >= point.y && box->p1.y <= point.y)
+    {
+        return 1;
+    }
+    return 0;
+}
+
 int point_is_in_box_list(Point point, struct list* list)
 {
     for(struct list* p=list->next; p!=NULL; p=p->next)
