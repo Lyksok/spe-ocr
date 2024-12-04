@@ -93,6 +93,17 @@ Uint32* get_pixels_from_surface(SDL_Surface* surface)
     return (Uint32*)surface->pixels;
 }
 
+Uint8* get_gpixels_from_surface(SDL_Surface* surface)
+{
+    int len = surface->w*surface->h;
+    Uint8* res = calloc(len, sizeof(Uint8));
+    for(int i=0; i<len; i++)
+    {
+        res[i] = get_gpixel_from_coord(surface, i, 0);
+    }
+    return res;
+}
+
 void set_pixels_on_surface(SDL_Surface* surface, Uint32* pixels)
 {
     surface->pixels = pixels;
