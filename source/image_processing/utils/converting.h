@@ -16,6 +16,6 @@ void convert_image_with_threshold(SDL_Surface *surface, size_t threshold,
 void convert_pixel_with_threshold(SDL_Surface *surface, int threshold,
 								  size_t i);
 void invert_binarized_colors(SDL_Surface *surface);
-void remove_box(SDL_Surface* surface, BoundingBox* box);
+void remove_box_pixels(SDL_Surface* surface, BoundingBox* box);
 
 #endif /* CONVERTING_H */

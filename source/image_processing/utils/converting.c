@@ -164,22 +164,22 @@ void invert_binarized_colors(SDL_Surface *surface) {
   }
 }
 
-static int xdir[4] = {0, 1, 0, -1};
-static int ydir[4] = {-1, 0, 1, 0};
+static int xdir[6] = {0, 1, 1, 0, -1, -1};
+static int ydir[6] = {-1, 0, 1, 1, 0, -1};
 
 void aux_remove_box(SDL_Surface* surface, int x, int y)
 {
     if(get_gpixel_from_coord(surface, x, y))
     {
         set_gpixel_from_coord(surface, x, y, 0);
-        for(int i=0; i<4; i++)
+        for(int i=0; i<6; i++)
         {
             aux_remove_box(surface, x+xdir[i], y+ydir[i]);
         }
     }
 }
 
-void remove_box(SDL_Surface* surface, BoundingBox* box)
+void remove_box_pixels(SDL_Surface* surface, BoundingBox* box)
 {
     aux_remove_box(surface, box->start.x, box->start.y);
 }
