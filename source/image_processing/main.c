@@ -9,8 +9,8 @@
 #include "denoising/contrasting.h"
 #include "edge_detection/gaussian.h"
 #include "edge_detection/convolution.h"
-#include "denoising/erosion.h"
 #include "denoising/pixel_filter.h"
+#include "denoising/morphology.h"
 #include "detection/detection.h"
 #include "detection/cluster-detection.h"
 #include "detection/list.h"
@@ -30,14 +30,17 @@ static struct parameters param =
     // denoising.c
     .denoising_w = 3, // (int) window
 
-    // erosion.c
-    .erosion_w = 3, // (int) window
-
     // pixel_filter.c
     .pixel_filter_max = 40, // (int)
     .pixel_filter_dir_nb = 4,  // (int) 
     .pixel_filter_dir_x = pixel_filter_dir_x, // (int*)
     .pixel_filter_dir_y = pixel_filter_dir_y, // (int*)
+
+    // erosion.c
+    .erosion_m = 0, // (int) 0=cross, 1=full
+
+    // morphology
+    .dilation_m = 0, // (int) 0=cross, 1=full
 
     // filtering.c
     .filtering_t1 = 10, 	//         (int)	      Threshold min
@@ -116,18 +119,20 @@ int main(int argc, char **argv) {
     errx(EXIT_FAILURE, "%s", SDL_GetError());
   }
 
-  int detecting = 0;
+  int detecting = 1;
   int w;
   double* mask = create_gaussian_mask_3x3(&w);
   convert_to_grayscale(surface, &param);
   convolve_surface(surface, mask, w);
   free(mask);
 
-  //contrast_surface(surface);
+  contrast_surface(surface);
   sauvola_thresholding(surface, &param);
+  invert_colors(surface);
+  dilate_surface(surface, &param);
+  erode_surface(surface, &param);
   //convert_to_binarized_average(surface);
   //sauvola_thresholding(surface);
-  invert_colors(surface);
   //level_2_image_2(surface);
 
   struct list* box_list;
@@ -192,7 +197,8 @@ int main(int argc, char **argv) {
       SDL_DestroyRenderer(renderer);
       SDL_DestroyWindow(window);
       SDL_Quit();
-      return EXIT_SUCCESS;
+      //exit(EXIT_SUCCESS);
+      return 0;
 
     case SDL_WINDOWEVENT:
       if (event.window.event == SDL_WINDOWEVENT_RESIZED) {

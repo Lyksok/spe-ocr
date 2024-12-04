@@ -10,15 +10,17 @@ struct parameters
     // denoising.c
     int denoising_w;
 
-    // erosion.c
-    int erosion_w;
-
     // pixel_filter.c
     int pixel_filter_max;
     int pixel_filter_dir_nb;
     int* pixel_filter_dir_x;
     int* pixel_filter_dir_y;
+    
+    // erosion.c
+    int erosion_m;
 
+    // morphology.c
+    int dilation_m;
 
     // filtering.c
     int filtering_t1;
