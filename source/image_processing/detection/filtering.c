@@ -5,9 +5,9 @@ static int t2 = 75;
 
 void filter_wrong_size_boxes(SDL_Surface* surface, struct list* box_list)
 {
-    // Frequency analysis on diagonal of boxes (histograms)
-    // Get two higher peeks in both height and width
-    // Remove all boxes that are not in the height or width peeks
+    // Get first peek
+    // Get second peek
+    // Remove every box smaller than (first+second)/2
 }
 
 void filter_wrong_size_boxes_threshold(SDL_Surface* surface, struct list* box_list)
