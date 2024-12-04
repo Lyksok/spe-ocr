@@ -26,6 +26,6 @@ source/*/bin/*
 
 # Ignore generated compile commands
 compile_commands.json
-
+.gch
 # Ignore any temporary files or backups
 *~

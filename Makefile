@@ -1,27 +1,21 @@
 CC = gcc
-FLAGS = -Wall -Wextra -fsanitize=address
-
-
-# Imported packages
+CFLAGS = -Wall -Wextra -fsanitize=address
+LIBS = -lm -lSDL2 -lSDL2_image
 PKGS = `pkg-config --cflags --libs gtk+-3.0`
-LIBS = -lSDL2 -lSDL2_image -lm
 
-# Source files
-IGNORE = %/image_processing.c %/main.c $(wildcard source/image_processing/detection-and-segmentation/*)
-SRC_APP = source/gtk/*.c
-SRC_BIN := $(filter-out $(IGNORE), $(wildcard source/image_processing/*/*.c))
-
-# Output executable
-TARGET = app_launcher
-
+TARGET = canny
+SRC = canny.c convolution.c ../utils/converting.c ../utils/pixel_utils.c gaussian.c
+OBJS = $(SRC:.c=.o)
 
 all: $(TARGET)
 
-$(TARGET): $(SRC_BIN) $(SRC_APP)
-	$(CC) $(SRC_APP) $(SRC_BIN) -o $(TARGET) $(PKGS) $(LIBS) $(FLAGS)
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET) $(LIBS) $(PKGS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(PKGS) -c $< -o $@
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) $(OBJS)
 
-# Phony targets
 .PHONY: all clean

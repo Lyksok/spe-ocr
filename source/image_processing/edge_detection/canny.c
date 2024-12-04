@@ -1,10 +1,13 @@
 #include "canny.h"
+
 #define PI 3.1415926535897932 // 16 decimals
+#define canny_double_threshold_low 0.3
+#define canny_double_threshold_high 0.7
 
 static double *get_sobel_mask_x()
 {
     double *mask = calloc(9, sizeof(double));
-    double *mat = {
+    double mat[9] = {
         -1, 0, 1,
         -2, 0, 2,
         -1, 0, 1};
@@ -16,7 +19,7 @@ static double *get_sobel_mask_x()
 static double *get_sobel_mask_y()
 {
     double *mask = calloc(9, sizeof(double));
-    double *mat = {
+    double mat[9] = {
         -1, -2, -1,
         0, 0, 0,
         1, 2, 1};
@@ -88,10 +91,30 @@ void non_maximum_suppression(SDL_Surface *magnitude, SDL_Surface *direction)
     }
     SDL_FreeSurface(suppressed);
 }
-void canny_edge_detection(SDL_Surface *surface, double threshold_low, double threshold_high)
+
+void double_threshold(SDL_Surface *magnitude)
+{
+    int width = magnitude->w;
+    int height = magnitude->h;
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            Uint8 pixel = get_gpixel_from_coord(magnitude, x, y);
+            if (canny_double_threshold_low > pixel) // non-edges : black, to delete
+                set_gpixel_from_coord(magnitude, x, y, 0);
+            else if (pixel > canny_double_threshold_high) // strong edge : white, to keep
+                set_gpixel_from_coord(magnitude, x, y, 255);
+            else // weak edge : in between, determined in step 6 : if connected to strong edge => strong edge else non-edge
+                set_gpixel_from_coord(magnitude, x, y, 128);
+        }
+    }
+}
+
+void canny_edge_detection(SDL_Surface *surface)
 {
     // STEP 1 : Grayscale image
-    convert_image_to_grayscale(surface);
+    image_to_grayscale(surface);
     // STEP 2 : Gaussian blur
     int window_gaussian;
     double *gaussian_mask = create_gaussian_mask_5x5(&window_gaussian);
@@ -127,11 +150,11 @@ void canny_edge_detection(SDL_Surface *surface, double threshold_low, double thr
         }
     // STEP 4 : Non-maximum suppression
     /**
-     * Non maximum suppression without interpolation requires us to divide the 3x3 grid of pixels into 8 sections. Ie. if the gradient direction falls in between the angle -22.5 and 22.5, then we use the pixels that fall between this angle (r and q) as the value to compare with pixel p
+     * Non maximum suppression without interpolation requires us to divide the 3x3 grid of pixels into 8 sections. Ie. if the gradient direction falls in between the angle -22.5 and 22.5, then we use the pixels that fall between this angle (r and q) as the value to compare with pixel p. USES
      */
     non_maximum_suppression(magnitude_gradient, direction_gradient);
     // STEP 5 : Double threshold for edge tracking
-    // TODO
+    double_threshold(magnitude_gradient);
     // STEP 6 : Edge tracking by hysteresis
     // TODO
 
