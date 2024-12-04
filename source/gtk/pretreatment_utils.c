@@ -5,10 +5,26 @@
 void on_run_clicked(GtkWidget *button, gpointer data)
 {
   GtkWidget *image_widget = GTK_WIDGET(data);
+  if (!image_widget)
+  {
+    printf("❌ Error: image_widget is NULL\n");
+    return;
+  }
   printf("🚀 Running the image processing pipeline\n");
+
+  // Convert to grayscale
+  printf("🌗 Converting to grayscale\n");
   on_grayscale_clicked(button, image_widget);
+
+  // Binarize the image
+  printf("🔳 Binarizing the image\n");
   on_binarize_clicked(button, image_widget);
+
+  // Invert colors
+  printf("🔄 Inverting colors\n");
   on_invert_colors_clicked(button, image_widget);
+
+  printf("✅ Image processing pipeline completed\n");
 }
 /***************************************************************
  *   ESSENTIAL PRETREATMENT FUNCTIONS
@@ -30,10 +46,21 @@ void on_grayscale_clicked(GtkWidget *widget, gpointer data)
   printf("🌗 Converting to grayscale\n");
   (void)widget; // Remove unused parameter warning
 
+  // Check if the data is a valid GtkImage
+  GtkImage *image = GTK_IMAGE(data);
+  if (!GTK_IS_IMAGE(data))
+  {
+    printf("Error: data is not a valid GtkImage\n");
+    return;
+  }
+
   // Get the GdkPixbuf from the image widget
-  GdkPixbuf *pixbuf = gtk_image_get_pixbuf(GTK_IMAGE(data));
+  GdkPixbuf *pixbuf = image_to_pixbuf(image);
   if (!pixbuf)
+  {
     printf("Failed to get pixbuf from image widget\n");
+    return;
+  }
 
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
   convert_to_grayscale(surface);

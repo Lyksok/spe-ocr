@@ -75,6 +75,7 @@
     <property name="can-focus">False</property>
     <property name="title">Organized Chaotic Results software</property>
     <property name="icon">../../../images/Logo_OCR_WS_fanette.png</property>
+    <signal name="destroy" handler="on_window_main_destroy" swapped="no"/>
     <child>
       <object class="GtkBox" id="main_box">
         <property name="can-focus">False</property>
@@ -139,7 +140,7 @@
                         <property name="use-underline">True</property>
                         <property name="image">image1</property>
                         <property name="use-stock">False</property>
-                        <signal name="activate" handler="on_grayscale_clicked" swapped="no"/>
+                        <signal name="activate" handler="on_grayscale_clicked" object="image_widget" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -150,7 +151,7 @@
                         <property name="use-underline">True</property>
                         <property name="image">image2</property>
                         <property name="use-stock">False</property>
-                        <signal name="activate" handler="on_contrast_amplification_clicked" swapped="no"/>
+                        <signal name="activate" handler="on_contrast_amplification_clicked" object="image_widget" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -160,7 +161,7 @@
                         <property name="can-focus">False</property>
                         <property name="image">image3</property>
                         <property name="use-stock">False</property>
-                        <signal name="activate" handler="on_median_filter_clicked" swapped="no"/>
+                        <signal name="activate" handler="on_median_filter_clicked" object="image_widget" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -170,7 +171,7 @@
                         <property name="can-focus">False</property>
                         <property name="image">image4</property>
                         <property name="use-stock">False</property>
-                        <signal name="activate" handler="on_gaussian_filter_clicked" swapped="no"/>
+                        <signal name="activate" handler="on_gaussian_filter_clicked" object="image_widget" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -204,7 +205,7 @@
                         <property name="can-focus">False</property>
                         <property name="image">image6</property>
                         <property name="use-stock">False</property>
-                        <signal name="activate" handler="on_adaptive_thresholding_clicked" swapped="no"/>
+                        <signal name="activate" handler="on_adaptive_thresholding_clicked" object="image_widget" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -214,7 +215,7 @@
                         <property name="can-focus">False</property>
                         <property name="image">image7</property>
                         <property name="use-stock">False</property>
-                        <signal name="activate" handler="on_otsu_thresholding_clicked" swapped="no"/>
+                        <signal name="activate" handler="on_otsu_thresholding_clicked" object="image_widget" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -357,7 +358,7 @@
                 <property name="margin-right">50</property>
                 <property name="margin-top">50</property>
                 <property name="margin-bottom">50</property>
-                <property name="pixbuf">../../../images/Logo_OCR_WS_fanette.png</property>
+                <property name="stock">gtk-missing-image</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -372,7 +373,7 @@
                 <property name="margin-left">100</property>
                 <property name="margin-right">100</property>
                 <property name="margin-top">20</property>
-                <property name="margin-bottom">50</property>
+                <property name="margin-bottom">20</property>
                 <property name="spacing">10</property>
                 <property name="baseline-position">bottom</property>
                 <child>
@@ -382,6 +383,7 @@
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="use-underline">True</property>
+                    <signal name="activate" handler="on_run_clicked" object="image_widget" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -396,6 +398,7 @@
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="use-underline">True</property>
+                    <signal name="activate" handler="on_rotate_left_clicked" object="image_widget" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -410,6 +413,7 @@
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="use-underline">True</property>
+                    <signal name="activate" handler="on_rotate_right_clicked" object="image_widget" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -442,6 +446,7 @@
     <property name="default-height">540</property>
     <property name="destroy-with-parent">True</property>
     <property name="icon">../../../images/Logo_OCR_WS_fanette.png</property>
+    <signal name="destroy" handler="destroy_widget" swapped="no"/>
     <child>
       <object class="GtkBox" id="main_box1">
         <property name="can-focus">False</property>
@@ -477,6 +482,18 @@
                     <property name="can-focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
+                      <object class="GtkFileChooserButton" id="solver_pathToGrid">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="title" translatable="yes">Path to grid</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkEntry" id="TextEntry_ListWords">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
@@ -485,7 +502,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">0</property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
@@ -498,7 +515,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">1</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                     <child>
@@ -510,7 +527,7 @@
                       <packing>
                         <property name="expand">True</property>
                         <property name="fill">True</property>
-                        <property name="position">2</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                   </object>

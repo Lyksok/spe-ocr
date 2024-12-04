@@ -1,24 +1,22 @@
 #include "main.h"
 
 /**
+ * @brief Callback function to destroy the main window.
+ */
+void on_window_main_destroy(GtkWidget *widget, gpointer data)
+{
+  gtk_main_quit();
+}
+/**
  * @brief Callback function to destroy a widget.
  * @param widget The widget to be destroyed.
  * @return gboolean Always returns FALSE to stop the timeout.
  */
 gboolean destroy_widget(gpointer widget)
 {
-  /**
-   * TODO : this forcing method to free is not working, thus the leaks are
-   * relative to the libpango as side effect of gtk
-   * 1. This loop goes through each element in the `children` GList
-   * 2/ Converts the child data to a GTK_WIDGET
-   * 3. Ultimatly destroys the widget
-   * 01/11/24
-   */
   if (GTK_IS_WIDGET(widget))
   {
     GList *children, *p;
-    // p pointer to current element
     children = gtk_container_get_children(GTK_CONTAINER(widget)); // list
     for (p = children; p != NULL; p = g_list_next(p))
     {
@@ -257,7 +255,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  // Connect signals
+  // Connect signals defined in the UI file
   gtk_builder_connect_signals(builder, NULL);
 
   // Get the screen size
@@ -272,7 +270,7 @@ int main(int argc, char *argv[])
   pixbuf = gdk_pixbuf_new_from_file("images/Logo_OCR_WS_fanette.png", NULL);
   if (pixbuf)
   {
-    gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), pixbuf);
+    process_and_display_image(image_widget, pixbuf);
     g_object_unref(pixbuf);
   }
   else
