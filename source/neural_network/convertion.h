@@ -9,6 +9,7 @@
 #include "structures.h"
 
 #define dimension 16
+//const int dimension = 16;
 
 SDL_Surface *toSDL(char *path);
 void SDL_to_list(SDL_Surface *surface, int len, int **list);

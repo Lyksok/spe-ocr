@@ -11,7 +11,8 @@ void Forward(int length, Layer l, Network net);
 
 void Backward(Network net, TrainingData data, int run);
 
-void Result(Network net, TrainingData data, int nbrun);
+//void Result(Network net, TrainingData data, int nbrun);
+void Result(TrainingData data, int nbrun);
 
 void Train(int nbrun, Network net, TrainingData data);
 

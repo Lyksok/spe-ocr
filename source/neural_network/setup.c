@@ -2,6 +2,12 @@
 #include <stdio.h>
 
 #include "structures.h"
+#include "setup.h"
+
+double HiddenBias[nNodes] = {};
+double HiddenWeight[nNodes][nInputs] = {};
+double OutputBias[nOut] = {};
+double OutputWeight[nOut][nNodes] = {};
 
 double GetMax(double x, double y)
 {
@@ -27,7 +33,7 @@ void InitWeigths(Layer layer)
 
 void RecoverWeigths(Layer l, int rows, int cols, double mat[rows][cols]) {
 	for (int r = 0; r < rows ; r++)
-	for (int c = 0; c < layer ; w++)
+	for (int c = 0; c < cols ; c++)
 	{
 		l.weights[r][c] = mat[r][c];
 	}
@@ -92,9 +98,9 @@ Layer RecoverFirstLayer()
 	layer.numNeurons = nNodes;
         layer.neurons = malloc(nNodes * sizeof(Neuron));
 	layer.inputs = calloc(nInputs, sizeof(double));
-	RecoverBiases(layer, nNodes, nInputs, HiddenWeight);
+	RecoverBiases(layer, nNodes, HiddenBias);
 	layer.numWeights = nInputs;
-	RecoverWeigths(layer, nNodes, HiddenBias);
+	RecoverWeigths(layer, nNodes, nInputs, HiddenWeight);
 	layer.prev = NULL;
 	layer.next = NULL;
         return layer;
@@ -106,17 +112,17 @@ void RecoverSecondLayer(Layer *l)
 	 * double OutputBias[nOut] = {};
 	 * double OutputWeight[nOut][nNodes] = {};
 	 * */
-        Layer *layer;
-	layer->numNeurons = nOut;
-        layer->neurons = malloc(nOut * sizeof(Neuron));
-	layer->inputs = calloc(nNodes, sizeof(double));
-	layer->numWeights = nNodes;
-	RecoverBiases(layer, nOut, nNodes, OutputWeight);
-	RecoverWeigths(layer, nOut, OutputBias);
+        Layer layer;
+	layer.numNeurons = nOut;
+        layer.neurons = malloc(nOut * sizeof(Neuron));
+	layer.inputs = calloc(nNodes, sizeof(double));
+	layer.numWeights = nNodes;
+	RecoverBiases(layer, nOut, OutputBias);
+	RecoverWeigths(layer, nOut, nNodes, OutputWeight);
 
-	layer->prev = l;
-	l->next = layer;
-	layer->next = NULL;
+	layer.prev = l;
+	l->next = &layer;
+	layer.next = NULL;
         return;
 }
 
@@ -209,7 +215,7 @@ Network CreateNet(int numLayers, int len)
 
 Network RecoverNet() {
         Network net;
-        network.layers = RecoverFirstLayer();
+        net.layers = RecoverFirstLayer();
 	RecoverSecondLayer(&(net.layers));
         return net;
 }

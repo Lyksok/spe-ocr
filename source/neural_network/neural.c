@@ -156,7 +156,7 @@ void Backward(Network net, TrainingData data, int run)
 	free(errors);
 }
 
-void Result(Network net, TrainingData data, int nbrun)
+void Result(TrainingData data, int nbrun)
 {
 	int succ = 0;
 	for (int run = 0; run < nbrun; run++)
@@ -207,7 +207,7 @@ void Train(int nbrun, Network net, TrainingData data)
 			Backward(net, data, run);
 		}
 	}
-	Result(net, data, nbrun);
+	Result(data, nbrun);
 }
 
 int main(int argc, char **argv)
@@ -224,7 +224,7 @@ int main(int argc, char **argv)
 		// we train
 		printf("Training new network\n");
 		// Init of Training Data
-		TrainingData data = CreateData(dimensions, nTrainingSets);
+		TrainingData data = CreateData(dimension, nTrainingSets);
 		// TODO
 		// actually create the data
 
