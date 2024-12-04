@@ -17,6 +17,12 @@
 #include "utils/sdl_utils.h"
 #include "utils/converting.h"
 
+void level_1_image_1(SDL_Surface* surface)
+{
+  convert_to_grayscale(surface);
+  convert_to_binarized_average(surface);
+  invert_colors(surface);
+}
 void level_2_image_2(SDL_Surface* surface)
 {
   convert_to_grayscale(surface);
@@ -24,6 +30,18 @@ void level_2_image_2(SDL_Surface* surface)
   int w;
   double* mask = create_gaussian_mask_3x3(&w);
   convolve_surface(surface, mask, w);
+  sauvola_thresholding(surface);
+  invert_colors(surface);
+  //erode_surface(surface);
+  free(mask);
+}
+void level_2_image_3(SDL_Surface* surface)
+{
+  convert_to_grayscale(surface);
+  //contrast_surface(surface);
+  int w;
+  double* mask = create_gaussian_mask_3x3(&w);
+  //convolve_surface(surface, mask, w);
   sauvola_thresholding(surface);
   invert_colors(surface);
   //erode_surface(surface);
@@ -55,7 +73,7 @@ int main(int argc, char **argv) {
     errx(EXIT_FAILURE, "%s", SDL_GetError());
   }
 
-  int detecting = 0;
+  int detecting = 1;
   //int w;
   //double* mask = create_gaussian_mask_5x5(&w);
   //convert_to_grayscale(surface);
@@ -73,8 +91,16 @@ int main(int argc, char **argv) {
         box_list = list_new_list();
         init_list(box_list);
         compute_bounding_boxes(surface, box_list);
-        detect_characters(surface, box_list);
-        printf("box-len=%zu\n", box_list->len);
+        struct list* chars = detect_characters(surface, box_list);
+        int grid_width;
+        int grid_height;
+        struct list* grid_boxes = list_hard_copy(chars);
+        BoundingBox** grid = detect_grid(surface, grid_boxes,
+                &grid_width, &grid_height);
+        if(grid!=NULL)
+            printf("Grid is %ix%i\n", grid_width, grid_height);
+        else
+            printf("No grid\n");
   }
   
   
