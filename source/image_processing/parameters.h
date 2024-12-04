@@ -21,8 +21,8 @@ struct parameters
 
 
     // filtering.c
-    int t1;
-    int t2;
+    int filtering_t1;
+    int filtering_t2;
 
     /* THRESHOLDING */
     // average
