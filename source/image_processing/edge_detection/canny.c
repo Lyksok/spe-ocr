@@ -4,7 +4,7 @@
 static double *get_sobel_mask_x()
 {
     double *mask = calloc(9, sizeof(double));
-    double mat[] = {
+    double *mat = {
         -1, 0, 1,
         -2, 0, 2,
         -1, 0, 1};
@@ -16,7 +16,7 @@ static double *get_sobel_mask_x()
 static double *get_sobel_mask_y()
 {
     double *mask = calloc(9, sizeof(double));
-    double mat[] = {
+    double *mat = {
         -1, -2, -1,
         0, 0, 0,
         1, 2, 1};
@@ -25,6 +25,69 @@ static double *get_sobel_mask_y()
     return mask;
 }
 
+void non_maximum_suppression(SDL_Surface *magnitude, SDL_Surface *direction)
+{
+    // Get the width and height of the image
+    int width = magnitude->w;
+    int height = magnitude->h;
+    SDL_Surface *suppressed = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0); // Create a dsdl surface to store the suppressed image
+
+    for (int y = 1; y < height - 1; y++)
+    { // Loop through each row of the image, excluding the borders
+        for (int x = 1; x < width - 1; x++)
+        {
+            // Loop through each column of the image, excluding the borders
+            Uint8 mag = get_gpixel_from_coord(magnitude, x, y);                        // Get the gradient magnitude for the current pixel
+            double dir = (get_gpixel_from_coord(direction, x, y) * 2 * PI / 255) - PI; // Get the gradient direction for the current pixel and convert it to radi
+
+            /** By initializing neighbour1 and neighbour2 to 255, we ensure that if the gradient direction does not match any of the specified ranges, the current pixel will be suppressed because its magnitude will not be greater than or equal to 255.*/
+            Uint8 neighbour1 = 255;
+            Uint8 neighbour2 = 255;
+
+            // Determine the neighboring pixels to compare based on the gradient direction
+            if ((0 <= dir && dir < PI / 8) || (7 * PI / 8 <= dir && dir <= PI))
+            {
+                neighbour1 = get_gpixel_from_coord(magnitude, x, y + 1); // Get the pixel value to the right
+                neighbour2 = get_gpixel_from_coord(magnitude, x, y - 1); // Get the pixel value to the left
+            }
+            else if (PI / 8 <= dir && dir < 3 * PI / 8)
+            {
+                neighbour1 = get_gpixel_from_coord(magnitude, x + 1, y - 1); // Get the pixel value to the top-right
+                neighbour2 = get_gpixel_from_coord(magnitude, x - 1, y + 1); // Get the pixel value to the bottom-left
+            }
+            else if (3 * PI / 8 <= dir && dir < 5 * PI / 8)
+            {
+                neighbour1 = get_gpixel_from_coord(magnitude, x + 1, y); // Get the pixel value to the top
+                neighbour2 = get_gpixel_from_coord(magnitude, x - 1, y); // Get the pixel value to the bottom
+            }
+            else if (5 * PI / 8 <= dir && dir < 7 * PI / 8)
+            {
+                neighbour1 = get_gpixel_from_coord(magnitude, x - 1, y - 1); // Get the pixel value to the top-left
+                neighbour2 = get_gpixel_from_coord(magnitude, x + 1, y + 1); // Get the pixel value to the bottom-right
+            }
+
+            // Suppress the non-maximum pixels
+            if (mag >= neighbour1 && mag >= neighbour2)
+            {
+                set_gpixel_from_coord(suppressed, x, y, mag); // Keep tur pixel if = current max
+            }
+            else
+            {
+                set_gpixel_from_coord(suppressed, x, y, 0); // else suppress cur pixel
+            }
+        }
+    }
+    // Copy suppressed surface => original magnitude surface
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            Uint8 pixel = get_gpixel_from_coord(suppressed, x, y);
+            set_gpixel_from_coord(magnitude, x, y, pixel);
+        }
+    }
+    SDL_FreeSurface(suppressed);
+}
 void canny_edge_detection(SDL_Surface *surface, double threshold_low, double threshold_high)
 {
     // STEP 1 : Grayscale image
@@ -63,7 +126,10 @@ void canny_edge_detection(SDL_Surface *surface, double threshold_low, double thr
             set_gpixel_from_coord(direction_gradient, i, j, (int)fmin((direction + PI) / (2 * PI) * 255, 255));
         }
     // STEP 4 : Non-maximum suppression
-    // TODO
+    /**
+     * Non maximum suppression without interpolation requires us to divide the 3x3 grid of pixels into 8 sections. Ie. if the gradient direction falls in between the angle -22.5 and 22.5, then we use the pixels that fall between this angle (r and q) as the value to compare with pixel p
+     */
+    non_maximum_suppression(magnitude_gradient, direction_gradient);
     // STEP 5 : Double threshold for edge tracking
     // TODO
     // STEP 6 : Edge tracking by hysteresis
@@ -73,5 +139,4 @@ void canny_edge_detection(SDL_Surface *surface, double threshold_low, double thr
     SDL_FreeSurface(gradient_y);
     SDL_FreeSurface(magnitude_gradient);
     SDL_FreeSurface(direction_gradient);
-}
 }
