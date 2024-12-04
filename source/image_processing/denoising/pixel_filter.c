@@ -2,8 +2,8 @@
 
 static int max_cluster = 15;
 static int dir_nb = 4;
-static int* dir_x = {0, 0, -1, 1};
-static int* dir_y = {-1, 1, 0, 0};
+static int* dir_x;
+static int* dir_y;
 
 void aux_flood_fill(SDL_Surface* surface, int* pixels, int** visited,
 	int x, int y, int* count)
