@@ -10,18 +10,33 @@ void convolve_surface(SDL_Surface* surface, double* mask, int w)
     for(int j=0; j<surface->h; j++)
 	for(int i=0; i<surface->w; i++)
 	{
-	    double sum = 0.0;
+	    double sumR = 0.0;
+	    double sumG = 0.0;
+	    double sumB= 0.0;
 	    for(int y=-w/2; y<=w/2; y++)
 		for(int x=-w/2; x<=w/2; x++)
 		{
-		    Uint8 pixel;
+		    Uint8 pixelR;
+		    Uint8 pixelG;
+		    Uint8 pixelB;
 		    if(i+x<0 || i+x>=surface->w || j+y<0 || j+y>=surface->h)
-			pixel = 255;
+		    {
+			pixelR = 255;
+			pixelG = 255;
+			pixelB = 255;
+		    }
 		    else
-			pixel = pixels[(j+y)*surface->w+i+x];
-		    sum += mask[(y+w/2)*w+x+w/2]*(double)pixel;
+		    {
+			pixelR = get_pixelR_from_coord(surface, i+x, j+y);;
+			pixelG = get_pixelG_from_coord(surface, i+x, j+y);;
+			pixelB = get_pixelB_from_coord(surface, i+x, j+y);;
+		    }
+		    sumR += mask[(y+w/2)*w+x+w/2]*(double)pixelR;
+		    sumG += mask[(y+w/2)*w+x+w/2]*(double)pixelG;
+		    sumB += mask[(y+w/2)*w+x+w/2]*(double)pixelB;
 		}
-	    set_gpixel_from_coord(surface, i, j, (int)fmin(sum,255));
+	    set_pixelRGB_from_coord(surface, i, j,
+		(int)fmin(sumR,255), (int)fmin(sumG,255), (int)fmin(sumB,255));
 	    //printf("%lf ",sum);
 	}
     free(pixels);

@@ -169,6 +169,8 @@ static int ydir[6] = {-1, 0, 1, 1, 0, -1};
 
 void aux_remove_box(SDL_Surface* surface, int x, int y)
 {
+    if(x<0 || y<0 || x>=surface->w || y>=surface->h)
+	return;
     if(get_gpixel_from_coord(surface, x, y))
     {
         set_gpixel_from_coord(surface, x, y, 0);

@@ -25,11 +25,11 @@ void level_1_image_1(SDL_Surface* surface)
 }
 void level_2_image_2(SDL_Surface* surface)
 {
-  convert_to_grayscale(surface);
-  //contrast_surface(surface);
   int w;
   double* mask = create_gaussian_mask_3x3(&w);
   convolve_surface(surface, mask, w);
+  convert_to_grayscale(surface);
+  //contrast_surface(surface);
   sauvola_thresholding(surface);
   invert_colors(surface);
   //erode_surface(surface);
