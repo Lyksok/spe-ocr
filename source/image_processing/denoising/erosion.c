@@ -2,8 +2,9 @@
 
 static int w=3;
 
-void erode_surface(SDL_Surface* surface)
+void erode_surface(SDL_Surface* surface, struct parameters* param)
 {
+	w=param->erosion_w;
     int pixel_nb = surface->w*surface->h;
     Uint8 pixels[pixel_nb] = {};
     for(int i=0; i<pixel_nb; i++)

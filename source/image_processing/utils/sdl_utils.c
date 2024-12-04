@@ -1,9 +1,9 @@
 #include "sdl_utils.h"
 
 void draw_rect(SDL_Surface* surface, SDL_Renderer *renderer, BoundingBox* box,
-        int width, int height)
+        int width, int height, struct parameters* param)
 {
-    int p = 0;
+    int p = param->sdl_utils_p;
     if(SDL_SetRenderDrawColor(renderer, 0, 255, 0, SDL_ALPHA_OPAQUE))
         errx(EXIT_FAILURE, "Failed to set render draw color: %s", SDL_GetError());
     SDL_Rect r;

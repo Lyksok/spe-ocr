@@ -25,8 +25,9 @@ Uint8 median_value(Uint8* pixels)
     return pixels[len/2];
 }
 
-void median_filter(SDL_Surface* surface)
+void median_filter(SDL_Surface* surface, struct parameters* param)
 {
+    d_w = param->denoising_w;
     Uint8* local_pixels = calloc(d_w*d_w, sizeof(Uint8));
     Uint8* pixels = calloc(surface->w*surface->h, sizeof(Uint8));
 
