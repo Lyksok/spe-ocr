@@ -4,7 +4,7 @@ TARGET-TEST = test
 TARGET = solver
 OBJECTS-TEST = solver.o test.o
 OBJECTS = solver.o read.o main.o
-FLAGS = -Wall -Wextra -Werror
+FLAGS = -Wall -Wextra -Werror -g
 
 #all: $(TARGET-TEST) $(TARGET)
 all: $(TARGET)

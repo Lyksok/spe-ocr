@@ -14,17 +14,20 @@ void PrintMat(int row, int col, char **mat)
         }
 }
 
-void PrintWord(char *word)
+void PrintWord(char *word, int len)
 {
-	int i = 0;
-	while (word[i] != 0)
+	for (int i = 0; i < len; i++)
 	{
 		printf("%c", word[i]);
-		i++;
 	}
 	printf("\n");
 }
 
+/*
+ * We expect 2 arguments (apart from the executable file)
+ * the first one is the grid to read
+ * the second one is the list of words to find
+ * */
 int main(int argc, char* argv[])
 {
 	if (argc != 3)
@@ -35,46 +38,35 @@ int main(int argc, char* argv[])
 	}
 
 	/*
-	 * row : pointer to the number of rows
-	 * col : pointer to the number of columns
+	 * row : number of rows
+	 * col : number of columns
 	 * grid : our matrix we want to search in
 	 */
-	int *row = calloc(1, sizeof(int));
-	int *col = calloc(1, sizeof(int));
-	if (row == NULL || col == NULL)
-	{
-		printf("Memory allocation failed (row/col)\n");
-		return 2;
-	}
+	int row = 0;
+	int col = 0;
 
-	char **grid = ReadFile(argv[1], row, col);
+	char **grid = ReadFile(argv[1], &row, &col);
 	if (grid == NULL)
 	{
 		printf("Could not create the grid\n");
 		return 3;
 	}
 
-	/*
-	 * This function checks for none letter characters
-	 * It also changes the word in place to uppercase
-	 */
-	if (NotJustLetters(argv[2]))
+	PrintMat(row, col, grid);
+
+	int nblines = 0;
+	Words *first = ReadWords(argv[2], &nblines);
+	for (int i = 0; i < nblines; i++)
 	{
-		FreeMat(grid, *row);
-		free(row);
-		free(col);
-		return 4;
+		PrintWord(first->w, first->len);
+		// call solver with word
+		Solver(row, col, grid, first->w, first->len);
+		// free word
+		Words *temp = first;
+		first = first->next;
+		DeleteWord(temp);
 	}
 
-	/* FOR TESTING PURPOSE
-	PrintMat(*row, *col, grid);
-	PrintWord(argv[2]);
-	*/
-
-	Solver(*row, *col, grid, argv[2]);
-
-	FreeMat(grid, *row);
-	free(row);
-	free(col);
+	FreeMat(grid, row);
 	return 0;
 }
