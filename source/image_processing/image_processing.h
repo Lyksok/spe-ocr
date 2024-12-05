@@ -5,5 +5,6 @@
 #include "utils/pixel_utils.h"
 #include "utils/converting.h"
 #include "thresholding/sauvola.h"
+#include "parameters.h"
 
 #endif /* IMAGE_PROCESSING_H */

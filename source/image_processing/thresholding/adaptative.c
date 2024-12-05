@@ -1,6 +1,6 @@
 #include "adaptative.h"
 
-size_t KERNEL_SIZE = 7;
+size_t KERNEL_SIZE;
 
 /* Returns the gaussian weighted mean based on pixel at coordinates x y
  */
@@ -116,4 +116,18 @@ void map_thresholds(int **histogram, size_t x, size_t y, SDL_Surface *surface) {
 
 void get_all_thresholds(SDL_Surface *surface, int **histogram) {
   create_histogram_of_surface(surface, histogram, map_thresholds);
+}
+
+void adaptative_thresholding(SDL_Surface* surface, struct parameters* param)
+{
+  // Set parameters
+  KERNEL_SIZE = param->adaptative_w;
+  
+  int *histo = calloc(surface->w * surface->h, sizeof(int));
+  get_all_thresholds(surface, &histo);
+
+  for (size_t i = 0; i < (size_t)surface->w * surface->h; i++) {
+    convert_pixel_with_threshold(surface, histo[i], i);
+  }
+  free(histo);
 }

@@ -105,3 +105,12 @@ size_t get_optimal_threshold(SDL_Surface *surface) {
   free(histo);
   return max_threshold;
 }
+
+void global_thresholding(SDL_Surface* surface, struct parameters* param)
+{
+  // Intialize parameters
+  (void)param;
+
+  size_t threshold = get_optimal_threshold(surface);
+  image_to_binarized(surface, threshold);
+}

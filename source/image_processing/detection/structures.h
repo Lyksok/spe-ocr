@@ -15,6 +15,8 @@ typedef struct BoundingBox
     Point p2;
     long id;
     Point start;
+    int score;
+    int pixel_nb;
 } BoundingBox;
 
 struct list

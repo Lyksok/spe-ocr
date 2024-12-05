@@ -1,8 +1,8 @@
 #include "sauvola.h"
 
-double k = 0.06; // Sensitivity
-double w = 15.0; // Window size	
-double R = 125.0; // Standard deviation
+static double k = 0.06; // Sensitivity
+static double w = 25.0; // Window size	
+static double R = 128.0; // Standard deviation
 
 Uint8* convert_to_matrix(SDL_Surface* surface)
 {
@@ -50,8 +50,13 @@ void compute_sauvola_args(int width, int height,
     *stddev = sqrt((sum_sq/(double)area)-(*mean)*(*mean));
 }
 
-void sauvola_thresholding(SDL_Surface* surface)
+void sauvola_thresholding(SDL_Surface* surface, struct parameters* param)
 {
+    // Initialize parameters
+    k = param->sauvola_k;
+    w = param->sauvola_w;
+    R = param->sauvola_R;
+
     int width = surface->w;
     int height = surface->h;
     int* integral = calloc(width*height, sizeof(double));

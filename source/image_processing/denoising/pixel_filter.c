@@ -1,8 +1,9 @@
 #include "pixel_filter.h"
 
 static int max_cluster = 15;
-static int dir_x[] = {0, 0, -1, 1};
-static int dir_y[] = {-1, 1, 0, 0};
+static int dir_nb = 4;
+static int* dir_x;
+static int* dir_y;
 
 void aux_flood_fill(SDL_Surface* surface, int* pixels, int** visited,
 	int x, int y, int* count)
@@ -49,8 +50,12 @@ void remove_cluster(SDL_Surface* surface, int* cluster)
     }
 }
 
-void filter_small_clusters(SDL_Surface* surface)
+void filter_small_clusters(SDL_Surface* surface, struct parameters* param)
 {
+	max_cluster = param->pixel_filter_max;
+	dir_nb = param->pixel_filter_dir_nb;
+	dir_x = param->pixel_filter_dir_x;
+	dir_y = param->pixel_filter_dir_y;
     // Remove clusters with 15 or less pixels
     for(int j=0; j<surface->h; j++)
     {

@@ -3,7 +3,10 @@
 
 #include <SDL2/SDL.h>
 #include "../utils/histograms.h"
+#include "../parameters.h"
+#include "../utils/converting.h"
 
-size_t get_optimal_threshold(SDL_Surface *surface);
+void global_thresholding(SDL_Surface* surface, struct parameters* param);
+
 
 #endif /* GLOBAL_H */
