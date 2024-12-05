@@ -15,17 +15,20 @@ void PrintMat(int row, int col, char **mat)
         }
 }
 
-void PrintWord(char *word)
+void PrintWord(char *word, int len)
 {
-	int i = 0;
-	while (word[i] != 0)
+	for (int i = 0; i < len; i++)
 	{
 		printf("%c", word[i]);
-		i++;
 	}
 	printf("\n");
 }
 
+/*
+ * We expect 2 arguments (apart from the executable file)
+ * the first one is the grid to read
+ * the second one is the list of words to find
+ * */
 int main(int argc, char* argv[])
 {
 	if (argc != 3)
@@ -35,57 +38,42 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	char *file = argv[1];
-	int to_print = 0;
-	if (!strcmp(file, "print"))
-	{
-		file = argv[2];
-		to_print = 1;
-	}
-
 	/*
-	 * row : pointer to the number of rows
-	 * col : pointer to the number of columns
+	 * row : number of rows
+	 * col : number of columns
 	 * grid : our matrix we want to search in
 	 */
 	int row = 0;
 	int col = 0;
 
-	char **grid = ReadFile(file, &row, &col);
+	char **grid = ReadFile(argv[1], &row, &col);
 	if (grid == NULL)
 	{
 		printf("Could not create the grid\n");
 		return 3;
 	}
 
-	if (to_print)
-	{
-		PrintMat(row, col, grid);
-		FreeMat(grid, row);
-		return 0;
-	}
-
-	/*
-	 * This function checks for none letter characters
-	 * It also changes the word in place to uppercase
-	 */
-	if (NotJustLetters(argv[2]))
-	{
-		FreeMat(grid, row);
-		return 4;
-	}
-
-	/* FOR TESTING PURPOSE
 	PrintMat(row, col, grid);
-	PrintWord(argv[2]);
-	*/
 
-	int srow = 0;
-	int scol = 0;
-	int erow = 0;
-	int ecol = 0;
-	Solver(row, col, grid, argv[2], &srow, &scol, &erow, &ecol);
-	// word is starting from (scol, srow) and ends at (ecol, erow)
+	int nblines = 0;
+	Words *first = ReadWords(argv[2], &nblines);
+	for (int i = 0; i < nblines; i++)
+	{
+		PrintWord(first->w, first->len);
+		// call solver with word
+		int srow = 0;
+		int scol = 0;
+		int erow = 0;
+		int ecol = 0;
+		Solver(row, col, grid, first->w, first->len,
+				&srow, &scol, &erow, &ecol);
+		// word is starting from (scol, srow)
+		// and ends at (ecol, erow)
+		// free word
+		Words *temp = first;
+		first = first->next;
+		DeleteWord(temp);
+	}
 
 	FreeMat(grid, row);
 	return 0;

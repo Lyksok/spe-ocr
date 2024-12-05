@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "read.h"
 #include "solver.h"
 
 void FreeMat(char **mat, int n)
@@ -21,6 +22,42 @@ int InvalidLetter(char *line, int n)
 	while (i < n && line[i] >= 'A' && line[i] <= 'Z')
 		i++;
 	return i != n;
+}
+
+Words *CreateWord(int len, char *word)
+{
+	Words *new = malloc(sizeof(Words));;
+	if (new == NULL) {
+		printf("Memory allocation failed (word)\n");
+		return NULL;
+	}
+	new->len = len;
+	new->w = calloc(len, sizeof(char));
+	if (new->w == NULL) {
+		printf("Memory allocation failed (word)\n");
+		return NULL;
+	}
+	for (int i = 0; i < len; i++)
+	{
+		new->w[i] = word[i];
+		//printf("%c ", new->w[i]);
+	}
+	//printf("\n");
+	new->next = NULL;
+	return new;
+}
+
+void LinkWords(Words *w1, Words *w2)
+{
+	w1->next = w2;
+	return;
+}
+
+void DeleteWord(Words *word)
+{
+	free(word->w);
+	free(word);
+	return;
 }
 
 /*
@@ -141,4 +178,62 @@ char **ReadFile(char *filename, int *row, int *col)
 //	THIS IS UP TO WHO WE CALLED TO FREE
 //	FreeMat(mat, r);
 	return mat;
+}
+
+/*
+ * filename : a path to a file
+ * returns a linked list of Words
+ * CAREFUL : need to free the list afterwards
+ * CAREFUL : we do not check wether we have nothing in the file or not
+ * we assume there is at least one word to read
+ */
+Words *ReadWords(char *filename, int *rows)
+{
+        FILE *file = fopen(filename, "r");
+        if (file == NULL) {
+                printf("Error opening file");
+		return NULL;
+        }
+
+	/*
+	 * line : dynamically allocated string
+	 * r : the number of lines in the file
+	 * c : the number of characters in the line
+	 */
+        char *line;
+	int r = 0;
+	int c = 0;
+	while ((line = ReadLine(file, &c)) != NULL)
+	{
+		r++;
+        	free(line);
+    	}
+	*rows = r;
+
+	rewind(file);
+
+	line = ReadLine(file, &c);
+	Words *first = CreateWord(c, line);
+	if (first == NULL)
+	{
+		return NULL;
+	}
+	Words *one = first;
+	free(line);
+	while ((line = ReadLine(file, &c)) != NULL)
+	{
+		Words *two = CreateWord(c, line);
+		if (two == NULL)
+		{
+			free(line);
+			return NULL;
+		}
+		LinkWords(one, two);
+		one = two;
+		free(line);
+		r++;
+	}
+
+        fclose(file);
+	return first;
 }
