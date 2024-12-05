@@ -10,8 +10,7 @@
 #include "../image_processing/thresholding/sauvola.h"
 #include "../image_processing/denoising/denoising.h"
 #include "../image_processing/denoising/contrasting.h"
-#include "../image_processing/edge_detection/gaussian.h"
-#include "../image_processing/edge_detection/convolution.h"
+#include "../image_processing/edge_detection/canny.h"
 // #include "../image_processing/denoising/erosion.h" // Excluded due to errors
 #include "../image_processing/denoising/pixel_filter.h"
 #include "../image_processing/detection/detection.h"

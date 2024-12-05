@@ -233,6 +233,16 @@
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <child>
+                      <object class="GtkImageMenuItem" id="Canny edge detection">
+                        <property name="label">Canny edge detection</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image8</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_canny_clicked" object="image_widget" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkImageMenuItem" id="detect_grid">
                         <property name="label">Detect grid</property>
                         <property name="visible">True</property>

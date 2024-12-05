@@ -4,7 +4,7 @@
 #define canny_double_threshold_low 0.3
 #define canny_double_threshold_high 0.7
 
-static double *get_sobel_mask_x()
+double *get_sobel_mask_x()
 {
     double *mask = calloc(9, sizeof(double));
     double mat[9] = {
@@ -16,7 +16,7 @@ static double *get_sobel_mask_x()
     return mask;
 }
 
-static double *get_sobel_mask_y()
+double *get_sobel_mask_y()
 {
     double *mask = calloc(9, sizeof(double));
     double mat[9] = {
@@ -72,7 +72,8 @@ void non_maximum_suppression(SDL_Surface *magnitude, SDL_Surface *direction)
             // Suppress the non-maximum pixels
             if (mag >= neighbour1 && mag >= neighbour2)
             {
-                set_gpixel_from_coord(suppressed, x, y, mag); // Keep tur pixel if = current max
+
+                set_gpixel_from_coord(suppressed, x, y, mag); // Keep the pixel if = current max
             }
             else
             {
@@ -81,14 +82,11 @@ void non_maximum_suppression(SDL_Surface *magnitude, SDL_Surface *direction)
         }
     }
     // Copy suppressed surface => original magnitude surface
-    for (int y = 0; y < height; y++)
-    {
-        for (int x = 0; x < width; x++)
-        {
-            Uint8 pixel = get_gpixel_from_coord(suppressed, x, y);
-            set_gpixel_from_coord(magnitude, x, y, pixel);
-        }
-    }
+
+    SDL_Rect srcRect = {0, 0, suppressed->w, suppressed->h};
+    SDL_Rect dstRect = {0, 0, magnitude->w, magnitude->h};
+    SDL_BlitSurface(suppressed, &srcRect, magnitude, &dstRect);
+
     SDL_FreeSurface(suppressed);
 }
 
@@ -110,6 +108,12 @@ void double_threshold(SDL_Surface *magnitude)
         }
     }
 }
+
+int is_within_bounds(int x, int y, int width, int height)
+{
+    return x >= 0 && x < width && y >= 0 && y < height;
+}
+
 void __edge_tracking_by_hysteresis(SDL_Surface *magnitude, int x, int y, int width, int height)
 {
     for (int dy = -1; dy <= 1; dy++)
@@ -167,48 +171,48 @@ void canny_edge_detection(SDL_Surface *surface)
 {
     // STEP 1 : Grayscale image
     image_to_grayscale(surface);
+
     // STEP 2 : Gaussian blur
     int window_gaussian;
-    double *gaussian_mask = create_gaussian_mask_5x5(&window_gaussian);
-    convolve_surface(surface, gaussian_mask, window_gaussian);
-    free(gaussian_mask); // The caller is responsible for freeing the mask
-                         // STEP 3 : Sobel filter for gradient magnitude
-                         /**
-                          * The whiter the point the higher the magnitude
-                          * cf https://www.youtube.com/watch?v=lOEBsQodtEQ
-                          */
-    // creation of 2 new surfaces to store the Sobel gradient in x and y
+    // double *gaussian_mask = create_gaussian_mask_5x5(&window_gaussian);
+    // convolve_surface(surface, gaussian_mask, window_gaussian);
+    // free(gaussian_mask); // The caller is responsible for freeing the mask
+
+    // STEP 3 : Sobel filter for gradient magnitude
     SDL_Surface *gradient_x = SDL_CreateRGBSurface(0, surface->w, surface->h, 8, 0, 0, 0, 0);
     SDL_Surface *gradient_y = SDL_CreateRGBSurface(0, surface->w, surface->h, 8, 0, 0, 0, 0);
-    // create Sobel mask
     double *sobel_mask_x = get_sobel_mask_x();
     double *sobel_mask_y = get_sobel_mask_y();
     convolve_surface(gradient_x, sobel_mask_x, 3);
     convolve_surface(gradient_y, sobel_mask_y, 3);
     free(sobel_mask_y);
     free(sobel_mask_x);
-    SDL_Surface *magnitude_gradient = SDL_CreateRGBSurface(0, surface->w, surface->h, 8, 0, 0, 0, 0); // 8 bits per pixel for 256 levels of grey
+
+    SDL_Surface *magnitude_gradient = SDL_CreateRGBSurface(0, surface->w, surface->h, 8, 0, 0, 0, 0);
     SDL_Surface *direction_gradient = SDL_CreateRGBSurface(0, surface->w, surface->h, 8, 0, 0, 0, 0);
+
     for (int j = 0; j < surface->h; j++)
+    {
         for (int i = 0; i < surface->w; i++)
         {
             Uint8 pixel_x = get_gpixel_from_coord(gradient_x, i, j);
             Uint8 pixel_y = get_gpixel_from_coord(gradient_y, i, j);
-            double magnitude = sqrt(pixel_x * pixel_x + pixel_y * pixel_y); // euclidean distance formula
+            double magnitude = sqrt(pixel_x * pixel_x + pixel_y * pixel_y); // Euclidean distance formula
+            double direction = atan2(pixel_y, pixel_x);                     // Gradient direction
 
-            double direction = atan2(pixel_y, pixel_x); // atan2 = "arc tangent" => angle in rad of (y / x) in the range -pipi : Careful !  : The gradient direction is perpendicular to the edge direction
             set_gpixel_from_coord(magnitude_gradient, i, j, (int)fmin(magnitude, 255));
             set_gpixel_from_coord(direction_gradient, i, j, (int)fmin((direction + PI) / (2 * PI) * 255, 255));
         }
+    }
+
     // STEP 4 : Non-maximum suppression
-    /**
-     * Non maximum suppression without interpolation requires us to divide the 3x3 grid of pixels into 8 sections. For example, if the gradient direction falls in between the angle -22.5 and 22.5, then we use the pixels that fall between this angle (r and q) as the value to compare with pixel p. USES
-     */
-    non_maximum_suppression(magnitude_gradient, direction_gradient);
+    // non_maximum_suppression(magnitude_gradient, direction_gradient);
+
     // STEP 5 : Double threshold for edge tracking
-    double_threshold(magnitude_gradient);
+    // double_threshold(magnitude_gradient);
+
     // STEP 6 : Edge tracking by hysteresis
-    edge_tracking_by_hysteresis(magnitude_gradient);
+    // edge_tracking_by_hysteresis(magnitude_gradient);
 
     SDL_FreeSurface(gradient_x);
     SDL_FreeSurface(gradient_y);

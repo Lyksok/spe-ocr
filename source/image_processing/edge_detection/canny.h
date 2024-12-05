@@ -12,7 +12,7 @@
 void canny_edge_detection(SDL_Surface *surface);
 void non_maximum_suppression(SDL_Surface *magnitude, SDL_Surface *direction);
 void double_threshold(SDL_Surface *magnitude);
-static double *get_sobel_mask_x();
-static double *get_sobel_mask_y();
+double *get_sobel_mask_x();
+double *get_sobel_mask_y();
 
 #endif

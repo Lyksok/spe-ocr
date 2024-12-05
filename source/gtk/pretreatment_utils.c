@@ -251,3 +251,16 @@ void on_bw_gaussian_filter_clicked(GtkWidget *widget, gpointer data)
   SDL_FreeSurface(surface); // Free the surface
   free(mask);               // Free the mask
 }
+
+void on_canny_clicked(GtkWidget *widget, gpointer data)
+{
+  printf("🔧 Applying Canny edge detection\n");
+  (void)widget; // Remove unused parameter warning
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
+  canny_edge_detection(surface);
+  GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  display_pixbuf(data, new_pixbuf);
+  printf("✅ Canny edge detection done\n");
+  SDL_FreeSurface(surface); // Free the surface
+}
