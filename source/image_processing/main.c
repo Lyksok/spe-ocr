@@ -17,12 +17,23 @@
 #include "utils/sdl_utils.h"
 #include "utils/converting.h"
 #include "parameters.h"
+#include "detection/list.h"
 
 static int pixel_filter_dir_x[] = {0, 0, -1, 1}; // (int*)
 static int pixel_filter_dir_y[] = {-1, 1, 0, 0}; // (int*)
 
 static struct parameters param =
 {
+    /* MAIN PROCEDURE */
+    .grayscale = 0,
+    .erosion = 0,
+    .dilation = 0,
+    .average = 0,
+    .adaptative = 0,
+    .global = 0,
+    .sauvola = 0,
+    .gaussian = 0,
+
     // grayscale
     .grayscale_m = 0, // (int) 0=human, 1=min-max, 2=average
 
@@ -45,6 +56,7 @@ static struct parameters param =
     // filtering.c
     .filtering_t1 = 10, 	//         (int)	      Threshold min
     .filtering_t2 = 150,	//         (int)	      Threshold max
+    .filtering_n = 20,  // (int)    Threshold for pixel number
 
     /* THRESHOLDING */
     // average
@@ -54,9 +66,9 @@ static struct parameters param =
     .adaptative_w = 7, 	// (size_t)	Kernel size
 
     // sauvola.c
-    .sauvola_k = 0.34,  // (double) Sensitivity
-    .sauvola_w = 15.0,  // (double) Window size	
-    .sauvola_R = 125.0, // (double) Standard deviation
+    .sauvola_k = 0.02,  // (double) Sensitivity
+    .sauvola_w = 22.0,  // (double) Window size	
+    .sauvola_R = 128.0, // (double) Standard deviation
 
     /* UTILS */
     // sdl_utils.c
@@ -118,30 +130,44 @@ int main(int argc, char **argv) {
   if (surface == NULL) {
     errx(EXIT_FAILURE, "%s", SDL_GetError());
   }
+  struct list* box_display;
 
   int detecting = 1;
   int w;
   double* mask = create_gaussian_mask_3x3(&w);
   convert_to_grayscale(surface, &param);
   convolve_surface(surface, mask, w);
+  convolve_surface(surface, mask, w);
   free(mask);
 
-  contrast_surface(surface);
+  //contrast_surface(surface);
   sauvola_thresholding(surface, &param);
   invert_colors(surface);
-  dilate_surface(surface, &param);
-  erode_surface(surface, &param);
+
+  struct list* box_list;
+    box_list = list_new_list();
+    init_list(box_list);
+    compute_bounding_boxes(surface, box_list);
+    erode_surface(surface, &param);
+    filter_wrong_size_boxes_threshold(surface, box_list, &param);
+
+    //dilate_surface(surface, &param);
+    list_free_with_boxes(box_list);
+    box_list = list_new_list();
+    init_list(box_list);
+
+  //erode_surface(surface, &param);
+  //dilate_surface(surface, &param);
+  //dilate_surface(surface, &param);
   //convert_to_binarized_average(surface);
   //sauvola_thresholding(surface);
   //level_2_image_2(surface);
 
-  struct list* box_list;
   if(detecting)
   {
-        box_list = list_new_list();
-        init_list(box_list);
         compute_bounding_boxes(surface, box_list);
         struct list* chars = detect_characters(surface, box_list, &param);
+        box_display = list_hard_copy(chars);
         int grid_width;
         int grid_height;
         struct list* grid_boxes = list_hard_copy(chars);
@@ -181,7 +207,7 @@ int main(int argc, char **argv) {
       if(detecting)
       {
       SDL_GetWindowSize(window, &WIDTH, &HEIGHT);
-      for(struct list* p=box_list->next; p!=NULL; p=p->next)
+      for(struct list* p=box_display->next; p!=NULL; p=p->next)
       {
           draw_rect(surface, renderer, p->box, WIDTH, HEIGHT, &param);
       }
