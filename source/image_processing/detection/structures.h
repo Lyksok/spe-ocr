@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-typedef struct
+typedef struct Point
 {
     int x;
     int y;
@@ -21,9 +21,9 @@ typedef struct BoundingBox
 
 struct list
 {
-    struct list* next;
-    struct list* prev;
-    struct BoundingBox* box;
+    struct list *next;
+    struct list *prev;
+    struct BoundingBox *box;
     size_t len;
 };
 
