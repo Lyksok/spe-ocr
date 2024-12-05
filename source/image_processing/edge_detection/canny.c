@@ -167,10 +167,10 @@ void edge_tracking_by_hysteresis(SDL_Surface *magnitude)
     }
 }
 
-void canny_edge_detection(SDL_Surface *surface)
+void canny_edge_detection(SDL_Surface *surface, struct parameters *param)
 {
     // STEP 1 : Grayscale image
-    image_to_grayscale(surface);
+    image_to_grayscale(surface, param);
 
     // STEP 2 : Gaussian blur
     int window_gaussian;

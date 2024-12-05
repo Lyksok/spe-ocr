@@ -6,10 +6,11 @@
 #include "gaussian.h"
 #include "../utils/converting.h"
 #include "../utils/pixel_utils.h"
+#include "../parameters.h"
 #include <math.h>
 #include <stdlib.h>
 
-void canny_edge_detection(SDL_Surface *surface);
+void canny_edge_detection(SDL_Surface *surface, struct parameters *param);
 void non_maximum_suppression(SDL_Surface *magnitude, SDL_Surface *direction);
 void double_threshold(SDL_Surface *magnitude);
 double *get_sobel_mask_x();

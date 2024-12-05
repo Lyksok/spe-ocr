@@ -13,9 +13,9 @@ struct parameters
     // pixel_filter.c
     int pixel_filter_max;
     int pixel_filter_dir_nb;
-    int* pixel_filter_dir_x;
-    int* pixel_filter_dir_y;
-    
+    int *pixel_filter_dir_x;
+    int *pixel_filter_dir_y;
+
     // erosion.c
     int erosion_m;
 
@@ -28,14 +28,14 @@ struct parameters
 
     /* THRESHOLDING */
     // average
-    int average_t;  // Threshold for average
+    int average_t; // Threshold for average
 
     // adaptative.c
     size_t adaptative_w;
 
     // sauvola.c
     double sauvola_k; // Sensitivity
-    double sauvola_w; // Window size	
+    double sauvola_w; // Window size
     double sauvola_R; // Standard deviation
 
     /* UTILS */

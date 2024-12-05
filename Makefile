@@ -7,7 +7,7 @@ PKGS = `pkg-config --cflags --libs gtk+-3.0` -rdynamic
 LIBS = -lSDL2 -lSDL2_image -lm
 
 # Source files
-IGNORE = %/image_processing.c %/main.c $(wildcard source/image_processing/detection-and-segmentation/*)
+IGNORE = %/image_processing.c %/main.c $(wildcard source/image_processing/detection-and-segmentation/*) source/image_processing/main.c
 SRC_APP = source/gtk/*.c
 SRC_BIN := $(filter-out $(IGNORE), $(wildcard source/image_processing/*/*.c))
 

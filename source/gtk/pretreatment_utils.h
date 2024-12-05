@@ -17,7 +17,9 @@
 #include "../image_processing/detection/cluster-detection.h"
 #include "../image_processing/detection/list.h"
 #include "../image_processing/utils/sdl_utils.h"
+#include "../image_processing/main.c" // for the parameters
 #include "../image_processing/utils/converting.h"
+#include "../image_processing/parameters.h"
 
 // MULTIPURPOSE BUTTON "RUN" FOR PIPELINE DEMONSTRATION
 void on_run_clicked(GtkWidget *button, gpointer data);

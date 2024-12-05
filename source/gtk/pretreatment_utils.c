@@ -63,7 +63,7 @@ void on_grayscale_clicked(GtkWidget *widget, gpointer data)
   }
 
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  convert_to_grayscale(surface);
+  convert_to_grayscale(surface, &param);
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
   display_pixbuf(data, new_pixbuf);
   printf("✅ Grayscale conversion done\n");
@@ -82,7 +82,7 @@ void on_binarize_clicked(GtkWidget *widget, gpointer data)
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  convert_to_binarized_average(surface);
+  convert_to_binarized_average(surface, &param);
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
   display_pixbuf(data, new_pixbuf);
   is_binarized = 1; // 1 == TRUE
@@ -174,7 +174,7 @@ void on_median_filter_clicked(GtkWidget *widget, gpointer data)
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  median_filter(surface);
+  median_filter(surface, &param);
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
   display_pixbuf(data, new_pixbuf);
   printf("✅ Median filter done\n");
@@ -203,7 +203,7 @@ void on_average_thresholding_clicked(GtkWidget *widget, gpointer data)
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  convert_to_binarized_average(surface);
+  convert_to_binarized_average(surface, &param);
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
   display_pixbuf(data, new_pixbuf);
   printf("✅ Average thresholding done\n");
@@ -216,7 +216,7 @@ void on_adaptive_thresholding_clicked(GtkWidget *widget, gpointer data)
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  convert_to_binarized_adaptative(surface);
+  convert_to_binarized_adaptative(surface, &param);
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
   display_pixbuf(data, new_pixbuf);
   printf("✅ Adaptive thresholding done\n");
@@ -229,7 +229,7 @@ void on_otsu_thresholding_clicked(GtkWidget *widget, gpointer data)
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  convert_to_binarized_global(surface);
+  convert_to_binarized_global(surface, &param);
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
   display_pixbuf(data, new_pixbuf);
   printf("✅ Otsu thresholding done\n");
@@ -258,7 +258,7 @@ void on_canny_clicked(GtkWidget *widget, gpointer data)
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  canny_edge_detection(surface);
+  canny_edge_detection(surface, &param);
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
   display_pixbuf(data, new_pixbuf);
   printf("✅ Canny edge detection done\n");
