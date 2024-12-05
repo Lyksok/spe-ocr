@@ -1,5 +1,7 @@
 #include "converting.h"
 
+static int grayscale_method = 0;
+
 /* Convert an image using an external function to reassign
  * each pixel with a different value based on the function
  */
@@ -79,15 +81,21 @@ Uint32 to_grayscale(SDL_PixelFormat *format, Uint32 pixel) {
     if (b < min)
       min = b;
   }
-  //Uint8 grayscale = 0.299*r+0.587*g+0.114*b;
-  //Uint8 grayscale = (min + max) / 2;
-  Uint8 grayscale = (r+g+b)/3;
+  Uint8 grayscale;
+  if(grayscale_method==1)
+    grayscale = (min + max) / 2;
+  else if(grayscale_method==2)
+    grayscale = (r+g+b)/3;
+  else
+    grayscale = 0.299*r+0.587*g+0.114*b;
+  
   return SDL_MapRGBA(format, grayscale, grayscale, grayscale, a);
 }
 
 /* Convert in place an image using its surface to a grayscale image
  */
-void image_to_grayscale(SDL_Surface *surface) {
+void image_to_grayscale(SDL_Surface *surface, struct parameters* param) {
+  grayscale_method = param->grayscale_m;
   convert_image(surface, to_grayscale);
 }
 
@@ -164,22 +172,24 @@ void invert_binarized_colors(SDL_Surface *surface) {
   }
 }
 
-static int xdir[4] = {0, 1, 0, -1};
-static int ydir[4] = {-1, 0, 1, 0};
+static int xdir[6] = {0, 1, 1, 0, -1, -1};
+static int ydir[6] = {-1, 0, 1, 1, 0, -1};
 
 void aux_remove_box(SDL_Surface* surface, int x, int y)
 {
+    if(x<0 || y<0 || x>=surface->w || y>=surface->h)
+	return;
     if(get_gpixel_from_coord(surface, x, y))
     {
         set_gpixel_from_coord(surface, x, y, 0);
-        for(int i=0; i<4; i++)
+        for(int i=0; i<6; i++)
         {
             aux_remove_box(surface, x+xdir[i], y+ydir[i]);
         }
     }
 }
 
-void remove_box(SDL_Surface* surface, BoundingBox* box)
+void remove_box_pixels(SDL_Surface* surface, BoundingBox* box)
 {
     aux_remove_box(surface, box->start.x, box->start.y);
 }
