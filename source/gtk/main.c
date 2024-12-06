@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
   // Check if the image widget is correctly retrieved
   if (!GTK_IS_IMAGE(image_widget))
   {
-    g_print("Failed to get image widget\n");
+    my_print("Failed to get image widget\n");
     return 1;
   }
 
@@ -63,6 +63,9 @@ int main(int argc, char *argv[])
   gint screen_width = gdk_screen_get_width(screen);
   gint screen_height = gdk_screen_get_height(screen);
 
+  // Set expand properties for responsiveness
+  gtk_widget_set_hexpand(image_widget, TRUE);
+  gtk_widget_set_vexpand(image_widget, TRUE);
   // Set the window size to half the screen size
   gtk_window_set_default_size(GTK_WINDOW(window), screen_width / 2, screen_height);
 
@@ -75,7 +78,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-    g_print("Failed to load sample image\n");
+    my_print("Failed to load sample image\n");
     return 1; // Exit the program if the image fails to load
   }
 

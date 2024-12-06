@@ -12,11 +12,11 @@ double right_angle = DEFAULT_RIGHT_ANGLE;
  */
 void on_angle_entry_activate(GtkEntry *entry, gpointer data)
 {
-  printf("🔄 Activating angle entry\n");
+  my_print("🔄 Activating angle entry\n");
   double *angle = (double *)data;
   const char *angle_text = gtk_entry_get_text(entry);
   *angle = g_ascii_strtod(angle_text, NULL); // Convert string to double
-  printf("📐 New angle: %f\n", *angle);
+  my_print("📐 New angle: %f\n", *angle);
 }
 
 /**
@@ -27,16 +27,16 @@ void on_angle_entry_activate(GtkEntry *entry, gpointer data)
  */
 void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
 {
-  printf("🔄 Rotating pixbuf by angle: %f\n", angle);
+  my_print("🔄 Rotating pixbuf by angle: %f\n", angle);
   int src_width = gdk_pixbuf_get_width(src_pixbuf);
   int src_height = gdk_pixbuf_get_height(src_pixbuf);
   int dst_width = gdk_pixbuf_get_width(dst_pixbuf);
   int dst_height = gdk_pixbuf_get_height(dst_pixbuf);
   int n_channels = gdk_pixbuf_get_n_channels(src_pixbuf);
 
-  printf("📏 Source Width: %d, Source Height: %d, Destination Width: %d, "
-         "Destination Height: %d, Channels: %d\n",
-         src_width, src_height, dst_width, dst_height, n_channels);
+  my_print("📏 Source Width: %d, Source Height: %d, Destination Width: %d, "
+           "Destination Height: %d, Channels: %d\n",
+           src_width, src_height, dst_width, dst_height, n_channels);
 
   double angle_rad = angle * PI / 180.0;
   double cos_angle = cos(angle_rad);
@@ -100,7 +100,7 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
     }
   }
 
-  printf("✅ Rotation done\n");
+  my_print("✅ Rotation done\n");
 }
 /**
  * @brief Callback function to rotate the image to the left.
@@ -109,7 +109,7 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
  */
 void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
 {
-  printf("🔄 Rotating image to the left by %f degrees\n", left_angle);
+  my_print("🔄 Rotating image to the left by %f degrees\n", left_angle);
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   int width = gdk_pixbuf_get_width(pixbuf);
@@ -118,7 +118,7 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
       gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
   rotate_pixbuf(pixbuf, new_pixbuf, left_angle);
   display_pixbuf(data, new_pixbuf);
-  printf("✅ Left rotation done\n");
+  my_print("✅ Left rotation done\n");
 }
 
 /**
@@ -128,7 +128,7 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
  */
 void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
 {
-  printf("🔄 Rotating image to the right by %f degrees\n", right_angle);
+  my_print("🔄 Rotating image to the right by %f degrees\n", right_angle);
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   int width = gdk_pixbuf_get_width(pixbuf);
@@ -137,5 +137,5 @@ void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
       gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
   rotate_pixbuf(pixbuf, new_pixbuf, -right_angle);
   display_pixbuf(data, new_pixbuf);
-  printf("✅ Right rotation done\n");
+  my_print("✅ Right rotation done\n");
 }

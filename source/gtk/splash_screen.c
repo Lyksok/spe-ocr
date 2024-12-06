@@ -5,7 +5,8 @@
  * @param app The GtkApplication instance.
  * @note The splash screen is destroyed after a timeout.
  */
-void show_splash_screen(GtkApplication *app) {
+void show_splash_screen(GtkApplication *app)
+{
   printf("🖼️ Showing splash screen\n");
   GtkWidget *splash_window, *splash_img;
 
@@ -17,7 +18,7 @@ void show_splash_screen(GtkApplication *app) {
   gtk_window_set_decorated(
       GTK_WINDOW(splash_window),
       FALSE); // remove default title bar, resize controls, etc.
-  printf("🪟 Splash screen window created\n");
+  my_print("🪟 Splash screen window created\n");
 
   // Load splash screen image
   splash_img = gtk_image_new_from_file(SPLASH_IMAGE_PATH);
@@ -31,7 +32,7 @@ void show_splash_screen(GtkApplication *app) {
 
   // Show splash screen
   gtk_widget_show_all(splash_window);
-  printf("✅ Splash screen shown\n");
+  my_print("✅ Splash screen shown\n");
 
   // Splash screen exits with timeout
   g_timeout_add(3000, destroy_widget, splash_window);

@@ -9,7 +9,7 @@ void on_documentation_clicked(GtkWidget *widget, gpointer data)
     (void)widget; // Remove unused parameter warning
     (void)data;   // Remove unused parameter warning
 
-    printf("📚 Documentation button clicked\n");
+    my_print("📚 Documentation button clicked\n");
 
     GtkWidget *window;
     GtkWidget *scrolled_window;
@@ -48,7 +48,7 @@ void on_documentation_clicked(GtkWidget *widget, gpointer data)
         fread(content, 1, length, file);
         content[length] = '\0';
         fclose(file);
-        printf("📄 README.md file loaded\n");
+        my_print("📄 README.md file loaded\n");
 
         // Set the text buffer with the content of README.md
         buffer = gtk_source_buffer_new(NULL);
@@ -62,16 +62,17 @@ void on_documentation_clicked(GtkWidget *widget, gpointer data)
         GtkSourceLanguage *lang = gtk_source_language_manager_get_language(lm, "markdown");
         gtk_source_buffer_set_language(buffer, lang);
         printf("🌈 Markdown syntax highlighting applied\n");
+        // TODO not working!!
     }
     else
     {
         buffer = gtk_source_buffer_new(NULL);
         gtk_text_buffer_set_text(GTK_TEXT_BUFFER(buffer), "Failed to load README.md", -1);
         gtk_text_view_set_buffer(GTK_TEXT_VIEW(source_view), GTK_TEXT_BUFFER(buffer));
-        printf("❌ Failed to load README.md file\n");
+        my_print("❌ Failed to load README.md file\n");
     }
 
     // Show all widgets in the window
     gtk_widget_show_all(window);
-    printf("✅ Documentation window shown\n");
+    my_print("✅ Documentation window shown\n");
 }

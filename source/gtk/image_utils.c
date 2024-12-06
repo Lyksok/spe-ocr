@@ -197,7 +197,7 @@ GdkPixbuf *resize_with_borders(GdkPixbuf *pixbuf)
       pixbuf, diagonal_length, diagonal_length);
   if (!pixbuf_1)
   {
-    printf("Failed to create pixbuf with alpha borders\n");
+    my_print("Failed to create pixbuf with alpha borders\n");
     return NULL;
   }
 
@@ -206,7 +206,7 @@ GdkPixbuf *resize_with_borders(GdkPixbuf *pixbuf)
   g_object_unref(pixbuf_1);
   if (!resized_pixbuf)
   {
-    printf("Failed to resize pixbuf\n");
+    my_print("Failed to resize pixbuf\n");
     return NULL;
   }
 
@@ -216,7 +216,7 @@ GdkPixbuf *resize_with_borders(GdkPixbuf *pixbuf)
   g_object_unref(resized_pixbuf);
   if (!final_pixbuf)
   {
-    printf("Failed to create final pixbuf with alpha borders\n");
+    my_print("Failed to create final pixbuf with alpha borders\n");
     return NULL;
   }
 
