@@ -9,6 +9,7 @@
 #include "pretreatment_utils.h"
 #include "splash_screen.h"
 #include "integration_solver.h"
+#include "integration_documentation.h"
 
 // CONSTANTS
 #define MAX_WIDTH 800

@@ -1,9 +1,9 @@
 CC = gcc
-FLAGS = -Wall -Wextra -fsanitize=address
+FLAGS = -Wall -Wextra -fsanitize=address -g
 
 
 # Imported packages
-PKGS = `pkg-config --cflags --libs gtk+-3.0` -rdynamic
+PKGS = `pkg-config --cflags --libs gtk+-3.0 gtksourceview-4` -rdynamic
 LIBS = -lSDL2 -lSDL2_image -lm
 
 # Source files
