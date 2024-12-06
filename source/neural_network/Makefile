@@ -11,7 +11,7 @@ LIBS = -lSDL2 -lSDL2_image -lm
 
 OBJ = neural.o setup.o
 OBJ-OLD = neural_letter.o
-OBJECT = convertion.o main.o
+OBJECT = convertion.o main.o ../gtk/conversion_utils.o ../gtk/image_utils.o
 
 all: $(TARGET) $(TEST)
 
