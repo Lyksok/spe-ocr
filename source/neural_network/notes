@@ -33,6 +33,17 @@ are repeatedly adjusted to minimize the difference
 between the actual output vector of the net
 and the desired output vector.
 
+----- CSV -----
+fgets() :
+	char *fgets(char *str, int n, FILE *stream);
+	str: pointer to buffer where the string will be stored
+	n: max number of char to read (including \0)
+	stream: input stream to read from
+	reads up to n-1 characters
+	OR up till a newline (\n) / end-of-file (EOF) is encountered
+	append \0 at the end (if \n was read, it will be included)
+	return NULL if no char was read
+
 ----- TODOs -----
 TODO: find how to train the network (Louis's script can help)
 TODO: check wether the transformation from image to list is working correctly

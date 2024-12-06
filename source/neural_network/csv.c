@@ -52,8 +52,8 @@ void WriteCsvBiases(const char *filename, Layer l)
 //----- TO CHECK -----//
 
 int ParseLine(const char *line,
-		char fields[MAX_FIELDS][MAX_FIELD_LEN],
-		int max_fields)
+		int max_fields,
+		char fields[max_fields][MAX_FIELD_LEN])
 {
     int field_count = 0;
     char temp_line[MAX_FIELD_LEN];
@@ -71,62 +71,70 @@ int ParseLine(const char *line,
 
 //----- TO CHECK -----//
 
-void ReadCsvWeigths(const char *filename, Record records[], int *record_count, int max_records)
+void ReadCsvWeigths(const char *filename, Layer *layer, int max_weights)
 {
-    FILE *file = fopen(filename, "r");
-    if (!file) {
-        perror("Unable to open file for reading");
-        return;
-    }
-
-    char line[MAX_LINE_LENGTH];
-    *record_count = 0;
-
-    /*
-     * char *fgets(char *str, int n, FILE *stream);
-     * str: pointer to buffer where the string will be stored
-     * n: max number of char to read (including \0)
-     * stream: input stream to read from
-     * reads up to n-1 characters
-     * OR up till a newline (\n) / end-of-file (EOF) is encountered
-     * append \0 at the end (if \n was read, it will be included)
-     * return NULL if no char was read
-     * */
-    while (fgets(line, sizeof(line), file) && *record_count < max_records) {
-        char fields[MAX_FIELDS][MAX_FIELD_LEN];
-        int num_fields = ParseLine(line, fields, MAX_FIELDS);
-
-        if (num_fields >= 3) { // Adjust based on required fields
-            strncpy(records[*record_count].name, fields[0], sizeof(records[*record_count].name));
-            records[*record_count].age = atoi(fields[1]);
-            records[*record_count].score = atof(fields[2]);
-            (*record_count)++;
-        } else {
-            fprintf(stderr, "Invalid line: %s", line);
-        }
-	/*
-	 * to check: include parameters for number of neurons
-	 * and number of weigths/inputs
-	 * to generalize the function
-	for (int r = 0; r < rows ; r++)
-	for (int c = 0; c < cols ; c++)
-	{
-		l.weights[r][c] = mat[r][c];
+	FILE *file = fopen(filename, "r");
+	if (!file) {
+		perror("Unable to open file for reading");
+		return;
 	}
-	for (int r = 0; r < rows ; r++)
-	for (int c = 0; c < cols ; c++)
-	{
-		l.weights[r][c] = mat[r][c];
-	}
-	 * */
-    }
 
-    fclose(file);
+	char line[MAX_LINE_LENGTH];
+	int nodes = 0;
+	layer->numWeights = max_weights;
+	int max_neurons = layer->numNeurons;
+	// we assume ReadCsvBiases is called before ReadCsvWeigths
+
+	// we assume every line is correct
+	while (fgets(line, sizeof(line), file) && nodes < max_neurons)
+	{
+		char fields[max_weights][MAX_FIELD_LEN];
+		// TODO: check fields' use in functions
+		int num_fields = ParseLine(line, max_weights, fields);
+		// should be equal to maw_weigths
+
+		for (int w = 0; w < num_fields; w++)
+		{
+			layer->weights[nodes][w] = atof(fields[w]);
+		}
+		nodes++;
+	}
+
+	fclose(file);
+}
+
+void ReadCsvBiases(const char *filename, Layer *layer, int max_neurons)
+{
+	FILE *file = fopen(filename, "r");
+	if (!file) {
+		perror("Unable to open file for reading");
+		return;
+	}
+
+	char line[MAX_LINE_LENGTH];
+	int nodes = 0;
+	layer->numNeurons = max_neurons;
+	layer->neurons = malloc(max_neurons * sizeof(Neuron));
+
+	// we assume every line is correct
+	while (fgets(line, sizeof(line), file) && nodes < max_neurons)
+	{
+		// should only have one bias per line
+		char fields[1][MAX_FIELD_LEN];
+		// TODO: check fields' use in functions
+		int num_fields = ParseLine(line, 1, fields);
+		// should be equal to max_neurons
+
+		layer->neurons[nodes].bias = atof(fields[0]);
+		nodes++;
+	}
+
+	fclose(file);
 }
 
 //----- TO CHECK -----//
 
-Layer RecoverFirstLayer()
+Layer RecoverFirstLayer(const char *fweight, const char *fbias)
 {
         /*
          * double HiddenBias[nNodes] = {};
@@ -140,9 +148,11 @@ Layer RecoverFirstLayer()
         layer.numNeurons = nNodes;
         layer.neurons = malloc(nNodes * sizeof(Neuron));
         layer.inputs = calloc(nInputs, sizeof(double));
-        RecoverBiases(layer, nNodes, HiddenBias);
+        //RecoverBiases(layer, nNodes, HiddenBias);
+	ReadCsvBiases(fbias, &layer, layer.numNeurons)
         layer.numWeights = nInputs;
-        RecoverWeigths(layer, nNodes, nInputs, HiddenWeight);
+        //RecoverWeigths(layer, nNodes, nInputs, HiddenWeight);
+	ReadCsvWeigths(fweight, &layer, layer.numWeights)
         layer.prev = NULL;
         layer.next = NULL;
         return layer;
