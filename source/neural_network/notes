@@ -43,6 +43,10 @@ fgets() :
 	OR up till a newline (\n) / end-of-file (EOF) is encountered
 	append \0 at the end (if \n was read, it will be included)
 	return NULL if no char was read
+fopen() :
+	If the file specified by filename does not exist, it will be created.
+	If the file already exists, it will be overwritten,
+	meaning its contents will be cleared.
 
 ----- TODOs -----
 TODO: find how to train the network (Louis's script can help)

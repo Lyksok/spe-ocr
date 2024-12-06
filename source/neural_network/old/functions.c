@@ -22,6 +22,63 @@ void init_biases(int length, double *array)
         }
 }
 
+void RecoverBiases(Layer l, int nodes, double arr[nodes]);
+
+void RecoverBiases(Layer l, int nodes, double arr[nodes])
+{
+        for (int n = 0; n < nodes ; n++)
+        {
+                l.neurons[n].bias = arr[n];
+        }
+        return;
+}
+
+void RecoverWeigths(Layer l, int rows, int cols, double mat[rows][cols]);
+
+void RecoverWeigths(Layer l, int rows, int cols, double mat[rows][cols])
+{
+        for (int r = 0; r < rows ; r++)
+        for (int c = 0; c < cols ; c++)
+        {
+                l.weights[r][c] = mat[r][c];
+        }
+        return;
+}
+
+Layer RecoverFirstLayer();
+
+Layer RecoverFirstLayer()
+{
+        Layer layer;
+        layer.numNeurons = nNodes;
+        layer.neurons = malloc(nNodes * sizeof(Neuron));
+        layer.inputs = calloc(nInputs, sizeof(double));
+        RecoverBiases(layer, nNodes, HiddenBias);
+        layer.numWeights = nInputs;
+        RecoverWeigths(layer, nNodes, nInputs, HiddenWeight);
+        layer.prev = NULL;
+        layer.next = NULL;
+        return layer;
+}
+
+void RecoverSecondLayer(Layer *l);
+
+void RecoverSecondLayer(Layer *l)
+{
+        Layer layer;
+        layer.numNeurons = nOut;
+        layer.neurons = malloc(nOut * sizeof(Neuron));
+        layer.inputs = calloc(nNodes, sizeof(double));
+        layer.numWeights = nNodes;
+        RecoverBiases(layer, nOut, OutputBias);
+        RecoverWeigths(layer, nOut, nNodes, OutputWeight);
+
+        layer.prev = l;
+        l->next = &layer;
+        layer.next = NULL;
+        return;
+}
+
 void Softmax(int length, double **mat);
 
 //void softmax(int K, double mat[1][K])

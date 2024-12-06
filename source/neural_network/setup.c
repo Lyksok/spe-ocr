@@ -84,45 +84,47 @@ void PrintData(Network net) {
 	return;
 }
 
-Layer RecoverFirstLayer()
+void SaveLayers(Layer *first)
 {
-	/*
-	 * double HiddenBias[nNodes] = {};
-	 * double HiddenWeight[nNodes][nInputs] = {};
-	 * */
-	/*
-	 * RecoverWeigths(int rows, int cols, double mat[rows][cols])
-	 * RecoverBiases(int nodes, double arr[nodes])
-	 * */
+        const char *fbias_1 = "network/fbias_1.csv";
+        const char *fweight_1 = "network/fweight_1.csv";
+        WriteCsvBiases(fbias_1, *first);
+        WriteCsvWeight(fweight_1, *first);
+
+        const char *fbias_2 = "network/fbias_2.csv";
+        const char *fweight_2 = "network/fweight_2.csv";
+        WriteCsvBiases(fbias_2, *(first->next));
+        WriteCsvWeight(fweight_2, *(first->next));
+        return;
+}
+
+Layer RecoverFirstLayer(const char *fweight, const char *fbias)
+{
         Layer layer;
-	layer.numNeurons = nNodes;
+        layer.numNeurons = nNodes;
         layer.neurons = malloc(nNodes * sizeof(Neuron));
-	layer.inputs = calloc(nInputs, sizeof(double));
-	RecoverBiases(layer, nNodes, HiddenBias);
-	layer.numWeights = nInputs;
-	RecoverWeigths(layer, nNodes, nInputs, HiddenWeight);
-	layer.prev = NULL;
-	layer.next = NULL;
+        layer.inputs = calloc(nInputs, sizeof(double));
+        layer.numWeights = nInputs;
+        ReadCsvBiases(fbias, &layer, layer.numNeurons);
+        ReadCsvWeigths(fweight, &layer, layer.numWeights);
+        layer.prev = NULL;
+        layer.next = NULL;
         return layer;
 }
 
-void RecoverSecondLayer(Layer *l)
+void RecoverSecondLayer(Layer *l, const char *fweight, const char *fbias)
 {
-	/*
-	 * double OutputBias[nOut] = {};
-	 * double OutputWeight[nOut][nNodes] = {};
-	 * */
         Layer layer;
-	layer.numNeurons = nOut;
+        layer.numNeurons = nOut;
         layer.neurons = malloc(nOut * sizeof(Neuron));
-	layer.inputs = calloc(nNodes, sizeof(double));
-	layer.numWeights = nNodes;
-	RecoverBiases(layer, nOut, OutputBias);
-	RecoverWeigths(layer, nOut, nNodes, OutputWeight);
+        layer.inputs = calloc(nNodes, sizeof(double));
+        layer.numWeights = nNodes;
+        ReadCsvBiases(fbias, &layer, layer.numNeurons);
+        ReadCsvWeigths(fweight, &layer, layer.numWeights);
 
-	layer.prev = l;
-	l->next = &layer;
-	layer.next = NULL;
+        layer.prev = l;
+        l->next = &layer;
+        layer.next = NULL;
         return;
 }
 
