@@ -18,7 +18,7 @@ TARGET = app_launcher
 all: $(TARGET)
 
 $(TARGET): $(SRC_BIN) $(SRC_APP)
-	$(CC) $(SRC_APP) $(SRC_BIN) -o $(TARGET) $(PKGS) $(LIBS) $(FLAGS)
+	$(CC) $(SRC_APP) $(SRC_BIN) -o $(TARGET) $(PKGS) $(LIBS) $(FLAGS) 2> log.txt
 
 clean:
 	rm -f $(TARGET)
