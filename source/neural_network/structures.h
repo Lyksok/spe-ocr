@@ -18,7 +18,7 @@ struct Layer {
 	// every inputs
 	double *inputs;
 	// a matrice where each row
-	// is the weigths given to one neuron
+	// is the weights given to one neuron
 	// it has dim numNeurons * numWeights
 	double **weights;
 	Layer *prev;

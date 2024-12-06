@@ -29,11 +29,11 @@ int main(int argc, char *argv[])
 		int *list = calloc(d * d, sizeof(int));
 		SDL_Surface *letter = toSDL(argv[2]);
 		SDL_to_list(letter, d * d, &list);
-		for (int i = 0; i < size; i++)
+		for (int i = 0; i < d; i++)
 		{
-			for (int j = 0; j < size; j++)
+			for (int j = 0; j < d; j++)
 			{
-				printf("%d ", list[i * size + j]);
+				printf("%d ", list[i * d + j]);
 			}
 			printf("\n");
 		}

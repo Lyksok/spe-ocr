@@ -5,6 +5,7 @@
 #include "convertion.h"
 #include "../gtk/conversion_utils.h"
 #include "../gtk/image_utils.h"
+#include "structures.h"
 
 // RGB WHITE = 255, 255, 255
 // RGB BLACK = 0, 0, 0

@@ -39,6 +39,12 @@ TODO: check wether the transformation from image to list is working correctly
 TODO: actually test stuff
 TODO: search how to store the "old" network (to reuse)
 
+TODO: finish the csv stuff
+TODO: convert everything so that it makes use of the csv files
+TODO: check for a correct number of neurons in a layer
+TODO: change name of structures.h ?
+to make sure of no problems with structures.h if det-seg
+
 ----- NB -----
 /!\ if a function was completely erased or modified
 it was moved to old/functions.c

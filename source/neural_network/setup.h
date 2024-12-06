@@ -11,7 +11,7 @@
 #define nLayers 2
 #define nTrainingSets 4
 #define nInputs (dimension * dimension)
-#define nNodes 16
+#define nNodes 50
 #define nOut 26
 
 double GetMax(double x, double y);
