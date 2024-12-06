@@ -291,14 +291,14 @@
                 </child>
               </object>
             </child>
-            <child>
+            <!-- <child>
               <object class="GtkMenuItem" id="menu_neural">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="label" translatable="yes">_🧠Neural network</property>
                 <property name="use-underline">True</property>
               </object>
-            </child>
+            </child> -->
             <child>
               <object class="GtkMenuItem" id="menu_solver">
                 <property name="visible">True</property>
