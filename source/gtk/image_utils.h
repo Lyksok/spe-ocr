@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include <math.h>
+#include "my_print.h"
 
 void process_and_display_image(GtkWidget *image_widget, GdkPixbuf *pixbuf);
 GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int new_width, int new_height);

@@ -7,6 +7,7 @@ void on_window_main_destroy(GtkWidget *widget, gpointer data)
 {
   gtk_main_quit();
 }
+
 /**
  * @brief Callback function to destroy a widget.
  * @param widget The widget to be destroyed.
@@ -27,18 +28,19 @@ gboolean destroy_widget(gpointer widget)
   }
   return FALSE;
 }
+GtkBuilder *builder;
 
 int main(int argc, char *argv[])
 {
-  GtkBuilder *builder;
   GtkWidget *window;
   GtkWidget *image_widget;
   GdkPixbuf *pixbuf;
 
   gtk_init(&argc, &argv);
 
-  // Load the UI file
+  // Load the UI file and initialize log view
   builder = gtk_builder_new_from_file("source/gtk/layout/layout.ui");
+  init_log_view("source/gtk/layout/layout.ui");
 
   // Get the main window
   window = GTK_WIDGET(gtk_builder_get_object(builder, "window_main"));

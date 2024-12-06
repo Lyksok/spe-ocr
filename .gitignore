@@ -29,3 +29,4 @@ compile_commands.json
 
 # Ignore any temporary files or backups
 *~
+log.txt // stderr redirection in main makefile

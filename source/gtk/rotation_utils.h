@@ -10,6 +10,7 @@
 #include "image_utils.h"
 #include <SDL2/SDL.h>
 #include "main.h"
+#include "my_print.h"
 
 // CONSTANTS
 #define PI 3.1415926535897932

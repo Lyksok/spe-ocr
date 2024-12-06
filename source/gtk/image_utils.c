@@ -10,23 +10,23 @@
  */
 void process_and_display_image(GtkWidget *image_widget, GdkPixbuf *pixbuf)
 {
-  printf("Entered process_and_display_image\n");
+  my_print("Entered process_and_display_image\n");
 
   // Create a new pixbuf with alpha borders and center the resized pixbuf
   GdkPixbuf *final_pixbuf = resize_with_borders(pixbuf);
   if (!final_pixbuf)
   {
-    printf("Failed to create pixbuf with alpha borders\n");
+    my_print("Failed to create pixbuf with alpha borders\n");
     return;
   }
-  printf("Final pixbuf with alpha borders created\n");
+  my_print("Final pixbuf with alpha borders created\n");
 
   // Display the final image with alpha borders
   gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), final_pixbuf);
-  printf("Image set in image_widget\n");
+  my_print("Image set in image_widget\n");
   // GTK_IMAGE(gtk_image_new_from_pixbuf(pixbuf));
   g_object_unref(final_pixbuf);
-  printf("Freed final pixbuf\n");
+  my_print("Freed final pixbuf\n");
 }
 /**
  * @brief Callback function to change the image in the image widget.

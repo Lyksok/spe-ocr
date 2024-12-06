@@ -10,6 +10,7 @@
 #include "splash_screen.h"
 #include "integration_solver.h"
 #include "integration_documentation.h"
+#include "my_print.h"
 
 // CONSTANTS
 #define MAX_WIDTH 800
