@@ -28,20 +28,20 @@ double *get_sobel_mask_y()
     return mask;
 }
 
-void non_maximum_suppression(SDL_Surface *magnitude, SDL_Surface *direction)
+void non_maximum_suppression(SDL_Surface* surface, Uint8**magnitude, Uint8**direction)
 {
     // Get the width and height of the image
-    int width = magnitude->w;
-    int height = magnitude->h;
-    SDL_Surface *suppressed = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0); // Create a dsdl surface to store the suppressed image
+    int width = surface->w;
+    int height = surface->h;
+    Uint8* suppressed = calloc(width*height, sizeof(Uint8)); // Create a dsdl surface to store the suppressed image
 
     for (int y = 1; y < height - 1; y++)
     { // Loop through each row of the image, excluding the borders
         for (int x = 1; x < width - 1; x++)
         {
             // Loop through each column of the image, excluding the borders
-            Uint8 mag = get_gpixel_from_coord(magnitude, x, y);                        // Get the gradient magnitude for the current pixel
-            double dir = (get_gpixel_from_coord(direction, x, y) * 2 * PI / 255) - PI; // Get the gradient direction for the current pixel and convert it to radi
+            Uint8 mag = (*magnitude)[y*surface->w+x]; // Get the gradient magnitude for the current pixel
+            double dir = ((*direction)[y*surface->w+x] * 2.0 * PI / 255.0) - PI; // Get the gradient direction for the current pixel and convert it to radi
 
             /** By initializing neighbour1 and neighbour2 to 255, we ensure that if the gradient direction does not match any of the specified ranges, the current pixel will be suppressed because its magnitude will not be greater than or equal to 255.*/
             Uint8 neighbour1 = 255;
@@ -50,61 +50,61 @@ void non_maximum_suppression(SDL_Surface *magnitude, SDL_Surface *direction)
             // Determine the neighboring pixels to compare based on the gradient direction
             if ((0 <= dir && dir < PI / 8) || (7 * PI / 8 <= dir && dir <= PI))
             {
-                neighbour1 = get_gpixel_from_coord(magnitude, x, y + 1); // Get the pixel value to the right
-                neighbour2 = get_gpixel_from_coord(magnitude, x, y - 1); // Get the pixel value to the left
+                neighbour1 = (*magnitude)[(y + 1)*surface->w+x]; // Get the pixel value to the right
+                neighbour2 = (*magnitude)[(y-1)*surface->w+x]; // Get the pixel value to the left
             }
             else if (PI / 8 <= dir && dir < 3 * PI / 8)
             {
-                neighbour1 = get_gpixel_from_coord(magnitude, x + 1, y - 1); // Get the pixel value to the top-right
-                neighbour2 = get_gpixel_from_coord(magnitude, x - 1, y + 1); // Get the pixel value to the bottom-left
+                neighbour1 = (*magnitude)[(y-1)*surface->w+x+1]; // Get the pixel value to the top-right
+                neighbour2 = (*magnitude)[(y-1)*surface->w+x-1]; // Get the pixel value to the bottom-left
             }
             else if (3 * PI / 8 <= dir && dir < 5 * PI / 8)
             {
-                neighbour1 = get_gpixel_from_coord(magnitude, x + 1, y); // Get the pixel value to the top
-                neighbour2 = get_gpixel_from_coord(magnitude, x - 1, y); // Get the pixel value to the bottom
+                neighbour1 = (*magnitude)[y*surface->w+x+1]; // Get the pixel value to the top
+                neighbour2 = (*magnitude)[y*surface->w+x - 1]; // Get the pixel value to the bottom
             }
             else if (5 * PI / 8 <= dir && dir < 7 * PI / 8)
             {
-                neighbour1 = get_gpixel_from_coord(magnitude, x - 1, y - 1); // Get the pixel value to the top-left
-                neighbour2 = get_gpixel_from_coord(magnitude, x + 1, y + 1); // Get the pixel value to the bottom-right
+                neighbour1 = (*magnitude)[(y - 1)*surface->w+x - 1]; // Get the pixel value to the top-left
+                neighbour2 = (*magnitude)[(y + 1)*surface->w+x+1]; // Get the pixel value to the bottom-right
             }
 
             // Suppress the non-maximum pixels
             if (mag >= neighbour1 && mag >= neighbour2)
             {
-
-                set_gpixel_from_coord(suppressed, x, y, mag); // Keep the pixel if = current max
+                suppressed[y*surface->w] = mag; // Keep the pixel if = current max
             }
             else
             {
-                set_gpixel_from_coord(suppressed, x, y, 0); // else suppress cur pixel
+                suppressed[y*surface->w+x] = 0; // else suppress cur pixel
             }
         }
     }
     // Copy suppressed surface => original magnitude surface
 
-    SDL_Rect srcRect = {0, 0, suppressed->w, suppressed->h};
-    SDL_Rect dstRect = {0, 0, magnitude->w, magnitude->h};
-    SDL_BlitSurface(suppressed, &srcRect, magnitude, &dstRect);
-
-    SDL_FreeSurface(suppressed);
+    free(*magnitude);
+    *magnitude = suppressed;
 }
 
-void double_threshold(SDL_Surface *magnitude)
+void double_threshold(SDL_Surface* surface, Uint8**magnitude)
 {
-    int width = magnitude->w;
-    int height = magnitude->h;
+    int width = surface->w;
+    int height = surface->h;
     for (int y = 0; y < height; y++)
     {
         for (int x = 0; x < width; x++)
         {
-            Uint8 pixel = get_gpixel_from_coord(magnitude, x, y);
+            Uint8 pixel = (*magnitude)[y*surface->w+x];
             if (canny_double_threshold_low > pixel) // non-edges : black, to delete
-                set_gpixel_from_coord(magnitude, x, y, 0);
+            {
+                (*magnitude)[y*surface->w+x] = 0;
+            }
             else if (pixel > canny_double_threshold_high) // strong edge : white, to keep
-                set_gpixel_from_coord(magnitude, x, y, 255);
+            {
+                (*magnitude)[y*surface->w+x] = 255;
+            }
             else // weak edge : in between, determined in step 6 : if connected to strong edge => strong edge else non-edge
-                set_gpixel_from_coord(magnitude, x, y, 128);
+                (*magnitude)[y*surface->w+x] = 128;
         }
     }
 }
@@ -114,7 +114,7 @@ int is_within_bounds(int x, int y, int width, int height)
     return x >= 0 && x < width && y >= 0 && y < height;
 }
 
-void __edge_tracking_by_hysteresis(SDL_Surface *magnitude, int x, int y, int width, int height)
+void __edge_tracking_by_hysteresis(SDL_Surface* surface, Uint8** magnitude, int x, int y, int width, int height)
 {
     for (int dy = -1; dy <= 1; dy++)
     {
@@ -126,29 +126,29 @@ void __edge_tracking_by_hysteresis(SDL_Surface *magnitude, int x, int y, int wid
             int ny = y + dy;
             if (is_within_bounds(nx, ny, width, height))
             {
-                Uint8 neighbor_pixel = get_gpixel_from_coord(magnitude, nx, ny);
+                Uint8 neighbor_pixel = (*magnitude)[ny*surface->w+nx];
                 if (neighbor_pixel == 128)
                 {
-                    set_gpixel_from_coord(magnitude, nx, ny, 255);                   // Becomes to strong edge!
-                    __edge_tracking_by_hysteresis(magnitude, nx, ny, width, height); // Recursive call
+                    (*magnitude)[ny*surface->w+nx] = 255; // Becomes to strong edge!
+                    __edge_tracking_by_hysteresis(surface, magnitude, nx, ny, width, height); // Recursive call
                 }
             }
         }
     }
 }
-void edge_tracking_by_hysteresis(SDL_Surface *magnitude)
+void edge_tracking_by_hysteresis(SDL_Surface* surface, Uint8** magnitude)
 {
-    int width = magnitude->w;
-    int height = magnitude->h;
+    int width = surface->w;
+    int height = surface->h;
 
     for (int y = 0; y < height; y++)
     {
         for (int x = 0; x < width; x++)
         {
-            Uint8 pixel = get_gpixel_from_coord(magnitude, x, y);
+            Uint8 pixel = (*magnitude)[y*surface->w+x];
             if (pixel == 255)
             { // Strong edge
-                __edge_tracking_by_hysteresis(magnitude, x, y, width, height);
+                __edge_tracking_by_hysteresis(surface, magnitude, x, y, width, height);
             }
         }
     }
@@ -158,13 +158,46 @@ void edge_tracking_by_hysteresis(SDL_Surface *magnitude)
     {
         for (int x = 0; x < width; x++)
         {
-            Uint8 pixel = get_gpixel_from_coord(magnitude, x, y);
+            Uint8 pixel = (*magnitude)[y*surface->w+x];
             if (pixel == 128)
             {
-                set_gpixel_from_coord(magnitude, x, y, 0); // Suppress weak edge
+                (*magnitude)[y*surface->w+x] = 0; // Suppress weak edge
             }
         }
     }
+}
+
+Uint8* apply_mask(SDL_Surface* surface, double* mask, int w)
+{
+    int len = surface->w*surface->h;
+
+    Uint8* res = calloc(len, sizeof(Uint8));
+    
+    for(int j=0; j<surface->h; j++)
+    {
+        for(int i=0; i<surface->w; i++)
+        {
+            Uint8 pixel = get_gpixel_from_coord(surface, i, j);
+            double sum = 0;
+            for(int y=-w/2; y<=w/2; y++)
+            {
+                for(int x=-w/2; x<=w/2; x++)
+                {
+                    if(i+x<0 || i+x>=surface->w || j+y<0 || j+y>=surface->h)
+                    {
+                        sum += ((double)(255*mask[(w/2+y)*w+x+w/2]))/9.0;
+                    }
+                    else
+                    {
+                        Uint8 local_pixel = get_gpixel_from_coord(surface, i+x, j+y);
+                        sum += ((double)(local_pixel*mask[(w/2+y)*w+x+w/2]))/9.0;
+                    }
+                }
+            }
+            res[j*surface->w+i]=(Uint8)sum;
+        }
+    }
+    return res;
 }
 
 void canny_edge_detection(SDL_Surface *surface, struct parameters *param)
@@ -179,43 +212,46 @@ void canny_edge_detection(SDL_Surface *surface, struct parameters *param)
     // free(gaussian_mask); // The caller is responsible for freeing the mask
 
     // STEP 3 : Sobel filter for gradient magnitude
-    SDL_Surface *gradient_x = SDL_CreateRGBSurface(0, surface->w, surface->h, 8, 0, 0, 0, 0);
-    SDL_Surface *gradient_y = SDL_CreateRGBSurface(0, surface->w, surface->h, 8, 0, 0, 0, 0);
+    int len = surface->w*surface->h;
+    Uint8* gradient_x = calloc(len, sizeof(Uint8));
+    Uint8* gradient_y = calloc(len, sizeof(Uint8));
+
     double *sobel_mask_x = get_sobel_mask_x();
     double *sobel_mask_y = get_sobel_mask_y();
-    convolve_surface(gradient_x, sobel_mask_x, 3);
-    convolve_surface(gradient_y, sobel_mask_y, 3);
+
+    Uint8 *magnitude_gradient = calloc(len, sizeof(Uint8));
+    Uint8 *direction_gradient = calloc(len, sizeof(Uint8));
+
+    Uint8* x_gradient = apply_mask(surface, sobel_mask_x, 3);
+    Uint8* y_gradient = apply_mask(surface, sobel_mask_y, 3);
     free(sobel_mask_y);
     free(sobel_mask_x);
-
-    SDL_Surface *magnitude_gradient = SDL_CreateRGBSurface(0, surface->w, surface->h, 8, 0, 0, 0, 0);
-    SDL_Surface *direction_gradient = SDL_CreateRGBSurface(0, surface->w, surface->h, 8, 0, 0, 0, 0);
 
     for (int j = 0; j < surface->h; j++)
     {
         for (int i = 0; i < surface->w; i++)
         {
-            Uint8 pixel_x = get_gpixel_from_coord(gradient_x, i, j);
-            Uint8 pixel_y = get_gpixel_from_coord(gradient_y, i, j);
+            Uint8 pixel_x = gradient_x[j*surface->w+i];
+            Uint8 pixel_y = gradient_x[j*surface->w+i];
             double magnitude = sqrt(pixel_x * pixel_x + pixel_y * pixel_y); // Euclidean distance formula
             double direction = atan2(pixel_y, pixel_x);                     // Gradient direction
 
-            set_gpixel_from_coord(magnitude_gradient, i, j, (int)fmin(magnitude, 255));
-            set_gpixel_from_coord(direction_gradient, i, j, (int)fmin((direction + PI) / (2 * PI) * 255, 255));
+            magnitude_gradient[j*surface->w+i] = (Uint8)fmin(magnitude, 255);
+            direction_gradient[j*surface->w+i] = (Uint8)fmin((direction + PI) / (2 * PI) * 255, 255);
         }
     }
 
     // STEP 4 : Non-maximum suppression
-    // non_maximum_suppression(magnitude_gradient, direction_gradient);
+    non_maximum_suppression(surface, &magnitude_gradient, &direction_gradient);
 
     // STEP 5 : Double threshold for edge tracking
-    // double_threshold(magnitude_gradient);
+    double_threshold(surface, &magnitude_gradient);
 
     // STEP 6 : Edge tracking by hysteresis
-    // edge_tracking_by_hysteresis(magnitude_gradient);
+    edge_tracking_by_hysteresis(surface, &magnitude_gradient);
 
-    SDL_FreeSurface(gradient_x);
-    SDL_FreeSurface(gradient_y);
-    SDL_FreeSurface(magnitude_gradient);
-    SDL_FreeSurface(direction_gradient);
+    free(magnitude_gradient);
+    free(direction_gradient);
+    free(x_gradient);
+    free(y_gradient);
 }
