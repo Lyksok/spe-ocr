@@ -188,16 +188,6 @@
                   <object class="GtkMenu">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <!-- <child>
-                      <object class="GtkImageMenuItem" id="average_thresholding">
-                        <property name="label">Average thresholding</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="image">image5</property>
-                        <property name="use-stock">False</property>
-                        <signal name="activate" handler="on_average_thresholding_clicked" swapped="no"/>
-                      </object>
-                    </child> -->
                     <child>
                       <object class="GtkImageMenuItem" id="adaptive_thresholding">
                         <property name="label">Adaptive (local) thresholding</property>
@@ -291,14 +281,6 @@
                 </child>
               </object>
             </child>
-            <!-- <child>
-              <object class="GtkMenuItem" id="menu_neural">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">_🧠Neural network</property>
-                <property name="use-underline">True</property>
-              </object>
-            </child> -->
             <child>
               <object class="GtkMenuItem" id="menu_solver">
                 <property name="visible">True</property>
@@ -362,58 +344,85 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButtonBox">
+              <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-left">100</property>
-                <property name="margin-right">100</property>
-                <property name="margin-top">20</property>
-                <property name="margin-bottom">20</property>
-                <property name="spacing">10</property>
-                <property name="baseline-position">bottom</property>
+                <property name="margin-right">30</property>
+                <property name="margin-top">10</property>
+                <property name="margin-bottom">10</property>
                 <child>
-                  <object class="GtkButton" id="run">
-                    <property name="label" translatable="yes">_RUN</property>
+                  <object class="GtkButtonBox">
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="use-underline">True</property>
-                    <signal name="activate" handler="on_run_clicked" object="image_widget" swapped="no"/>
+                    <property name="can-focus">False</property>
+                    <property name="margin-left">20</property>
+                    <property name="margin-right">20</property>
+                    <property name="margin-top">20</property>
+                    <property name="margin-bottom">20</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">10</property>
+                    <property name="baseline-position">bottom</property>
+                    <child>
+                      <object class="GtkButton" id="run">
+                        <property name="label" translatable="yes">_RUN</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <property name="use-underline">True</property>
+                        <signal name="activate" handler="on_run_clicked" object="image_widget" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="rotate_right">
+                        <property name="label" translatable="yes">_Rotate left</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <property name="use-underline">True</property>
+                        <signal name="activate" handler="on_rotate_left_clicked" object="image_widget" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="rotate_left">
+                        <property name="label" translatable="yes">Rotate right</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <property name="use-underline">True</property>
+                        <signal name="activate" handler="on_rotate_right_clicked" object="image_widget" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
+                    <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="rotate_right">
-                    <property name="label" translatable="yes">_Rotate left</property>
+                  <object class="GtkTextView" id="log_view">
+                    <property name="name">log_view</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="use-underline">True</property>
-                    <signal name="activate" handler="on_rotate_left_clicked" object="image_widget" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="rotate_left">
-                    <property name="label" translatable="yes">Rotate right</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="use-underline">True</property>
-                    <signal name="activate" handler="on_rotate_right_clicked" object="image_widget" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
