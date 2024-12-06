@@ -250,6 +250,15 @@ void canny_edge_detection(SDL_Surface *surface, struct parameters *param)
     // STEP 6 : Edge tracking by hysteresis
     edge_tracking_by_hysteresis(surface, &magnitude_gradient);
 
+    for (int j = 0; j < surface->h; j++)
+    {
+        for (int i = 0; i < surface->w; i++)
+        {
+            set_gpixel_from_coord(surface, i, j, magnitude_gradient[j*surface->w+i]);
+        }
+    }
+
+
     free(magnitude_gradient);
     free(direction_gradient);
     free(x_gradient);
