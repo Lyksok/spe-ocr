@@ -206,13 +206,13 @@ void canny_edge_detection(SDL_Surface *surface, struct parameters *param)
     }
 
     // STEP 4 : Non-maximum suppression
-    // non_maximum_suppression(magnitude_gradient, direction_gradient);
+    non_maximum_suppression(magnitude_gradient, direction_gradient);
 
     // STEP 5 : Double threshold for edge tracking
-    // double_threshold(magnitude_gradient);
+    double_threshold(magnitude_gradient);
 
     // STEP 6 : Edge tracking by hysteresis
-    // edge_tracking_by_hysteresis(magnitude_gradient);
+    edge_tracking_by_hysteresis(magnitude_gradient);
 
     SDL_FreeSurface(gradient_x);
     SDL_FreeSurface(gradient_y);

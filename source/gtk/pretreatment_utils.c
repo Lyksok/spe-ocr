@@ -199,14 +199,51 @@ void on_gaussian_filter_clicked(GtkWidget *widget, gpointer data)
 
 void on_average_thresholding_clicked(GtkWidget *widget, gpointer data)
 {
-  printf("🔧 Applying average thresholding\n");
+  printf("🔧 Applying global thresholding\n");
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  if (pixbuf == NULL)
+  {
+    printf("❌ Failed to get pixbuf\n");
+    return;
+  }
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  convert_to_binarized_average(surface, &param);
+  if (surface == NULL)
+  {
+    printf("❌ Failed to convert pixbuf to SDL surface\n");
+    return;
+  }
+
+  // Allocate and initialize the histogram array
+  int *histogram = calloc(256, sizeof(int));
+  if (histogram == NULL)
+  {
+    fprintf(stderr, "Error: Failed to allocate memory for histogram\n");
+    SDL_FreeSurface(surface);
+    return;
+  }
+
+  // Create the histogram of pixel values
+  create_histogram_of_pixel(surface, &histogram, count_by_pixel);
+
+  // Perform global thresholding using the histogram
+  convert_to_binarized_global(surface, &param);
+
+  // Free the histogram array
+  free(histogram);
+
+  // Convert the SDL surface back to a GdkPixbuf
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  if (new_pixbuf == NULL)
+  {
+    printf("❌ Failed to convert SDL surface to pixbuf\n");
+    SDL_FreeSurface(surface);
+    return;
+  }
+
+  // Display the new pixbuf
   display_pixbuf(data, new_pixbuf);
-  printf("✅ Average thresholding done\n");
+  printf("✅ Global thresholding done\n");
   SDL_FreeSurface(surface); // Free the surface
 }
 
