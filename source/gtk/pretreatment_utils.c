@@ -218,7 +218,7 @@ void on_average_thresholding_clicked(GtkWidget *widget, gpointer data)
   int *histogram = calloc(256, sizeof(int));
   if (histogram == NULL)
   {
-    my_print(stderr, "Error: Failed to allocate memory for histogram\n");
+    my_print("Error: Failed to allocate memory for histogram\n");
     SDL_FreeSurface(surface);
     return;
   }

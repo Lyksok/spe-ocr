@@ -58,14 +58,31 @@ int main(int argc, char *argv[])
   // Connect signals defined in the UI file
   gtk_builder_connect_signals(builder, NULL);
 
+  // Retrieve the buttons from the layout file
+  GtkWidget *rotate_left_button = GTK_WIDGET(gtk_builder_get_object(builder, "rotate_left"));
+  GtkWidget *rotate_right_button = GTK_WIDGET(gtk_builder_get_object(builder, "rotate_right"));
+  GtkWidget *run_button = GTK_WIDGET(gtk_builder_get_object(builder, "run"));
+  // Set expand property to FALSE for the buttons
+  gtk_widget_set_hexpand(rotate_left_button, FALSE);
+  gtk_widget_set_vexpand(rotate_left_button, FALSE);
+  gtk_widget_set_hexpand(rotate_right_button, FALSE);
+  gtk_widget_set_vexpand(rotate_right_button, FALSE);
+  gtk_widget_set_hexpand(run_button, FALSE);
+  gtk_widget_set_vexpand(run_button, FALSE);
+  // Connect the buttons to their handlers / callbacks
+  g_signal_connect(rotate_left_button, "clicked", G_CALLBACK(on_rotate_left_clicked), image_widget);
+  g_signal_connect(rotate_right_button, "clicked", G_CALLBACK(on_rotate_right_clicked), image_widget);
+  g_signal_connect(run_button, "clicked", G_CALLBACK(on_run_clicked), image_widget);
+
+  // Resizing directives
+  // Set the expand properties for the image widget
+  gtk_widget_set_hexpand(image_widget, TRUE);
+  gtk_widget_set_vexpand(image_widget, TRUE);
   // Get the screen size
   GdkScreen *screen = gdk_screen_get_default();
   gint screen_width = gdk_screen_get_width(screen);
   gint screen_height = gdk_screen_get_height(screen);
 
-  // Set expand properties for responsiveness
-  gtk_widget_set_hexpand(image_widget, TRUE);
-  gtk_widget_set_vexpand(image_widget, TRUE);
   // Set the window size to half the screen size
   gtk_window_set_default_size(GTK_WINDOW(window), screen_width / 2, screen_height);
 

@@ -41,8 +41,8 @@ source/gtk/main.c:6:57: warning: unused parameter ‘data’ [-Wunused-parameter
     6 | void on_window_main_destroy(GtkWidget *widget, gpointer data)
       |                                                ~~~~~~~~~^~~~
 source/gtk/main.c: In function ‘main’:
-source/gtk/main.c:63:3: warning: ‘gdk_screen_get_width’ is deprecated [-Wdeprecated-declarations]
-   63 |   gint screen_width = gdk_screen_get_width(screen);
+source/gtk/main.c:83:3: warning: ‘gdk_screen_get_width’ is deprecated [-Wdeprecated-declarations]
+   83 |   gint screen_width = gdk_screen_get_width(screen);
       |   ^~~~
 In file included from /usr/include/gtk-3.0/gdk/gdkapplaunchcontext.h:31,
                  from /usr/include/gtk-3.0/gdk/gdk.h:32,
@@ -52,8 +52,8 @@ In file included from /usr/include/gtk-3.0/gdk/gdkapplaunchcontext.h:31,
 /usr/include/gtk-3.0/gdk/gdkscreen.h:58:14: note: declared here
    58 | gint         gdk_screen_get_width             (GdkScreen   *screen);
       |              ^~~~~~~~~~~~~~~~~~~~
-source/gtk/main.c:64:3: warning: ‘gdk_screen_get_height’ is deprecated [-Wdeprecated-declarations]
-   64 |   gint screen_height = gdk_screen_get_height(screen);
+source/gtk/main.c:84:3: warning: ‘gdk_screen_get_height’ is deprecated [-Wdeprecated-declarations]
+   84 |   gint screen_height = gdk_screen_get_height(screen);
       |   ^~~~
 /usr/include/gtk-3.0/gdk/gdkscreen.h:60:14: note: declared here
    60 | gint         gdk_screen_get_height            (GdkScreen   *screen);
@@ -71,19 +71,6 @@ In file included from source/gtk/pretreatment_utils.h:20,
 source/gtk/../image_processing/main.c:24:26: warning: ‘param’ defined but not used [-Wunused-variable]
    24 | static struct parameters param =
       |                          ^~~~~
-source/gtk/pretreatment_utils.c: In function ‘on_average_thresholding_clicked’:
-source/gtk/pretreatment_utils.c:221:14: warning: passing argument 1 of ‘my_print’ from incompatible pointer type [-Wincompatible-pointer-types]
-  221 |     my_print(stderr, "Error: Failed to allocate memory for histogram\n");
-      |              ^~~~~~
-      |              |
-      |              FILE *
-In file included from source/gtk/conversion_utils.h:6,
-                 from source/gtk/main.h:6,
-                 from source/gtk/pretreatment_utils.h:4,
-                 from source/gtk/pretreatment_utils.c:1:
-source/gtk/my_print.h:9:27: note: expected ‘const char *’ but argument is of type ‘FILE *’
-    9 | void my_print(const char *format, ...); // The '...' is a variadic argument
-      |               ~~~~~~~~~~~~^~~~~~
 In file included from source/gtk/pretreatment_utils.h:20,
                  from source/gtk/main.h:9,
                  from source/gtk/conversion_utils.h:5,

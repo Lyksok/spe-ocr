@@ -30,17 +30,17 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
   my_print("🔄 Rotating pixbuf by angle: %f\n", angle);
   int src_width = gdk_pixbuf_get_width(src_pixbuf);
   int src_height = gdk_pixbuf_get_height(src_pixbuf);
-  int dst_width = gdk_pixbuf_get_width(dst_pixbuf);
-  int dst_height = gdk_pixbuf_get_height(dst_pixbuf);
+  double angle_rad = angle * PI / 180.0;
+  double cos_angle = cos(angle_rad);
+  double sin_angle = sin(angle_rad);
+  int dst_width = (int)(fabs(src_width * cos_angle) + fabs(src_height * sin_angle));
+  int dst_height = (int)(fabs(src_width * sin_angle) + fabs(src_height * cos_angle));
+
   int n_channels = gdk_pixbuf_get_n_channels(src_pixbuf);
 
   my_print("📏 Source Width: %d, Source Height: %d, Destination Width: %d, "
            "Destination Height: %d, Channels: %d\n",
            src_width, src_height, dst_width, dst_height, n_channels);
-
-  double angle_rad = angle * PI / 180.0;
-  double cos_angle = cos(angle_rad);
-  double sin_angle = sin(angle_rad);
 
   for (int y = 0; y < dst_height; y++)
   {
