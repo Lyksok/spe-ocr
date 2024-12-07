@@ -27,7 +27,7 @@ void on_angle_entry_activate(GtkEntry *entry, gpointer data)
  */
 void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
 {
-  my_print("🔄 Rotating pixbuf by angle: %f\n", angle);
+  printf("🔄 Rotating pixbuf by angle: %.2f\n", angle);
   int src_width = gdk_pixbuf_get_width(src_pixbuf);
   int src_height = gdk_pixbuf_get_height(src_pixbuf);
   double angle_rad = angle * PI / 180.0;
@@ -38,9 +38,9 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
 
   int n_channels = gdk_pixbuf_get_n_channels(src_pixbuf);
 
-  my_print("📏 Source Width: %d, Source Height: %d, Destination Width: %d, "
-           "Destination Height: %d, Channels: %d\n",
-           src_width, src_height, dst_width, dst_height, n_channels);
+  printf("📏 Source Width: %d, Source Height: %d, Destination Width: %d, "
+         "Destination Height: %d, Channels: %d\n",
+         src_width, src_height, dst_width, dst_height, n_channels);
 
   // Ensure dst_pixbuf has the correct dimensions
   if (gdk_pixbuf_get_width(dst_pixbuf) != dst_width || gdk_pixbuf_get_height(dst_pixbuf) != dst_height)
@@ -121,8 +121,7 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   int width = gdk_pixbuf_get_width(pixbuf);
   int height = gdk_pixbuf_get_height(pixbuf);
-  GdkPixbuf *new_pixbuf =
-      gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
+  GdkPixbuf *new_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
   rotate_pixbuf(pixbuf, new_pixbuf, left_angle);
   display_pixbuf(data, new_pixbuf);
   my_print("✅ Left rotation done\n");

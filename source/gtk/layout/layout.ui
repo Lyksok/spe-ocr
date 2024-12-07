@@ -231,38 +231,38 @@
               <object class="GtkMenuItem" id="menu_rotation">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">_Rotation</property>
+                <property name="label" translatable="yes">_↪️Rotation</property>
                 <property name="use-underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem" id="rotate_lef">
+                      <object class="GtkButton" id="rotate_left_button">
+                        <property name="label" translatable="yes">Rotate left</property>
                         <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="image">image14</property>
-                        <property name="use-stock">False</property>
-                        <signal name="activate" handler="on_rotate_left_clicked" object="image_widget" swapped="no"/>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <signal name="clicked" handler="on_rotate_left_clicked" object="image_widget" swapped="no"/>
                       </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem" id="rotate_righ">
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">0</property>
+                      </packing>
+
+                      <object class="GtkButton" id="rotate_right_button">
+                        <property name="label" translatable="yes">Rotate right</property>
                         <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="image">image15</property>
-                        <property name="use-stock">False</property>
-                        <signal name="activate" handler="on_rotate_right_clicked" object="image_widget" swapped="no"/>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <signal name="clicked" handler="on_rotate_right_clicked" object="image_widget" swapped="no"/>
                       </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem" id="auto_rotate">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="image">image16</property>
-                        <property name="use-stock">False</property>
-                        <signal name="activate" handler="on_auto_rotate_clicked" object="image_widget" swapped="no"/>
-                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">0</property>
+                      </packing>
                     </child>
                   </object>
                 </child>
@@ -433,6 +433,57 @@
                         <property name="position">0</property>
                       </packing>
                     </child>
+                    <child>
+                      <object class="GtkEntry" id="left_angle_entry">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="placeholder-text" translatable="yes">Enter left angle</property>
+                        <signal name="activate" handler="on_left_angle_entry_activate" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="left_angle_enter">
+                        <property name="label" translatable="yes">Rotate left</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="right_angle_entry">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="placeholder-text" translatable="yes">Enter right angle</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="right_angle_enter">
+                        <property name="label" translatable="yes">Rotate right</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -441,21 +492,13 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="scrolled_window_log_view">
+                  <object class="GtkTextView" id="log_view">
+                    <property name="name">log_view</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="hexpand">True</property>
-                    <property name="vexpand">True</property>
-                    <child>
-                      <object class="GtkTextView" id="log_view">
-                        <property name="name">log_view</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                      </object>
-                    </child>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
+                    <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>

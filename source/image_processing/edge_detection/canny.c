@@ -30,58 +30,57 @@ double *get_sobel_mask_y()
 
 void non_maximum_suppression(SDL_Surface *surface, Uint8 **magnitude, Uint8 **direction)
 {
-    // Get the width and height of the image
     int width = surface->w;
     int height = surface->h;
-    Uint8 *suppressed = calloc(width * height, sizeof(Uint8)); // Create a dsdl surface to store the suppressed image
 
-    for (int y = 1; y < height - 1; y++)
-    { // Loop through each row of the image, excluding the borders
+    // Allocate space for suppressed magnitude
+    Uint8 *suppressed = calloc(width * height, sizeof(Uint8));
+
+    for (int y = 1; y < height - 1; y++) // Exclude borders
+    {
         for (int x = 1; x < width - 1; x++)
         {
-            // Loop through each column of the image, excluding the borders
-            Uint8 mag = (*magnitude)[y * surface->w + x];                            // Get the gradient magnitude for the current pixel
-            double dir = ((*direction)[y * surface->w + x] * 2.0 * PI / 255.0) - PI; // Get the gradient direction for the current pixel and convert it to radi
+            Uint8 mag = (*magnitude)[y * width + x];
+            double dir = ((*direction)[y * width + x] * 2.0 * PI / 255.0) - PI;
 
-            /** By initializing neighbour1 and neighbour2 to 255, we ensure that if the gradient direction does not match any of the specified ranges, the current pixel will be suppressed because its magnitude will not be greater than or equal to 255.*/
-            Uint8 neighbour1 = 255;
-            Uint8 neighbour2 = 255;
+            Uint8 neighbor1 = 0;
+            Uint8 neighbor2 = 0;
 
-            // Determine the neighboring pixels to compare based on the gradient direction
-            if ((0 <= dir && dir < PI / 8) || (7 * PI / 8 <= dir && dir <= PI))
+            // Determine the neighboring pixels based on gradient direction
+            if ((-PI / 8 <= dir && dir < PI / 8) || (7 * PI / 8 <= dir || dir < -7 * PI / 8))
             {
-                neighbour1 = (*magnitude)[(y + 1) * surface->w + x]; // Get the pixel value to the right
-                neighbour2 = (*magnitude)[(y - 1) * surface->w + x]; // Get the pixel value to the left
+                neighbor1 = (*magnitude)[y * width + (x + 1)]; // Right
+                neighbor2 = (*magnitude)[y * width + (x - 1)]; // Left
             }
-            else if (PI / 8 <= dir && dir < 3 * PI / 8)
+            else if ((PI / 8 <= dir && dir < 3 * PI / 8) || (-7 * PI / 8 <= dir && dir < -5 * PI / 8))
             {
-                neighbour1 = (*magnitude)[(y - 1) * surface->w + x + 1]; // Get the pixel value to the top-right
-                neighbour2 = (*magnitude)[(y - 1) * surface->w + x - 1]; // Get the pixel value to the bottom-left
+                neighbor1 = (*magnitude)[(y - 1) * width + (x + 1)]; // Top-right
+                neighbor2 = (*magnitude)[(y + 1) * width + (x - 1)]; // Bottom-left
             }
-            else if (3 * PI / 8 <= dir && dir < 5 * PI / 8)
+            else if ((3 * PI / 8 <= dir && dir < 5 * PI / 8) || (-5 * PI / 8 <= dir && dir < -3 * PI / 8))
             {
-                neighbour1 = (*magnitude)[y * surface->w + x + 1]; // Get the pixel value to the top
-                neighbour2 = (*magnitude)[y * surface->w + x - 1]; // Get the pixel value to the bottom
+                neighbor1 = (*magnitude)[(y - 1) * width + x]; // Top
+                neighbor2 = (*magnitude)[(y + 1) * width + x]; // Bottom
             }
-            else if (5 * PI / 8 <= dir && dir < 7 * PI / 8)
+            else if ((5 * PI / 8 <= dir && dir < 7 * PI / 8) || (-3 * PI / 8 <= dir && dir < -PI / 8))
             {
-                neighbour1 = (*magnitude)[(y - 1) * surface->w + x - 1]; // Get the pixel value to the top-left
-                neighbour2 = (*magnitude)[(y + 1) * surface->w + x + 1]; // Get the pixel value to the bottom-right
+                neighbor1 = (*magnitude)[(y - 1) * width + (x - 1)]; // Top-left
+                neighbor2 = (*magnitude)[(y + 1) * width + (x + 1)]; // Bottom-right
             }
 
-            // Suppress the non-maximum pixels
-            if (mag >= neighbour1 && mag >= neighbour2)
+            // Keep the pixel if it is greater than or equal to both neighbors
+            if (mag >= neighbor1 && mag >= neighbor2)
             {
-                suppressed[y * surface->w] = mag; // Keep the pixel if = current max
+                suppressed[y * width + x] = mag;
             }
             else
             {
-                suppressed[y * surface->w + x] = 0; // else suppress cur pixel
+                suppressed[y * width + x] = 0;
             }
         }
     }
-    // Copy suppressed surface => original magnitude surface
 
+    // Replace the magnitude with the suppressed version
     free(*magnitude);
     *magnitude = suppressed;
 }
@@ -264,13 +263,13 @@ void canny_edge_detection(SDL_Surface *surface, struct parameters *param)
     apply_sobel_filter(surface, &magnitude_gradient, &direction_gradient);
 
     // STEP 4 : Non-maximum suppression
-    // non_maximum_suppression(surface, &magnitude_gradient, &direction_gradient);
+    non_maximum_suppression(surface, &magnitude_gradient, &direction_gradient);
 
     // STEP 5 : Double threshold for edge tracking
-    // double_threshold(surface, &magnitude_gradient);
+    double_threshold(surface, &magnitude_gradient);
 
     // STEP 6 : Edge tracking by hysteresis
-    // edge_tracking_by_hysteresis(surface, &magnitude_gradient);
+    edge_tracking_by_hysteresis(surface, &magnitude_gradient);
 
     for (int j = 0; j < surface->h; j++)
     {
