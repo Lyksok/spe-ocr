@@ -18,21 +18,21 @@ double RandFrom(double min, double max)
         return min + (rand() / div);
 }
 
-void InitWeigths(Layer layer)
+void InitWeigths(Layer *layer)
 {
-	for (int n = 0; n < layer.numNeurons ; n++)
-	for (int w = 0; w < layer.numWeights ; w++)
+	for (int n = 0; n < layer->numNeurons ; n++)
+	for (int w = 0; w < layer->numWeights ; w++)
 	{
-		layer.weights[n][w] = RandFrom(-1, 1);
+		layer->weights[n][w] = RandFrom(-1, 1);
 	}
 	return;
 }
 
-void InitBiases(Layer layer)
+void InitBiases(Layer *layer)
 {
-	for (int n = 0; n < layer.numNeurons ; n++)
+	for (int n = 0; n < layer->numNeurons ; n++)
 	{
-		layer.neurons[n].bias = 0;
+		layer->neurons[n].bias = 0;
 	}
 	return;
 }
@@ -78,47 +78,47 @@ void SaveLayers(Layer *first)
         return;
 }
 
-Layer RecoverFirstLayer(const char *fweight, const char *fbias)
+Layer *RecoverFirstLayer(const char *fweight, const char *fbias)
 {
-        Layer layer;
-        layer.numNeurons = nNodes;
-        layer.neurons = malloc(nNodes * sizeof(Neuron));
-        layer.inputs = calloc(nInputs, sizeof(double));
-        layer.numWeights = nInputs;
-        ReadCsvBiases(fbias, &layer, layer.numNeurons);
-        ReadCsvWeigths(fweight, &layer, layer.numWeights);
-        layer.prev = NULL;
-        layer.next = NULL;
+        Layer *layer = malloc(sizeof(Layer));
+        layer->numNeurons = nNodes;
+        layer->neurons = malloc(nNodes * sizeof(Neuron));
+        layer->inputs = calloc(nInputs, sizeof(double));
+        layer->numWeights = nInputs;
+        ReadCsvBiases(fbias, layer, layer->numNeurons);
+        ReadCsvWeigths(fweight, layer, layer->numWeights);
+        layer->prev = NULL;
+        layer->next = NULL;
         return layer;
 }
 
 void RecoverSecondLayer(Layer *l, const char *fweight, const char *fbias)
 {
-        Layer layer;
-        layer.numNeurons = nOut;
-        layer.neurons = malloc(nOut * sizeof(Neuron));
-        layer.inputs = calloc(nNodes, sizeof(double));
-        layer.numWeights = nNodes;
-        ReadCsvBiases(fbias, &layer, layer.numNeurons);
-        ReadCsvWeigths(fweight, &layer, layer.numWeights);
+        Layer *layer = malloc(sizeof(Layer));
+        layer->numNeurons = nOut;
+        layer->neurons = malloc(nOut * sizeof(Neuron));
+        layer->inputs = calloc(nNodes, sizeof(double));
+        layer->numWeights = nNodes;
+        ReadCsvBiases(fbias, layer, layer->numNeurons);
+        ReadCsvWeigths(fweight, layer, layer->numWeights);
 
-        layer.prev = l;
-        l->next = &layer;
-        layer.next = NULL;
+        layer->prev = l;
+        l->next = layer;
+        layer->next = NULL;
         return;
 }
 
-Layer CreateFirstLayer(int len, int nn)
+Layer *CreateFirstLayer(int len, int nn)
 {
-        Layer layer;
-	layer.numNeurons = nn;
-        layer.neurons = malloc(nn * sizeof(Neuron));
-	layer.inputs = calloc(len, sizeof(double));
+        Layer *layer = malloc(sizeof(Layer));
+	layer->numNeurons = nn;
+        layer->neurons = malloc(nn * sizeof(Neuron));
+	layer->inputs = calloc(len, sizeof(double));
 	InitBiases(layer);
-	layer.numWeights = len;
+	layer->numWeights = len;
 	InitWeigths(layer);
-	layer.prev = NULL;
-	layer.next = NULL;
+	layer->prev = NULL;
+	layer->next = NULL;
         return layer;
 }
 
@@ -133,71 +133,89 @@ Layer *CreateLayer(Layer *l, int nn)
         return layer;
 }
 
-void DestroyLayer(Layer layer)
+void DestroyLayer(Layer *layer)
 {
-	free(layer.neurons);
-	free(layer.inputs);
-	if (layer.next == NULL)	
+	if (layer == NULL)
+	{
 		return;
+	}
 	else
 	{
-		DestroyLayer(layer.next[0]);
+		free(layer->neurons);
+		free(layer->inputs);
+		DestroyLayer(layer->next);
+		free(layer);
+		return;
 	}
 }
 
-TrainingData CreateData()
+TrainingData *CreateData()
 {
-	TrainingData data;
-	data.inputs = calloc(nInputs, sizeof(double));
+	TrainingData *data = malloc(sizeof(TrainingData));
+	data->inputs = calloc(nInputs, sizeof(double));
 	// what is the expected result (as a character)
-	data.expected = 0;
-	data.next = NULL;
+	data->expected = 0;
+	data->next = NULL;
 	return data;
 }
 
-void LinkData(TrainingData *d1, TrainingData *d2)
+TrainingData *LinkData(TrainingData *d1, TrainingData *d2)
 {
 	if (d1 == NULL)
+	{
 		d1 = d2;
+		return d1;
+	}
 	else
+	{
 		d1->next = d2;
-	return;
+		return d1;
+	}
 }
 
-void DestroyData(TrainingData data)
+void DestroyData(TrainingData *data)
 {
-	free(data.inputs);
-	DestroyData(*(data.next));
-	return;
+	if (data == NULL)
+	{
+		return;
+	}
+	else
+	{
+		free(data->inputs);
+		DestroyData(data->next);
+		free(data);
+		return;
+	}
 }
 
-Network CreateNet(int numLayers, int lr)
+Network *CreateNet(int numLayers, int lr)
 {
-        Network network;
+        Network *network = malloc(sizeof(Network));
 
-	network.layers = CreateFirstLayer(nInputs, nNodes);
-	Layer *l = &(network.layers);
+	network->layers = CreateFirstLayer(nInputs, nNodes);
+	Layer *l = network->layers;
         for (int i = 1; i < numLayers; i++)
         {
 		l = CreateLayer(l, nNodes);
         }
 
-	network.lr = lr;
+	network->lr = lr;
 
         return network;
 }
 
-Network RecoverNet(const char *fw1, const char *fb1,
+Network *RecoverNet(const char *fw1, const char *fb1,
                 const char *fw2, const char *fb2)
 {
-        Network net;
-        net.layers = RecoverFirstLayer(fw1, fb1);
-	RecoverSecondLayer(&(net.layers), fw2, fb2);
+        Network *net = malloc(sizeof(Network));
+        net->layers = RecoverFirstLayer(fw1, fb1);
+	RecoverSecondLayer(net->layers, fw2, fb2);
         return net;
 }
 
-void DestroyNet(Network network)
+void DestroyNet(Network *network)
 {
-	DestroyLayer(network.layers);
+	DestroyLayer(network->layers);
+	free(network);
         return;
 }

@@ -33,7 +33,7 @@ struct TrainingData {
 };
 
 typedef struct Network {
-	Layer layers;
+	Layer *layers;
 	double **outputs;
 	double lr;
 } Network;

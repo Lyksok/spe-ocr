@@ -27,14 +27,14 @@ int main(int argc, char *argv[])
 	else if (!strcmp(argv[1], "find"))
 	{
 		int d = dimension;
-		int *list = calloc(d * d, sizeof(int));
+		double *list = calloc(d * d, sizeof(int));
 		SDL_Surface *letter = toSDL(argv[2]);
 		SDL_to_list(letter, d * d, &list);
 		for (int i = 0; i < d; i++)
 		{
 			for (int j = 0; j < d; j++)
 			{
-				printf("%d ", list[i * d + j]);
+				printf("%f ", list[i * d + j]);
 			}
 			printf("\n");
 		}

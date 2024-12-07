@@ -31,6 +31,7 @@ SDL_Surface *toSDL(char *path)
 	 * SDL_Surface *gdk_pixbuf_to_sdl_surface(GdkPixbuf *pixbuf);
 	 * */
 	int d = dimension;
+//	printf("here\n");
 	GdkPixbuf *pix = sdl_surface_to_gdk_pixbuf(temp);
 	pix = resize_pixbuf(pix, d, d);
 	temp = gdk_pixbuf_to_sdl_surface(pix);
@@ -78,7 +79,7 @@ void SDL_to_list(SDL_Surface *surface, int len, double **list)
 		SDL_GetRGB(pixel, surface->format, &r, &g, &b);
 		// we take a surface with only black and white
 		// if one of the parameter is != 0, then it has to be white
-		(*list)[i] = r ? 1 : 0;
+		(*list)[i] = (r ? 1 : 0);
 	}
 	SDL_UnlockSurface(surface);
 	SDL_FreeSurface(surface);

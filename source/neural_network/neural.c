@@ -114,7 +114,7 @@ double dCost(double a, double b) {
 
 void Backward(Network net, TrainingData data, int i)
 {
-	Layer *l = &(net.layers);
+	Layer *l = net.layers;
 	for (; l->next != NULL; l = l->next)
 	{}
 
@@ -204,8 +204,8 @@ void Train(int nbrun, Network net, TrainingData data)
 		for (int i = 0; i < nInputs; i++)
 		{
 			int len = dimension * dimension;
-			Copy(len, data.inputs, &(net.layers.inputs));
-			Forward(len, net.layers, net, i);
+			Copy(len, data.inputs, &(net.layers->inputs));
+			Forward(len, *net.layers, net, i);
 			//Copy(26, net.outputs, &(net.outputs[i]));
 			Backward(net, data, run);
 			accuracy += Result(data, net, run);
@@ -236,7 +236,7 @@ int main(int argc, char **argv)
 		int nbrun = atoi(argv[2]);
 		Train(nbrun, network, *data);
 
-		DestroyData(*data);
+		DestroyData(data);
 		PrintData(network);
 		DestroyNet(network);
 		return 0;
