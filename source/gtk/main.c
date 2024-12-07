@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
   gint screen_height = gdk_screen_get_height(screen);
 
   // Set the window size to half the screen size
-  gtk_window_set_default_size(GTK_WINDOW(window), screen_width / 2, screen_height);
+  gtk_window_set_default_size(GTK_WINDOW(window), screen_width / 2, screen_height / 2);
 
   // Load a sample image and set it to the image widget
   pixbuf = gdk_pixbuf_new_from_file("images/Logo_OCR_WS_fanette.png", NULL);
@@ -111,6 +111,14 @@ int main(int argc, char *argv[])
     my_print("Failed to load sample image\n");
     return 1; // Exit the program if the image fails to load
   }
+
+  // Load and apply CSS
+  GtkCssProvider *css_provider = gtk_css_provider_new();
+  gtk_css_provider_load_from_path(css_provider, "source/gtk/style/style.css", NULL);
+  gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+                                            GTK_STYLE_PROVIDER(css_provider),
+                                            GTK_STYLE_PROVIDER_PRIORITY_USER);
+  g_object_unref(css_provider);
 
   // Show the main window
   gtk_widget_show_all(window);
