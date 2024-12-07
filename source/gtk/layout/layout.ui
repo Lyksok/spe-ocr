@@ -46,6 +46,11 @@
     <property name="can-focus">False</property>
     <property name="stock">gtk-execute</property>
   </object>
+  <object class="GtkImage" id="image17">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-execute</property>
+  </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -237,6 +242,17 @@
                   <object class="GtkMenu">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="auto_rotate">
+                        <property name="label">_Auto rotate</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="image">image17</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_auto_rotate_clicked" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -425,11 +441,14 @@
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
+                        <signal name="activate" handler="on_rotate_left_clicked" swapped="no"/>
+
                       </object>
                       <packing>
                         <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="position">2</property>
+
                       </packing>
                     </child>
                     <child>
@@ -450,6 +469,8 @@
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
+                        <signal name="activate" handler="on_rotate_right_clicked" swapped="no"/>
+
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -468,9 +489,9 @@
                   <object class="GtkScrolledWindow" id="scroll_window">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="hexpand">True</property>
                     <property name="hscrollbar-policy">always</property>
                     <property name="shadow-type">in</property>
-                    <property name="hexpand">True</property>
                     <child>
                       <object class="GtkTextView" id="log_view">
                         <property name="name">log_view</property>

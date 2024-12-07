@@ -70,9 +70,27 @@ int main(int argc, char *argv[])
 
   // Connect signals defined in the UI file
   gtk_builder_connect_signals(builder, NULL);
+  // Connect rotation signals
+  GtkWidget *rotate_left_button = GTK_WIDGET(gtk_builder_get_object(builder, "rotate_left_button"));
+  g_signal_connect(rotate_left_button, "clicked", G_CALLBACK(on_rotate_left_clicked), image_widget);
 
-  // Retrieve the buttons from the layout file
+  GtkWidget *rotate_right_button = GTK_WIDGET(gtk_builder_get_object(builder, "rotate_right_button"));
+  g_signal_connect(rotate_right_button, "clicked", G_CALLBACK(on_rotate_right_clicked), image_widget);
+
   GtkWidget *run_button = GTK_WIDGET(gtk_builder_get_object(builder, "run"));
+  // Set expand property to FALSE for the buttons
+  gtk_widget_set_hexpand(run_button, FALSE);
+  gtk_widget_set_vexpand(run_button, FALSE);
+  // Connect the buttons to their handlers / callbacks
+  g_signal_connect(run_button, "clicked", G_CALLBACK(on_run_clicked), image_widget);
+
+  // Connect GtkEntry signals
+  GtkWidget *left_angle_entry = GTK_WIDGET(gtk_builder_get_object(builder, "left_angle_entry"));
+  g_signal_connect(left_angle_entry, "activate", G_CALLBACK(on_left_angle_entry_activate), NULL);
+
+  GtkWidget *right_angle_entry = GTK_WIDGET(gtk_builder_get_object(builder, "right_angle_entry"));
+  g_signal_connect(right_angle_entry, "activate", G_CALLBACK(on_right_angle_entry_activate), NULL);
+
   // Set expand property to FALSE for the buttons
   gtk_widget_set_hexpand(run_button, FALSE);
   gtk_widget_set_vexpand(run_button, FALSE);

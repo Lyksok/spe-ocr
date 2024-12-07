@@ -24,7 +24,9 @@ extern double right_angle;
 void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle);
 void on_rotate_left_clicked(GtkWidget *widget, gpointer data);
 void on_rotate_right_clicked(GtkWidget *widget, gpointer data);
-void on_angle_entry_activate(GtkEntry *entry, gpointer data);
+void on_left_angle_entry_activate(GtkEntry *entry, gpointer data);
+void on_right_angle_entry_activate(GtkEntry *entry, gpointer data);
+void on_auto_rotate_clicked(GtkWidget *widget, gpointer data);
 int main(int argc, char **argv);
 
 #endif // ROTATION_UTILS_H

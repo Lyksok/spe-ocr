@@ -5,18 +5,42 @@ double left_angle = DEFAULT_LEFT_ANGLE;
 double right_angle = DEFAULT_RIGHT_ANGLE;
 
 /**
- * @brief Callback function to handle the "activate" signal of the GtkEntry
- * widgets.
+ * @brief Callback function for the left angle entry activation.
  * @param entry The GtkEntry widget.
- * @param data Pointer to the rotation angle macro to update.
+ * @param data Unused (can be NULL).
  */
-void on_angle_entry_activate(GtkEntry *entry, gpointer data)
+void on_left_angle_entry_activate(GtkEntry *entry, gpointer data)
 {
-  my_print("🔄 Activating angle entry\n");
-  double *angle = (double *)data;
+  (void)data; // Unused parameter
+  printf("🔄 Activating left angle entry\n");
   const char *angle_text = gtk_entry_get_text(entry);
-  *angle = g_ascii_strtod(angle_text, NULL); // Convert string to double
-  my_print("📐 New angle: %f\n", *angle);
+  char *endptr;
+  left_angle = g_ascii_strtod(angle_text, &endptr);
+  if (endptr == angle_text || *endptr != '\0')
+  {
+    printf("Error: Invalid input for left angle\n");
+  }
+
+  printf("📐 New left angle: %.2f\n", left_angle);
+}
+
+/**
+ * @brief Callback function for the right angle entry activation.
+ * @param entry The GtkEntry widget.
+ * @param data Unused (can be NULL).
+ */
+void on_right_angle_entry_activate(GtkEntry *entry, gpointer data)
+{
+  (void)data; // Unused parameter
+  my_print("🔄 Activating right angle entry\n");
+  const char *angle_text = gtk_entry_get_text(entry);
+  char *endptr;
+  left_angle = g_ascii_strtod(angle_text, &endptr);
+  if (endptr == angle_text || *endptr != '\0')
+  {
+    printf("Error: Invalid input for left angle\n");
+  }
+  my_print("📐 New right angle: %.2f\n", right_angle);
 }
 
 /**
@@ -144,4 +168,31 @@ void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
   rotate_pixbuf(pixbuf, new_pixbuf, -right_angle);
   display_pixbuf(data, new_pixbuf);
   my_print("✅ Right rotation done\n");
+}
+
+void on_auto_rotate_clicked(GtkWidget *widget, gpointer data)
+{
+  my_print("🔄 Auto-rotating image\n");
+  (void)widget; // Remove unused parameter warning
+
+  // Convert the image to SDL_Surface
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
+
+  // Detect the rotation angle
+  double angle = auto_detect_rotation_angle(surface, &param);
+
+  // Log the detected angle
+  my_print("📐 Detected rotation angle: %.2f degrees\n", angle);
+
+  // Rotate the image by the detected angle
+  int width = gdk_pixbuf_get_width(pixbuf);
+  int height = gdk_pixbuf_get_height(pixbuf);
+  GdkPixbuf *new_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
+  rotate_pixbuf(pixbuf, new_pixbuf, angle);
+  display_pixbuf(data, new_pixbuf);
+
+  // Clean up
+  SDL_FreeSurface(surface);
+  my_print("✅ Auto-rotation done\n");
 }
