@@ -33,7 +33,7 @@ void list_push_tail(struct list* list, BoundingBox* box);
 // Insert a bounding box in the list (keeping the list sorted)
 void list_insert(struct list* list, BoundingBox* box);
 
-// Remove a bounding box in the list without freeing the box
+// Remove a bounding box in the list freeing also the box
 void list_remove(struct list* list, struct list* elm);
 
 // Swap two elements of a list

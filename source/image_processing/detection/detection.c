@@ -136,6 +136,52 @@ int _refine_grid_size(SDL_Surface* surface, struct list* char_list,
     else
         return 1;
 }
+
+/* Check all vertices that are linked horizontally and vertically
+*/
+void find_horizontal_continuous_vertices(SDL_Surface* surface, struct list* char_list)
+{
+    // HORIZONTALLY
+    int len = list_len(char_list);
+
+    struct list* grid = list_hard_copy(char_list);
+    // For each box, compute all distances between each box on the same line of
+    // pixels
+    for(struct list* p=char_list->next; p!=NULL; p=p->next)
+    {
+        struct list* line = list_hard_copy(char_list);
+
+        // Distance list
+        int* distances = calloc(len, sizeof(int));
+        int i=0;
+        
+        // Get current box (p) boundaries
+        int y_min = p->box->p1.y;
+        int y_max = p->box->p2.y;
+        Point p_center = box_get_center(p->box);
+        for(struct list* q = line->next; q!=NULL; q=q->next)
+        {
+            // p current box, checking its line, remove from line all boxes
+            // that are not in its line
+            Point q_center = box_get_center(q->box);
+            if(p_center == q_center)
+                continue;
+
+            if(q_center.y>=y_max || q_center.y<=y_min)
+            {
+                q=q->prev;
+                list_remove(line, q->next);
+                continue;
+            }
+
+            distances[i++] = dist2(p_center, q_center);
+        }
+
+        
+    }
+    // Compute the average/median and std deviation
+    
+}
         
 /* Try to find the grid
  * If found return the grid and set its width and height
@@ -146,6 +192,10 @@ BoundingBox** detect_grid(SDL_Surface* surface, struct list* char_list,
 {
     int tolerance = 5;
     list_squarify_boxes(surface, char_list);
+
+    printf("EXPERIMENTAL RESULTS:\n");
+    int* dim = freq_most_frequent_tuple(surface, box_list);
+    printf("%ix%i\n", dim[0], dim[1]);
 
     // Nb of box per col and row
     int* nb_box_per_col;
