@@ -5,7 +5,7 @@
 #include "convertion.h"
 #include "../gtk/conversion_utils.h"
 #include "../gtk/image_utils.h"
-#include "structures.h"
+#include "neural_structures.h"
 
 // RGB WHITE = 255, 255, 255
 // RGB BLACK = 0, 0, 0
@@ -65,7 +65,7 @@ SDL_Surface *toSDL(char *path)
  * no idea wether said surface is black or white
  * thus need further ckecks
  * */
-void SDL_to_list(SDL_Surface *surface, int len, int **list)
+void SDL_to_list(SDL_Surface *surface, int len, double **list)
 {
 	SDL_LockSurface(surface);
 	Uint8 *pixels = (Uint8 *)surface->pixels;

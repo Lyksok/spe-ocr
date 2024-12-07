@@ -1,3 +1,17 @@
+double HiddenBias[nNodes] = {};
+double HiddenWeight[nNodes][nInputs] = {};
+double OutputBias[nOut] = {};
+double OutputWeight[nOut][nNodes] = {};
+
+typedef struct TrainingData {
+        int size;
+        int nbinputs;
+        double **inputs;
+        double **outputs;
+        char *expected;
+        double lr;
+} TrainingData;
+
 void init_weights(int row, int col, double **array);
 
 void init_weights(int row, int col, double **array)

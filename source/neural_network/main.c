@@ -2,7 +2,8 @@
 #include <SDL2/SDL_image.h>
 
 #include "convertion.h"
-#include "structures.h"
+#include "csv.h"
+#include "neural_structures.h"
 
 int main(int argc, char *argv[])
 {

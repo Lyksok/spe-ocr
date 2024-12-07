@@ -1,5 +1,5 @@
-#ifndef STRUCTURES_H
-#define STRUCTURES_H
+#ifndef NEURAL_STRUCTURES_H
+#define NEURAL_STRUCTURES_H
 
 #include <stdio.h>
 
@@ -25,19 +25,17 @@ struct Layer {
 	Layer *next;
 };
 
-typedef struct TrainingData {
-	int size;
-	int nbinputs;
-	double **inputs;
-	double **outputs;
-	char *expected;
-	double lr;
-} TrainingData;
+typedef struct TrainingData TrainingData;
+struct TrainingData {
+	double *inputs;
+	char expected;
+	TrainingData *next;
+};
 
 typedef struct Network {
-	// pointer to the first layer of the network
 	Layer layers;
-	double *outputs;
+	double **outputs;
+	double lr;
 } Network;
 
-#endif /* STRUCTURES_H */
+#endif /* NEURAL_STRUCTURES_H */

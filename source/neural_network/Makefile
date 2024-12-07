@@ -9,8 +9,8 @@ CFLAGS = -Wall -Wextra -fsanitize=address -g
 PKGS = `pkg-config --cflags --libs gtk+-3.0`
 LIBS = -lSDL2 -lSDL2_image -lm
 
-OBJ = neural.o setup.o
-OBJ-OLD = neural_letter.o
+OBJ2 = convertion.o ../gtk/conversion_utils.o ../gtk/image_utils.o
+OBJ = neural.o setup.o csv.o read_data.o $(OBJ2)
 OBJECT = convertion.o main.o ../gtk/conversion_utils.o ../gtk/image_utils.o
 
 all: $(TARGET) $(TEST)

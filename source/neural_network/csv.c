@@ -2,15 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "csv.h"
 #include "setup.h"
-#include "structures.h"
-
-#define MAX_FIELDS nInputs
-#define MAX_FIELD_LEN 7
-// because we store each value on 6 char + ','
-// also 6 char + '\0' for parsing
-#define MAX_LINE_LEN (MAX_FIELD_LEN * MAX_FIELDS + 50)
-// the 50 is there for safety
+#include "neural_structures.h"
 
 void WriteCsvWeight(const char *filename, Layer l)
 {
@@ -25,9 +19,9 @@ void WriteCsvWeight(const char *filename, Layer l)
     {
 	    for (int w = 0; w < l.numWeights - 1; w++)
 	    {
-		    fprintf("%.6g,", l.weights[n][w]);
+		    fprintf(file, "%.6g,", l.weights[n][w]);
 	    }
-	    fprintf("%.6g\n", l.weights[n][l.numWeights - 1]);
+	    fprintf(file, "%.6g\n", l.weights[n][l.numWeights - 1]);
     }
     fclose(file);
 }
@@ -43,9 +37,9 @@ void WriteCsvBiases(const char *filename, Layer l)
 
     for (int n = 0; n < l.numNeurons; n++)
     {
-	    fprintf("%.6g,", l.neurons[n].bias);
+	    fprintf(file, "%.6g,", l.neurons[n].bias);
     }
-    fprintf("%.6g\n", l.neurons[l.numNeurons - 1].bias);
+    fprintf(file, "%.6g\n", l.neurons[l.numNeurons - 1].bias);
     fclose(file);
 }
 
@@ -79,7 +73,7 @@ void ReadCsvWeigths(const char *filename, Layer *layer, int max_weights)
 		return;
 	}
 
-	char line[MAX_LINE_LENGTH];
+	char line[MAX_LINE_LEN];
 	int nodes = 0;
 	layer->numWeights = max_weights;
 	int max_neurons = layer->numNeurons;
@@ -111,7 +105,7 @@ void ReadCsvBiases(const char *filename, Layer *layer, int max_neurons)
 		return;
 	}
 
-	char line[MAX_LINE_LENGTH];
+	char line[MAX_LINE_LEN];
 	int nodes = 0;
 	layer->numNeurons = max_neurons;
 	layer->neurons = malloc(max_neurons * sizeof(Neuron));
@@ -122,7 +116,7 @@ void ReadCsvBiases(const char *filename, Layer *layer, int max_neurons)
 		// should only have one bias per line
 		char fields[1][MAX_FIELD_LEN];
 		// TODO: check fields' use in functions
-		int num_fields = ParseLine(line, 1, fields);
+		ParseLine(line, 1, fields);
 		// should be equal to max_neurons
 
 		layer->neurons[nodes].bias = atof(fields[0]);

@@ -4,8 +4,9 @@
 #include <string.h>
 
 #include "neural.h"
+#include "neural_structures.h"
+#include "read_data.h"
 #include "setup.h"
-#include "structures.h"
 
 void Softmax(int length, double **mat)
 {
@@ -66,7 +67,7 @@ void SumHidden(Layer l1, Layer l2)
 	return;
 }
 
-void Forward(int length, Layer l, Network net)
+void Forward(int length, Layer l, Network net, int i)
 {
 	Sum(length, l);
 	// while the next layer is not NULL
@@ -79,10 +80,10 @@ void Forward(int length, Layer l, Network net)
 	// we collect the result of the last layer
 	for (int n = 0; n < l.numNeurons; n++)
 	{
-		net.outputs[n] = l.neurons[n].value;
+		net.outputs[i][n] = l.neurons[n].value;
 	}
 	// then we transform it to probabilities
-	Softmax(l.numNeurons, &net.outputs);
+	Softmax(l.numNeurons, &(net.outputs[i]));
 }
 
 void Update(Layer l, double *errors, int lr) {
@@ -111,7 +112,7 @@ double dCost(double a, double b) {
 	return 2 * c;
 }
 
-void Backward(Network net, TrainingData data, int run)
+void Backward(Network net, TrainingData data, int i)
 {
 	Layer *l = &(net.layers);
 	for (; l->next != NULL; l = l->next)
@@ -125,8 +126,8 @@ void Backward(Network net, TrainingData data, int run)
 	}
 	for (int n = 0; n < 26; n++)
 	{
-		double r = (data.expected[run] - 'A' == n) ? 1 : 0;
-		errors[n] += Cost(data.outputs[run][n], r);
+		double r = (data.expected - 'A' == n) ? 1 : 0;
+		errors[n] += Cost(net.outputs[i][n], r);
 	}
 	for (; l != NULL; l = l->prev)
 	{
@@ -149,38 +150,42 @@ void Backward(Network net, TrainingData data, int run)
 			nerr *= dSigmoid(v);
 			err[n] += nerr;
 		}
-		Update(l[0], errors, data.lr);
+		Update(l[0], errors, net.lr);
 		free(errors);
 		errors = err;
 	}
 	free(errors);
 }
 
-void Result(TrainingData data, int nbrun)
+double Result(TrainingData data, Network net, int run)
 {
 	int succ = 0;
-	for (int run = 0; run < nbrun; run++)
+	TrainingData *cur = &data;
+	int i = 0;
+	for (; cur != NULL; cur = cur->next)
 	{
-		double r = data.outputs[run][0];
+		double r = net.outputs[i][0];
 		char res = 0;
-		for (char i = 1; i < 26; i++)
+		for (char c = 1; c < 26; c++)
 		{
-			double rr = GetMax(r, data.outputs[run][(int)i]);
+			double rr = GetMax(r, net.outputs[i][(int)c]);
 			if (r != rr)
-				res = i;
+				res = c;
 			r = rr;
 		}
 		char *got = "Predicted Output =";
 		char *want = "Expected Output =";
 		res += 'A';
-		char eres = data.expected[run];
+		char eres = data.expected;
 		printf("Run %i : %s %c | %s %c\n",
 			run, got, res, want, eres);
 		if (res == eres)
 			succ += 1;
+		i++;
 	}
-	double acc = (double) succ/nbrun;
+	double acc = (i != 0) ? (double) succ/i : 0;
 	printf("Accuracy for this set : %f\n", acc);
+	return acc;
 }
 
 void Copy(int len, double *src, double **dest) {
@@ -193,28 +198,27 @@ void Copy(int len, double *src, double **dest) {
 
 void Train(int nbrun, Network net, TrainingData data)
 {
-	// learning rate
-	data.lr = 0.1f;
-
+	double accuracy = 0;
 	for (int run = 0; run < nbrun; run++)
 	{
-		for (int i = 0; i < data.nbinputs; i++)
+		for (int i = 0; i < nInputs; i++)
 		{
-			int len = data.size;
-			Copy(len, data.inputs[run], &(net.layers.inputs));
-			Forward(len, net.layers, net);
-			Copy(26, net.outputs, &(data.outputs[i]));
+			int len = dimension * dimension;
+			Copy(len, data.inputs, &(net.layers.inputs));
+			Forward(len, net.layers, net, i);
+			//Copy(26, net.outputs, &(net.outputs[i]));
 			Backward(net, data, run);
+			accuracy += Result(data, net, run);
 		}
 	}
-	Result(data, nbrun);
+	printf("Total accuracy : %f\n", (nbrun != 0) ? (accuracy/nbrun) : 0);
 }
 
 int main(int argc, char **argv)
 {
 	(void) argc;
 	(void) argv;
-	if (argc < 2)
+	if (argc < 3)
 	{
 		printf("Expected more arguments\n");
 		return 1;
@@ -224,26 +228,31 @@ int main(int argc, char **argv)
 		// we train
 		printf("Training new network\n");
 		// Init of Training Data
-		TrainingData data = CreateData(dimension, nTrainingSets);
-		// TODO
-		// actually create the data
+		TrainingData *data = ParseDirectory();
 
 		// Init of Network
-		Network network = CreateNet(nLayers, data.size);
+		Network network = CreateNet(nLayers, 0.5);
 
-		int nbrun = 100000;
-		Train(nbrun, network, data);
+		int nbrun = atoi(argv[2]);
+		Train(nbrun, network, *data);
 
-		DestroyData(data);
+		DestroyData(*data);
 		PrintData(network);
 		DestroyNet(network);
 		return 0;
 	}
-	else
+	else if (!(strcmp(argv[1], "recover")))
 	{
 		// we want an actual answer
 		printf("Using current network\n");
-		Network network = RecoverNet();
+		const char *fb1 = "network/fbias_1.csv";
+		const char *fw1 = "network/fweight_1.csv";
+		const char *fb2 = "network/fbias_2.csv";
+		const char *fw2 = "network/fweight_2.csv";
+		Network network = RecoverNet(fw1, fb1, fw2, fb2);
+		// argv[2] is a path to the image to read
+		// convert to sdl, resize and tranfsorm to list
+		// call network and solve
 		DestroyNet(network);
 		return 0;
 	}

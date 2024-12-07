@@ -1,13 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "structures.h"
+#include "convertion.h"
+#include "csv.h"
+#include "neural_structures.h"
 #include "setup.h"
-
-double HiddenBias[nNodes] = {};
-double HiddenWeight[nNodes][nInputs] = {};
-double OutputBias[nOut] = {};
-double OutputWeight[nOut][nNodes] = {};
 
 double GetMax(double x, double y)
 {
@@ -31,28 +28,11 @@ void InitWeigths(Layer layer)
 	return;
 }
 
-void RecoverWeigths(Layer l, int rows, int cols, double mat[rows][cols]) {
-	for (int r = 0; r < rows ; r++)
-	for (int c = 0; c < cols ; c++)
-	{
-		l.weights[r][c] = mat[r][c];
-	}
-	return;
-}
-
 void InitBiases(Layer layer)
 {
 	for (int n = 0; n < layer.numNeurons ; n++)
 	{
 		layer.neurons[n].bias = 0;
-	}
-	return;
-}
-
-void RecoverBiases(Layer l, int nodes, double arr[nodes]) {
-	for (int n = 0; n < nodes ; n++)
-	{
-		l.neurons[n].bias = arr[n];
 	}
 	return;
 }
@@ -165,60 +145,54 @@ void DestroyLayer(Layer layer)
 	}
 }
 
-TrainingData CreateData(int dim, int ni)
+TrainingData CreateData()
 {
-	// TODO
 	TrainingData data;
-	// the size of the list
-	// that is the dimensions of the image
-	// eg : if image is of 13x13, then size = 13 * 13
-	data.size = dim * dim;
-	// the number of inputs we have
-	data.nbinputs = ni;
-	// the list of inputs
-	data.inputs = malloc(ni * sizeof(double*));
-	for (int i = 0; i < ni; i++)
-	{
-		// each input
-		// one input = a list of 0 and 1
-		data.inputs[i] = calloc(data.size, sizeof(double));
-	}
+	data.inputs = calloc(nInputs, sizeof(double));
 	// what is the expected result (as a character)
-	data.expected = calloc(ni, sizeof(char));
+	data.expected = 0;
+	data.next = NULL;
 	return data;
+}
+
+void LinkData(TrainingData *d1, TrainingData *d2)
+{
+	if (d1 == NULL)
+		d1 = d2;
+	else
+		d1->next = d2;
+	return;
 }
 
 void DestroyData(TrainingData data)
 {
-	// TODO
-	for (int i = 0; i < data.nbinputs; i++)
-	{
-		free(data.inputs[i]);
-	}
 	free(data.inputs);
-	free(data.expected);
+	DestroyData(*(data.next));
 	return;
 }
 
-Network CreateNet(int numLayers, int len)
+Network CreateNet(int numLayers, int lr)
 {
         Network network;
-	// nn : number of neurons inside the layers
-	int nn = 0;
-	network.layers = CreateFirstLayer(len, nn);
+
+	network.layers = CreateFirstLayer(nInputs, nNodes);
 	Layer *l = &(network.layers);
         for (int i = 1; i < numLayers; i++)
         {
-		l = CreateLayer(l, nn);
+		l = CreateLayer(l, nNodes);
         }
+
+	network.lr = lr;
 
         return network;
 }
 
-Network RecoverNet() {
+Network RecoverNet(const char *fw1, const char *fb1,
+                const char *fw2, const char *fb2)
+{
         Network net;
-        net.layers = RecoverFirstLayer();
-	RecoverSecondLayer(&(net.layers));
+        net.layers = RecoverFirstLayer(fw1, fb1);
+	RecoverSecondLayer(&(net.layers), fw2, fb2);
         return net;
 }
 
