@@ -14,7 +14,7 @@ TrainingData *ReadDirectory(const char *directory)
 	if (dir == NULL)
 	{
 		perror("opendir");
-		return;
+		return NULL;
 	}
 	struct dirent *entry;
 	size_t p_len = strlen(directory);
@@ -28,7 +28,8 @@ TrainingData *ReadDirectory(const char *directory)
 		&& strcmp(entry->d_name, ".."))
 		{
 			size_t len = strlen(entry->d_name);
-			char name[len] = entry->d_name;
+			char name[len];
+			strcpy(name, entry->d_name);
 			if ((len > 4)
 			&& (name[len-4] == '.') && (name[len-3] == 'p')
 			&& (name[len-2] == 'n') && (name[len-1] == 'g'))
@@ -49,7 +50,7 @@ TrainingData *ReadDirectory(const char *directory)
 				{
 					LinkData(cur, &data);
 				}
-				SDL_to_list(surface, nInputs, cur->inputs);
+				SDL_to_list(surface, nInputs, &(cur->inputs));
 				cur = cur->next;
 			}
 		}
@@ -65,7 +66,7 @@ TrainingData *ReadDirectory(const char *directory)
 TrainingData *ParseDirectory()
 {
 	TrainingData *first = NULL;
-	TrainingData *prev = first:
+	TrainingData *prev = first;
 	char *base = "data/dataset/training";
 	char directory[25];
 	for (char i = 0; i < 26; i++)
