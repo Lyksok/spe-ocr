@@ -20,6 +20,81 @@ void freq_box_nb(SDL_Surface* surface, struct list* box_list,
     }
 }  
 
+static struct f_tuple
+{
+    int* tuple;
+    int nb;
+};
+
+int* freq_most_frequent_tuple(SDL_Surface* surface, struct list* box_list)
+{
+    int i=0;
+    int** tuples = calloc(list_len(box_list), sizeof(int*));
+    
+    for(struct list* p=box_list; p!=NULL; p=p->next)
+    {
+        Point p1 = p->box->p1;
+        Point p2 = p->box->p2;
+
+        int* tuple = calloc(2, sizeof(int));
+        for(struct list* q=box_list; q!=NULL; q=q->next)
+        {
+            if(box_are_equal(p->box, q->box))
+                continue;
+            
+            // Check if q center is between p bounds
+            Point q_center = box_get_center(q->box);
+            if(q_center.x>=p1.x && q_center.x<=p2.x)
+                tuple[0]++;
+            if(q_center.y>=p1.y && q_center.y<=p2.y)
+                tuple[1]++;
+        }
+        if(tuple[0]!= || tuple[1]!=0)
+            tuples[i++] = tuple;
+    }
+
+    // Frequence analysis to get the most frequent
+    struct f_tuple* tuple_freq = calloc(i, sizeof(struct f_tuple));
+    for(int j=0; j<i; j++)
+    {
+        tuple_freq[j]={tuples[j],0};
+    }
+    for(int j=0; j<i-1; j++)
+    {
+        struct f_tuple t1 = tuple_freq[j];
+        if(t1.nb==-1 || (t1.tuple[0]==0 && t1.tuple[1]==0))
+            continue;
+        for(int k=j+1; k<i; k++)
+        {
+            struct f_tuple t2 = tuple_freq[k];
+            if(t2.nb==-1)
+                continue;
+            if(t1.tuple[0]==t2.tuple[0] && t1.tuple[1]==t2.tuple[1])
+            {
+                t1.nb++;
+                tuple_freq[k].nb=-1;
+            }
+        }
+    }
+
+    struct f_tuple most_freq = tuple_freq[0];
+    for(int j=1; j<i; j++)
+    {
+        if(tuple_freq[j].nb>most_freq.nb)
+            most_freq = tuple_freq[j];
+    }
+    int* res = calloc(2, sizeof(int));
+    res[0]=most_freq.tuple[0];
+    res[1]=most_freq.tuple[1];
+    for(int j=0; j<i; j++)
+    {
+        free(tuples[j]);
+    }
+    free(tuples);
+    free(tuple_freq);
+    return res;
+}
+
 int freq_most_frequent(int* freq_list, int size)
 {
     // Get the largest element
