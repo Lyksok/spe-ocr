@@ -42,6 +42,18 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
            "Destination Height: %d, Channels: %d\n",
            src_width, src_height, dst_width, dst_height, n_channels);
 
+  // Ensure dst_pixbuf has the correct dimensions
+  if (gdk_pixbuf_get_width(dst_pixbuf) != dst_width || gdk_pixbuf_get_height(dst_pixbuf) != dst_height)
+  {
+    g_object_unref(dst_pixbuf);
+    dst_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(src_pixbuf), 8, dst_width, dst_height);
+  }
+
+  guchar *src_pixels = gdk_pixbuf_get_pixels(src_pixbuf);
+  guchar *dst_pixels = gdk_pixbuf_get_pixels(dst_pixbuf);
+  int src_rowstride = gdk_pixbuf_get_rowstride(src_pixbuf);
+  int dst_rowstride = gdk_pixbuf_get_rowstride(dst_pixbuf);
+
   for (int y = 0; y < dst_height; y++)
   {
     for (int x = 0; x < dst_width; x++)
@@ -70,37 +82,32 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
         for (int c = 0; c < n_channels; c++)
         {
           // Top-left pixel
-          guchar *p1 = gdk_pixbuf_get_pixels(src_pixbuf) +
-                       y1 * gdk_pixbuf_get_rowstride(src_pixbuf) +
-                       x1 * n_channels + c;
+          guchar *p1 = src_pixels + y1 * src_rowstride + x1 * n_channels + c;
           // Top-right pixel
-          guchar *p2 = gdk_pixbuf_get_pixels(src_pixbuf) +
-                       y1 * gdk_pixbuf_get_rowstride(src_pixbuf) +
-                       x2 * n_channels + c;
+          guchar *p2 = src_pixels + y1 * src_rowstride + x2 * n_channels + c;
           // Bottom-left pixel
-          guchar *p3 = gdk_pixbuf_get_pixels(src_pixbuf) +
-                       y2 * gdk_pixbuf_get_rowstride(src_pixbuf) +
-                       x1 * n_channels + c;
+          guchar *p3 = src_pixels + y2 * src_rowstride + x1 * n_channels + c;
           // Bottom-right pixel
-          guchar *p4 = gdk_pixbuf_get_pixels(src_pixbuf) +
-                       y2 * gdk_pixbuf_get_rowstride(src_pixbuf) +
-                       x2 * n_channels + c;
+          guchar *p4 = src_pixels + y2 * src_rowstride + x2 * n_channels + c;
 
+          // Bilinear interpolation
           double value = (1 - dx) * (1 - dy) * (*p1) +
                          dx * (1 - dy) * (*p2) +
                          (1 - dx) * dy * (*p3) +
                          dx * dy * (*p4);
 
-          guchar *dst_pixel = gdk_pixbuf_get_pixels(dst_pixbuf) +
-                              y * gdk_pixbuf_get_rowstride(dst_pixbuf) +
-                              x * n_channels + c;
-          *dst_pixel = (guchar)value;
+          dst_pixels[y * dst_rowstride + x * n_channels + c] = (guchar)value;
+        }
+      }
+      else
+      {
+        for (int c = 0; c < n_channels; c++)
+        {
+          dst_pixels[y * dst_rowstride + x * n_channels + c] = 0; // Set to black or transparent
         }
       }
     }
   }
-
-  my_print("✅ Rotation done\n");
 }
 /**
  * @brief Callback function to rotate the image to the left.
@@ -109,7 +116,7 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
  */
 void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
 {
-  my_print("🔄 Rotating image to the left by %f degrees\n", left_angle);
+  my_print("🔄 Rotating image to the left by %.2f degrees\n", left_angle);
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   int width = gdk_pixbuf_get_width(pixbuf);
@@ -128,7 +135,7 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
  */
 void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
 {
-  my_print("🔄 Rotating image to the right by %f degrees\n", right_angle);
+  my_print("🔄 Rotating image to the right by %.2f degrees\n", right_angle);
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   int width = gdk_pixbuf_get_width(pixbuf);
