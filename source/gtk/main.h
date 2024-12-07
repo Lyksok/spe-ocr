@@ -13,8 +13,8 @@
 #include "my_print.h"
 
 // CONSTANTS
-#define MAX_WIDTH 800
-#define MAX_HEIGHT 800
+#define MAX_WIDTH 600
+#define MAX_HEIGHT 600
 #define SAMPLE_IMAGE_PATH "images/abstract_background.jpg"
 
 GtkWidget *init_button(const char *label, GCallback callback, gpointer data);
