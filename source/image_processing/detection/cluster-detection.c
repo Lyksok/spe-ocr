@@ -157,6 +157,7 @@ void compute_bounding_boxes(SDL_Surface *surface, struct list* box_list)
         boxes[i]=calloc(1, sizeof(BoundingBox));
     }
     
+    int* count_pixels = calloc(cluster_id, sizeof(int));
     int* seen = calloc(cluster_id, sizeof(int));
     int id;
     for (int j = 0; j < surface->h; j++)
@@ -166,6 +167,7 @@ void compute_bounding_boxes(SDL_Surface *surface, struct list* box_list)
             id = clusters[j*surface->w+i];
             if(!id || eq_table[id]!=0)
                 continue;
+            count_pixels[id]++;
             if(!seen[id])
             {
                 seen[id] = 1;
@@ -184,7 +186,10 @@ void compute_bounding_boxes(SDL_Surface *surface, struct list* box_list)
     for(int i=1; i<cluster_id; i++)
     {
         if(eq_table[i]==0)
+        {
+            boxes[i]->pixel_nb = count_pixels[i];
             list_push_front(box_list, boxes[i]);
+        }
     }
     free(boxes);
 }

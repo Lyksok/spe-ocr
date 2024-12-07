@@ -8,8 +8,9 @@
  */
 struct list* detect_characters(SDL_Surface* surface, struct list* box_list, struct parameters* param)
 {
-    filter_wrong_size_boxes_threshold(surface, box_list, param);
-    return list_hard_copy(box_list);
+    struct list* cpy = list_hard_copy(box_list);
+    filter_wrong_size_boxes_threshold(surface, cpy, param);
+    return cpy;
 }
 
 // Auxiliary function that marks the boxes depending if they are probably in

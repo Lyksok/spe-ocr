@@ -25,7 +25,6 @@ void contrast_surface(SDL_Surface* surface)
 	}
     }
 }
-*/
 
 void contrast_surface(SDL_Surface* surface)
 {
@@ -63,4 +62,26 @@ void contrast_surface(SDL_Surface* surface)
 	    set_gpixel_from_coord(surface, i, j, pixel);
 	}
     }
+}
+*/
+
+void constrast_surface(SDL_Surface* surface)
+{
+    int pixel_nb = surface->w*surface->h;
+    Uint8* pixels = get_gpixels_from_surface(surface);
+
+    // Get maximum and minimum pixel
+    Uint8 mini = pixels[0];
+    Uint8 maxi = pixels[0];
+    for(int i=1; i<pixel_nb; i++)
+    {
+        Uint8 px = pixels[i];
+        if(px<mini)
+            mini=px;
+        if(px>maxi)
+            maxi=px;
+    }
+
+
+
 }
