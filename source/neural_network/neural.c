@@ -38,7 +38,7 @@ void Sum(int length, Layer layer)
 	// foreach neurons
 	for (int n = 0; layer.numNeurons; n++)
 	{
-		Neuron neuron = layer.neurons[n];
+		Neuron *neuron = layer.neurons[n];
 		// we initialize the value of the neuron
 		double sum = 0;
 		// foreach inputs
@@ -49,9 +49,9 @@ void Sum(int length, Layer layer)
 			sum += inputs[i] * w;
 		}
 		// then we add the bias
-		sum += neuron.bias;
+		sum += neuron->bias;
 		// and apply the activation function
-		neuron.value = sigmoid(sum);
+		neuron->value = sigmoid(sum);
 	}
 	return;
 }
@@ -61,7 +61,7 @@ void SumHidden(Layer l1, Layer l2)
 	int length = l1.numNeurons;
 	for (int n = 0; n < length; n++)
 	{
-		l2.inputs[n] = l1.neurons[n].value;
+		l2.inputs[n] = l1.neurons[n]->value;
 	}
 	Sum(length, l2);
 	return;
@@ -80,7 +80,7 @@ void Forward(int length, Layer l, Network net, int i)
 	// we collect the result of the last layer
 	for (int n = 0; n < l.numNeurons; n++)
 	{
-		net.outputs[i][n] = l.neurons[n].value;
+		net.outputs[i][n] = l.neurons[n]->value;
 	}
 	// then we transform it to probabilities
 	Softmax(l.numNeurons, &(net.outputs[i]));
@@ -96,8 +96,8 @@ void Update(Layer l, double *errors, int lr) {
 			double in = l.inputs[i];
 			l.weights[n][i] = w - lr * e * in;
 		}
-		double b = l.neurons[n].bias;
-		l.neurons[n].bias = b - lr * e;
+		double b = l.neurons[n]->bias;
+		l.neurons[n]->bias = b - lr * e;
 	}
 	return;
 }
@@ -146,7 +146,7 @@ void Backward(Network net, TrainingData data, int i)
 				double w = l->weights[x][n];
 				nerr += err[n] * w;
 			}
-			double v = l->neurons[n].value;
+			double v = l->neurons[n]->value;
 			nerr *= dSigmoid(v);
 			err[n] += nerr;
 		}
@@ -231,13 +231,13 @@ int main(int argc, char **argv)
 		TrainingData *data = ParseDirectory();
 
 		// Init of Network
-		Network network = CreateNet(nLayers, 0.5);
+		Network *network = CreateNet(nLayers, 0.5);
 
 		int nbrun = atoi(argv[2]);
-		Train(nbrun, network, *data);
+		Train(nbrun, *network, *data);
 
 		DestroyData(data);
-		PrintData(network);
+		PrintData(*network);
 		DestroyNet(network);
 		return 0;
 	}
@@ -249,7 +249,7 @@ int main(int argc, char **argv)
 		const char *fw1 = "network/fweight_1.csv";
 		const char *fb2 = "network/fbias_2.csv";
 		const char *fw2 = "network/fweight_2.csv";
-		Network network = RecoverNet(fw1, fb1, fw2, fb2);
+		Network *network = RecoverNet(fw1, fb1, fw2, fb2);
 		// argv[2] is a path to the image to read
 		// convert to sdl, resize and tranfsorm to list
 		// call network and solve

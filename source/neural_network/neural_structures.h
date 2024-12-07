@@ -12,7 +12,7 @@ typedef struct Neuron {
 typedef struct Layer Layer;
 struct Layer {
 	int numNeurons;
-	Neuron *neurons;
+	Neuron **neurons;
 	// equivalent to the number of inputs
 	int numWeights;
 	// every inputs

@@ -37,9 +37,9 @@ void WriteCsvBiases(const char *filename, Layer l)
 
     for (int n = 0; n < l.numNeurons; n++)
     {
-	    fprintf(file, "%.6g,", l.neurons[n].bias);
+	    fprintf(file, "%.6g,", l.neurons[n]->bias);
     }
-    fprintf(file, "%.6g\n", l.neurons[l.numNeurons - 1].bias);
+    fprintf(file, "%.6g\n", l.neurons[l.numNeurons - 1]->bias);
     fclose(file);
 }
 
@@ -108,7 +108,11 @@ void ReadCsvBiases(const char *filename, Layer *layer, int max_neurons)
 	char line[MAX_LINE_LEN];
 	int nodes = 0;
 	layer->numNeurons = max_neurons;
-	layer->neurons = malloc(max_neurons * sizeof(Neuron));
+	layer->neurons = malloc(max_neurons * sizeof(Neuron*));
+	for (int n = 0; n < layer->numNeurons; n++)
+	{
+		layer->neurons[n] = CreateNeuron();
+	}
 
 	// we assume every line is correct
 	while (fgets(line, sizeof(line), file) && nodes < max_neurons)
@@ -119,7 +123,7 @@ void ReadCsvBiases(const char *filename, Layer *layer, int max_neurons)
 		ParseLine(line, 1, fields);
 		// should be equal to max_neurons
 
-		layer->neurons[nodes].bias = atof(fields[0]);
+		layer->neurons[nodes]->bias = atof(fields[0]);
 		nodes++;
 	}
 

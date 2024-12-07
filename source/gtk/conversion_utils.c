@@ -8,14 +8,14 @@
  * @return A pointer to the new GdkPixbuf.
  */
 GdkPixbuf *sdl_surface_to_gdk_pixbuf(SDL_Surface *surface) {
-  printf("🖼️ Converting SDL_Surface to GdkPixbuf\n");
+  // printf("🖼️ converting sdl_surface to gdkpixbuf\n");
   // Retrieve the surface data about its pixels
   int width = surface->w;
   int height = surface->h;
   int rowstride = surface->pitch;
   guchar *pixels = (guchar *)surface->pixels;
 
-  printf("📏 Width: %d, Height: %d, Rowstride: %d\n", width, height, rowstride);
+  // printf("📏 Width: %d, Height: %d, Rowstride: %d\n", width, height, rowstride);
 
   // Call gdk_pixbuf_new_from_data to create a new GdkPixbuf from the data
   // retrieved
@@ -29,7 +29,7 @@ GdkPixbuf *sdl_surface_to_gdk_pixbuf(SDL_Surface *surface) {
       NULL,      // no supported destroy
       NULL);     // no supported destroy
 
-  printf("✅ Conversion to GdkPixbuf done\n");
+  // printf("✅ Conversion to GdkPixbuf done\n");
   return pixbuf;
 }
 
@@ -42,7 +42,7 @@ GdkPixbuf *sdl_surface_to_gdk_pixbuf(SDL_Surface *surface) {
  * @return A pointer to the new SDL_Surface.
  */
 SDL_Surface *gdk_pixbuf_to_sdl_surface(GdkPixbuf *pixbuf) {
-  printf("🖼️ Converting GdkPixbuf to SDL_Surface\n");
+  // printf("🖼️ Converting GdkPixbuf to SDL_Surface\n");
   // Retrieve the pixbuf data about its pixels
   int width = gdk_pixbuf_get_width(pixbuf);
   int height = gdk_pixbuf_get_height(pixbuf);
@@ -50,8 +50,8 @@ SDL_Surface *gdk_pixbuf_to_sdl_surface(GdkPixbuf *pixbuf) {
   int n_channels = gdk_pixbuf_get_n_channels(pixbuf);
   guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
 
-  printf("📏 Width: %d, Height: %d, Rowstride: %d, Channels: %d\n", width,
-         height, rowstride, n_channels);
+  // printf("📏 Width: %d, Height: %d, Rowstride: %d, Channels: %d\n", width,
+  //        height, rowstride, n_channels);
 
   // Call SDL_CreateRGBSurfaceFrom to create a new SDL_Surface from the data
   // retrieved
@@ -66,7 +66,7 @@ SDL_Surface *gdk_pixbuf_to_sdl_surface(GdkPixbuf *pixbuf) {
           ? 0xFF000000
           : 0); // Alpha mask if 4  (as hexa) channels (= RGBA) else 0 (= RGB)
 
-  printf("✅ Conversion to SDL_Surface done\n");
+  // printf("✅ Conversion to SDL_Surface done\n");
   return surface;
 }
 
