@@ -20,6 +20,7 @@
 GtkWidget *init_button(const char *label, GCallback callback, gpointer data);
 GtkWidget *init_menu_bar(GtkWidget *image_widget);
 gboolean destroy_widget(gpointer data);
+gboolean on_window_configure_event(GtkWidget *widget, GdkEvent *event, gpointer data);
 // not needed static void activate(GtkApplication *app);
 int main(int argc, char **argv);
 

@@ -28,6 +28,19 @@ gboolean destroy_widget(gpointer widget)
   }
   return FALSE;
 }
+
+/**
+ * @brief Callback function to handle window resize events.
+ */
+gboolean on_window_configure_event(GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+  GdkScreen *screen = gdk_screen_get_default();
+  gint screen_width = gdk_screen_get_width(screen);
+  gint screen_height = gdk_screen_get_height(screen);
+  gtk_window_set_default_size(GTK_WINDOW(widget), screen_width / 2, screen_height);
+  return FALSE;
+}
+
 GtkBuilder *builder;
 
 int main(int argc, char *argv[])
