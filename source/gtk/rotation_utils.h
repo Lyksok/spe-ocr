@@ -17,7 +17,7 @@
 #define DEFAULT_LEFT_ANGLE 45.0  // Default left rotation angle
 #define DEFAULT_RIGHT_ANGLE 45.0 // Default right rotation angle
 
-// extern variables can be used by other files
+// extern variables can be updated by other files
 extern double left_angle;
 extern double right_angle;
 
@@ -27,6 +27,5 @@ void on_rotate_right_clicked(GtkWidget *widget, gpointer data);
 void on_left_angle_entry_activate(GtkEntry *entry, gpointer data);
 void on_right_angle_entry_activate(GtkEntry *entry, gpointer data);
 void on_auto_rotate_clicked(GtkWidget *widget, gpointer data);
-int main(int argc, char **argv);
 
 #endif // ROTATION_UTILS_H

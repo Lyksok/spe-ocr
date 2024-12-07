@@ -441,14 +441,12 @@
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
-                        <signal name="activate" handler="on_rotate_left_clicked" swapped="no"/>
-
+                        <signal name="activate" handler="on_rotate_left_clicked" object="image_widget" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="position">2</property>
-
                       </packing>
                     </child>
                     <child>
@@ -469,8 +467,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
-                        <signal name="activate" handler="on_rotate_right_clicked" swapped="no"/>
-
+                        <signal name="activate" handler="on_rotate_right_clicked" object="image_widget" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>

@@ -1,48 +1,80 @@
 #include "rotation_utils.h"
 
-// Global variables to store the changing angle values
+// global variables to store the changing angle values
 double left_angle = DEFAULT_LEFT_ANGLE;
 double right_angle = DEFAULT_RIGHT_ANGLE;
 
 /**
- * @brief Callback function for the left angle entry activation.
+ * @brief Callback function to handle the "activate" signal of the GtkEntry widgets.
  * @param entry The GtkEntry widget.
- * @param data Unused (can be NULL).
+ * @param data Pointer to the rotation angle macro to update.
  */
-void on_left_angle_entry_activate(GtkEntry *entry, gpointer data)
+void on_angle_entry_activate(GtkEntry *entry, gpointer data)
 {
-  (void)data; // Unused parameter
-  printf("🔄 Activating left angle entry\n");
+  double *angle = (double *)data;
   const char *angle_text = gtk_entry_get_text(entry);
-  char *endptr;
-  left_angle = g_ascii_strtod(angle_text, &endptr);
-  if (endptr == angle_text || *endptr != '\0')
-  {
-    printf("Error: Invalid input for left angle\n");
-  }
-
-  printf("📐 New left angle: %.2f\n", left_angle);
+  *angle = g_ascii_strtod(angle_text, NULL); // convert string to double
 }
-
 /**
- * @brief Callback function for the right angle entry activation.
- * @param entry The GtkEntry widget.
- * @param data Unused (can be NULL).
+ * @brief Callback function to rotate the image to the left by the specified angle.
+ * @param widget The widget that triggered the function.
+ * @param data User data passed to the function.
  */
-void on_right_angle_entry_activate(GtkEntry *entry, gpointer data)
+void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
 {
-  (void)data; // Unused parameter
-  my_print("🔄 Activating right angle entry\n");
-  const char *angle_text = gtk_entry_get_text(entry);
-  char *endptr;
-  left_angle = g_ascii_strtod(angle_text, &endptr);
-  if (endptr == angle_text || *endptr != '\0')
+  (void)data; // Remove unused warning
+  GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget");
+  if (!GTK_IS_IMAGE(image))
   {
-    printf("Error: Invalid input for left angle\n");
+    printf("Failed to retrieve image widget\n");
+    return;
   }
-  my_print("📐 New right angle: %.2f\n", right_angle);
-}
+  GdkPixbuf *pixbuf = gtk_image_get_pixbuf(GTK_IMAGE(image));
+  if (!pixbuf)
+  {
+    printf("Failed to get pixbuf from image\n");
+    return;
+  }
+  printf("Rotating left by %f degrees\n", left_angle);
 
+  int width = gdk_pixbuf_get_width(pixbuf);
+  int height = gdk_pixbuf_get_height(pixbuf);
+  GdkPixbuf *rotated_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(pixbuf), 8, width, height);
+
+  rotate_pixbuf(pixbuf, rotated_pixbuf, left_angle);
+  gtk_image_set_from_pixbuf(GTK_IMAGE(image), rotated_pixbuf);
+  g_object_unref(rotated_pixbuf);
+}
+/**
+ * @brief Callback function to rotate the image to the right by the specified angle.
+ * @param widget The widget that triggered the function.
+ * @param data User data passed to the function.
+ */
+void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
+{
+  (void)data; // Remove unused warning
+  GtkWidget *image = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "image-widget");
+  if (!GTK_IS_IMAGE(image))
+  {
+    printf("Failed to retrieve image widget\n");
+    return;
+  }
+  GdkPixbuf *pixbuf = gtk_image_get_pixbuf(GTK_IMAGE(image));
+  if (!pixbuf)
+  {
+    printf("Failed to get pixbuf from image\n");
+    return;
+  }
+  printf("Rotating right by %f degrees\n", right_angle);
+
+  int width = gdk_pixbuf_get_width(pixbuf);
+  int height = gdk_pixbuf_get_height(pixbuf);
+  GdkPixbuf *rotated_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(pixbuf), 8, width, height);
+
+  rotate_pixbuf(pixbuf, rotated_pixbuf, right_angle);
+  gtk_image_set_from_pixbuf(GTK_IMAGE(image), rotated_pixbuf);
+  g_object_unref(rotated_pixbuf);
+}
 /**
  * @brief Rotates a pixbuf by the specified angle using bi-linear interpolation.
  * @param src_pixbuf The original pixbuf to rotate.
@@ -132,42 +164,6 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
       }
     }
   }
-}
-/**
- * @brief Callback function to rotate the image to the left.
- * @param widget The widget that triggered the function.
- * @param data Pointer to the image widget to be updated.
- */
-void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
-{
-  my_print("🔄 Rotating image to the left by %.2f degrees\n", left_angle);
-  (void)widget; // Remove unused parameter warning
-  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
-  int width = gdk_pixbuf_get_width(pixbuf);
-  int height = gdk_pixbuf_get_height(pixbuf);
-  GdkPixbuf *new_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
-  rotate_pixbuf(pixbuf, new_pixbuf, left_angle);
-  display_pixbuf(data, new_pixbuf);
-  my_print("✅ Left rotation done\n");
-}
-
-/**
- * @brief Callback function to rotate the image to the right.
- * @param widget The widget that triggered the function.
- * @param data Pointer to the image widget to be updated.
- */
-void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
-{
-  my_print("🔄 Rotating image to the right by %.2f degrees\n", right_angle);
-  (void)widget; // Remove unused parameter warning
-  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
-  int width = gdk_pixbuf_get_width(pixbuf);
-  int height = gdk_pixbuf_get_height(pixbuf);
-  GdkPixbuf *new_pixbuf =
-      gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
-  rotate_pixbuf(pixbuf, new_pixbuf, -right_angle);
-  display_pixbuf(data, new_pixbuf);
-  my_print("✅ Right rotation done\n");
 }
 
 void on_auto_rotate_clicked(GtkWidget *widget, gpointer data)

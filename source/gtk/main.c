@@ -45,6 +45,25 @@ GtkBuilder *builder;
 
 int main(int argc, char *argv[])
 {
+
+  /**
+   * TODO 8/12 rotation old was working
+   *
+   * // Manage entry buttons for the rotation
+  // Update angle values according to user input
+  GtkWidget *left_angle_entry = gtk_entry_new();
+  GtkWidget *right_angle_entry = gtk_entry_new();
+  char *left_angle_text = g_strdup_printf("%.2f", DEFAULT_LEFT_ANGLE);
+  gtk_entry_set_text(GTK_ENTRY(left_angle_entry), left_angle_text);
+  g_free(left_angle_text);
+
+  char *right_angle_text = g_strdup_printf("%.2f", DEFAULT_RIGHT_ANGLE);
+  gtk_entry_set_text(GTK_ENTRY(right_angle_entry), right_angle_text);
+  g_free(right_angle_text);
+
+  g_signal_connect(left_angle_entry, "activate", G_CALLBACK(on_angle_entry_activate), &left_angle);   // updates when the user presses enter
+  g_signal_connect(right_angle_entry, "activate", G_CALLBACK(on_angle_entry_activate), &right_angle); // updates when the user presses enter
+   */
   GtkWidget *window;
   GtkWidget *image_widget;
   GdkPixbuf *pixbuf;
@@ -71,11 +90,11 @@ int main(int argc, char *argv[])
   // Connect signals defined in the UI file
   gtk_builder_connect_signals(builder, NULL);
   // Connect rotation signals
-  GtkWidget *rotate_left_button = GTK_WIDGET(gtk_builder_get_object(builder, "rotate_left_button"));
-  g_signal_connect(rotate_left_button, "clicked", G_CALLBACK(on_rotate_left_clicked), image_widget);
+  GtkWidget *left_angle_enter = GTK_WIDGET(gtk_builder_get_object(builder, "left_angle_enter"));
+  g_signal_connect(left_angle_enter, "clicked", G_CALLBACK(on_rotate_left_clicked), image_widget);
 
-  GtkWidget *rotate_right_button = GTK_WIDGET(gtk_builder_get_object(builder, "rotate_right_button"));
-  g_signal_connect(rotate_right_button, "clicked", G_CALLBACK(on_rotate_right_clicked), image_widget);
+  GtkWidget *right_angle_enter = GTK_WIDGET(gtk_builder_get_object(builder, "right_angle_enter"));
+  g_signal_connect(right_angle_enter, "clicked", G_CALLBACK(on_rotate_right_clicked), image_widget);
 
   GtkWidget *run_button = GTK_WIDGET(gtk_builder_get_object(builder, "run"));
   // Set expand property to FALSE for the buttons
