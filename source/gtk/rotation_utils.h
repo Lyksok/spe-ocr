@@ -11,11 +11,12 @@
 #include <SDL2/SDL.h>
 #include "main.h"
 #include "my_print.h"
+#include <SDL2/SDL2_rotozoom.h> // plan de secours
 
 // CONSTANTS
 #define PI 3.1415926535897932
-#define DEFAULT_LEFT_ANGLE 45.0  // Default left rotation angle
-#define DEFAULT_RIGHT_ANGLE 45.0 // Default right rotation angle
+#define DEFAULT_LEFT_ANGLE 90.0  // Default left rotation angle
+#define DEFAULT_RIGHT_ANGLE 90.0 // Default right rotation angle
 
 // extern variables can be updated by other files
 extern double left_angle;

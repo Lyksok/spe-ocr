@@ -15,7 +15,7 @@
 // CONSTANTS
 #define MAX_WIDTH 600
 #define MAX_HEIGHT 600
-#define SAMPLE_IMAGE_PATH "images/abstract_background.jpg"
+#define SAMPLE_IMAGE_PATH "images/Logo_OCR_WS_fanette.png"
 
 GtkWidget *init_button(const char *label, GCallback callback, gpointer data);
 GtkWidget *init_menu_bar(GtkWidget *image_widget);

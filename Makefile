@@ -4,7 +4,7 @@ FLAGS = -Wall -Wextra -fsanitize=address -g
 
 # Imported packages
 PKGS = `pkg-config --cflags --libs gtk+-3.0 gtksourceview-4` -rdynamic
-LIBS = -lSDL2 -lSDL2_image -lm
+LIBS = -lSDL2 -lSDL2_image -lSDL2_gfx -lm
 
 # Source files
 IGNORE = %/image_processing.c %/main.c $(wildcard source/image_processing/detection-and-segmentation/*) source/image_processing/main.c

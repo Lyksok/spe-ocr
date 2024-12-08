@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
   // Check if the image widget is correctly retrieved
   if (!GTK_IS_IMAGE(image_widget))
   {
-    my_print("Failed to get image widget\n");
+    my_print("gtk/main.c : Failed to get image widget\n");
     return 1;
   }
 
@@ -103,16 +103,33 @@ int main(int argc, char *argv[])
   // Connect the buttons to their handlers / callbacks
   g_signal_connect(run_button, "clicked", G_CALLBACK(on_run_clicked), image_widget);
 
-  // Connect GtkEntry signals
+  // // Connect GtkEntry signals
+  // GtkWidget *left_angle_entry = GTK_WIDGET(gtk_builder_get_object(builder, "left_angle_entry"));
+  // g_signal_connect(left_angle_entry, "activate", G_CALLBACK(on_left_angle_entry_activate), NULL);
+
+  // GtkWidget *right_angle_entry = GTK_WIDGET(gtk_builder_get_object(builder, "right_angle_entry"));
+  // g_signal_connect(right_angle_entry, "activate", G_CALLBACK(on_right_angle_entry_activate), NULL);
+
+  // // Set expand property to FALSE for the buttons
+  // gtk_widget_set_hexpand(run_button, FALSE);
+  // gtk_widget_set_vexpand(run_button, FALSE);
   GtkWidget *left_angle_entry = GTK_WIDGET(gtk_builder_get_object(builder, "left_angle_entry"));
-  g_signal_connect(left_angle_entry, "activate", G_CALLBACK(on_left_angle_entry_activate), NULL);
-
   GtkWidget *right_angle_entry = GTK_WIDGET(gtk_builder_get_object(builder, "right_angle_entry"));
-  g_signal_connect(right_angle_entry, "activate", G_CALLBACK(on_right_angle_entry_activate), NULL);
+  if (!left_angle_entry || !right_angle_entry)
+  {
+    g_error("Failed to retrieve GtkEntry widgets.");
+  }
 
-  // Set expand property to FALSE for the buttons
-  gtk_widget_set_hexpand(run_button, FALSE);
-  gtk_widget_set_vexpand(run_button, FALSE);
+  char *left_angle_text = g_strdup_printf("%.2f", DEFAULT_LEFT_ANGLE);
+  gtk_entry_set_text(GTK_ENTRY(left_angle_entry), left_angle_text);
+  g_free(left_angle_text);
+
+  char *right_angle_text = g_strdup_printf("%.2f", DEFAULT_RIGHT_ANGLE);
+  gtk_entry_set_text(GTK_ENTRY(right_angle_entry), right_angle_text);
+  g_free(right_angle_text);
+
+  g_signal_connect(left_angle_entry, "activate", G_CALLBACK(on_left_angle_entry_activate), &left_angle);    // updates when the user presses enter
+  g_signal_connect(right_angle_entry, "activate", G_CALLBACK(on_right_angle_entry_activate), &right_angle); // updates when the user presses enterpresses enter
   // Connect the buttons to their handlers / callbacks
 
   g_signal_connect(run_button, "clicked", G_CALLBACK(on_run_clicked), image_widget);

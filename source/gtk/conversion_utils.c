@@ -99,7 +99,7 @@ GdkPixbuf *image_to_pixbuf(GtkImage *image)
     pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
     if (pixbuf == NULL)
     {
-      g_warning("❌ New pixbuf creation failed");
+      printf("❌ New pixbuf creation failed");
       return NULL;
     }
     guchar *new_pixels =
@@ -130,8 +130,8 @@ GdkPixbuf *image_to_pixbuf(GtkImage *image)
     GtkImage *sample_image = GTK_IMAGE(gtk_image_new_from_pixbuf(pixbuf));
     if (sample_image == NULL)
     {
-      g_warning("❌ Failed to load sample image from path: %s",
-                SAMPLE_IMAGE_PATH);
+      printf("❌ Failed to load sample image from path: %s",
+             SAMPLE_IMAGE_PATH);
       return NULL;
     }
     printf("✅ Sample image loaded\n");
