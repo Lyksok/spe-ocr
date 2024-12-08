@@ -1,9 +1,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <string.h>
 
 #include "convertion.h"
 #include "../gtk/conversion_utils.h"
 #include "../gtk/image_utils.h"
+#include "neural_structures.h"
 
 // RGB WHITE = 255, 255, 255
 // RGB BLACK = 0, 0, 0
@@ -11,11 +13,6 @@
 /*
  * path : a path to a png image
  * returns : a surface from the image
- * TODO
- * use SDL_CreateSoftwareRenderer and SDL_RenderCopy()
- * need to pass by a texture / renderer to resize the surface
- * search for more information too
- * add a size parameter ? need to fix one maybe
  * */
 SDL_Surface *toSDL(char *path)
 {
@@ -25,6 +22,20 @@ SDL_Surface *toSDL(char *path)
 		printf("Failure to create the surface : ");
 		printf("%s", SDL_GetError());
 	}
+
+	/*
+	 * GdkPixbuf *sdl_surface_to_gdk_pixbuf(SDL_Surface *surface);
+	 * GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf,
+				int new_width,
+				int new_height);
+	 * SDL_Surface *gdk_pixbuf_to_sdl_surface(GdkPixbuf *pixbuf);
+	 * */
+	int d = dimension;
+//	printf("here\n");
+	GdkPixbuf *pix = sdl_surface_to_gdk_pixbuf(temp);
+	pix = resize_pixbuf(pix, d, d);
+	temp = gdk_pixbuf_to_sdl_surface(pix);
+
 	SDL_Surface *new;
 	new = SDL_ConvertSurfaceFormat(temp, SDL_PIXELFORMAT_INDEX8, 0);
 	/*
@@ -39,17 +50,6 @@ SDL_Surface *toSDL(char *path)
 		printf("%s", SDL_GetError());
 	}
 	SDL_ClearError();
-
-	/*
-	GdkPixbuf *sdl_surface_to_gdk_pixbuf(SDL_Surface *surface);
-	GdkPixbuf *resize_pixbuf(GdkPixbuf *pixbuf, int new_width, int new_height);
-	SDL_Surface *gdk_pixbuf_to_sdl_surface(GdkPixbuf *pixbuf);
-	*/
-	int width;
-	int height;
-	GdkPixbuf *pix = sdl_surface_to_gdk_pixbuf(new);
-	pix = resize_pixbuf(pix, width, height);
-	new = gdk_pixbuf_to_sdl_surface(pix);
 
 	return new;
 }
@@ -66,7 +66,7 @@ SDL_Surface *toSDL(char *path)
  * no idea wether said surface is black or white
  * thus need further ckecks
  * */
-void SDL_to_list(SDL_Surface *surface, int len, int **list)
+void SDL_to_list(SDL_Surface *surface, int len, double **list)
 {
 	SDL_LockSurface(surface);
 	Uint8 *pixels = (Uint8 *)surface->pixels;
@@ -79,7 +79,7 @@ void SDL_to_list(SDL_Surface *surface, int len, int **list)
 		SDL_GetRGB(pixel, surface->format, &r, &g, &b);
 		// we take a surface with only black and white
 		// if one of the parameter is != 0, then it has to be white
-		(*list)[i] = r ? 1 : 0;
+		(*list)[i] = (r ? 1 : 0);
 	}
 	SDL_UnlockSurface(surface);
 	SDL_FreeSurface(surface);
