@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 {
   if (argc != 3 && argc != 4)
     errx(EXIT_FAILURE,
-         "Usage: <image-file> <detection/segmentation> <chars/words/list/grid>");
+         "Usage: <image-file> <detection/segmentation>");
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
     errx(EXIT_FAILURE, "%s", SDL_GetError());
@@ -79,10 +79,10 @@ int main(int argc, char **argv)
   }
 
   convert_to_grayscale(surface, get_parameters());
-  convert_to_binarized_sauvola(surface, get_parameters());
+  convert_to_binarized_average(surface, get_parameters());
   invert_colors(surface);
 
-  int is_detection = 0;
+  int is_detection = 1;
   if (strcmp(argv[2], "detection") == 0)
   {
     is_detection = 1;
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
     free(grid_box);
   }
   else
-    errx(EXIT_FAILURE, "Usage: <image-file> <detection/segmentation> <chars/words/list/grid>");
+    errx(EXIT_FAILURE, "Usage: <image-file> <detection/segmentation>");
 
   if (!is_detection)
   {
@@ -105,30 +105,18 @@ int main(int argc, char **argv)
     SDL_Quit();
     return EXIT_SUCCESS;
   }
-  else
-    errx(EXIT_FAILURE, "Usage: <image-file> <detection/segmentation>");
-
-  if (!is_detection)
-    return EXIT_SUCCESS;
-
   int chars = 0;
   int words = 0;
   int list = 0;
   int grid = 0;
-
-  if (strcmp(argv[3], "chars") == 0)
-    chars = 1;
-  else if (strcmp(argv[3], "words") == 0)
-    words = 1;
-  else if (strcmp(argv[3], "list") == 0)
-    list = 1;
-  else if (strcmp(argv[3], "grid") == 0)
-    grid = 1;
+  (void)chars;
+  (void)words;
+  (void)list;
+  (void)grid;
 
   int number_of_characters;
-  struct list* boxes = list_new_list();
-  init_list(boxes);
   BoundingBox **characters = get_char_boxes(surface, &number_of_characters, get_parameters());
+  (void)characters;
   BoundingBox *grid_box = get_grid_box(surface, get_parameters());
   BoundingBox *word_list = get_word_list_box(surface, get_parameters());
   int word_count;
@@ -156,6 +144,7 @@ int main(int argc, char **argv)
       int rect[] = {x1, y1, x2 - x1, y2 - y1};
       draw_rect(renderer, rect);
     }
+    
     int x1 = (int)((double)word_list->p1.x / (double)surface->w * (double)width);
     int y1 = (int)((double)word_list->p1.y / (double)surface->h * (double)height);
     int x2 = (int)((double)word_list->p2.x / (double)surface->w * (double)width);

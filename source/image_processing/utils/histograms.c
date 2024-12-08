@@ -45,9 +45,7 @@ void histogram_of_pixels(SDL_Surface *surface, int **histogram) {
 void get_bounding_box_freq_histograms(SDL_Surface* surface,
 		BoundingBox** boxes, int size, int** column_histo, int** row_histo)
 {
-	int pixel_nb = surface->w*surface->h;
-	int* bounding_boxes = calloc(pixel_nb, sizeof(int));
-
+  (void)size;
   	for (int j = 0; j < surface->h; j++)
 	{
     	for (int i = 0; i < surface->w; i++)
