@@ -79,11 +79,6 @@ void list_push_tail(struct list* list, BoundingBox* box)
     list->len++;
 }
 
-void list_insert(struct list* list, BoundingBox* box)
-{
-    // TODO
-}
-
 void list_remove(struct list* list, struct list* elm)
 {
     list->len--;
@@ -151,7 +146,15 @@ void list_free_without_boxes(struct list* list)
 
 void list_free_with_boxes(struct list* list)
 {
-    // TODO
+    struct list* last=list;
+    for(struct list* p=list->next; p!=NULL; p=p->next)
+    {
+        free(last->box);
+        free(last);
+        last=p;
+    }
+    free(last->box);
+    free(last);
 }
 
 struct list* list_hard_copy(struct list* list)

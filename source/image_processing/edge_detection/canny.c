@@ -177,7 +177,6 @@ Uint8 *apply_mask(SDL_Surface *surface, double *mask, int w)
     {
         for (int i = 0; i < surface->w; i++)
         {
-            Uint8 pixel = get_gpixel_from_coord(surface, i, j);
             double sum = 0;
             for (int y = -w / 2; y <= w / 2; y++)
             {
@@ -206,7 +205,7 @@ void canny_edge_detection(SDL_Surface *surface, struct parameters *param)
     image_to_grayscale(surface, param);
 
     // STEP 2 : Gaussian blur
-    int window_gaussian;
+    //int window_gaussian;
     // double *gaussian_mask = create_gaussian_mask_5x5(&window_gaussian);
     // convolve_surface(surface, gaussian_mask, window_gaussian);
     // free(gaussian_mask); // The caller is responsible for freeing the mask
@@ -232,7 +231,7 @@ void canny_edge_detection(SDL_Surface *surface, struct parameters *param)
         for (int i = 0; i < surface->w; i++)
         {
             Uint8 pixel_x = gradient_x[j * surface->w + i];
-            Uint8 pixel_y = gradient_x[j * surface->w + i];
+            Uint8 pixel_y = gradient_y[j * surface->w + i];
             double magnitude = sqrt(pixel_x * pixel_x + pixel_y * pixel_y); // Euclidean distance formula
             double direction = atan2(pixel_y, pixel_x);                     // Gradient direction
 

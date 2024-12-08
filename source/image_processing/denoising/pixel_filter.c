@@ -28,7 +28,6 @@ int* flood_fill_count(SDL_Surface* surface, int x, int y, int* count)
     int pixel_nb = surface->w*surface->h;
     int* visited = calloc(pixel_nb, sizeof(int));
 
-    Uint32* surface_pixels = (Uint32*)surface->pixels;
     int* pixels = calloc(pixel_nb, sizeof(int));
     for(int i=0; i<pixel_nb; i++)
 	pixels[i] = get_gpixel_from_coord(surface, i, 0) ? 1 : 0;

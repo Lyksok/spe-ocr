@@ -2,8 +2,9 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 
-#include "bounding-box.h"
-#include "structures.h"
+#include "detection.h"
+#include "../image_processing/detection/structures.h"
+
 /* Cuts the surface into a smaller surface representing
  * a bounding box
 */
@@ -36,7 +37,7 @@ SDL_Surface *cut(SDL_Surface *surface, BoundingBox *box)
 void save_bounding_box(SDL_Surface* surface, BoundingBox* box)
 {
 	surface = cut(surface, box);
-	Point p = box_get_center(box);
+	Point p = get_bounding_box_center(box);
 	char buffer[128];
 	char* dir_path = "./segmentation-results/";
 	sprintf(buffer, "%s%i-%i.png",dir_path , p.x, p.y);
