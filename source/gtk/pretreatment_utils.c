@@ -301,3 +301,27 @@ void on_canny_clicked(GtkWidget *widget, gpointer data)
   my_print("✅ Canny edge detection done\n");
   SDL_FreeSurface(surface); // Free the surface
 }
+
+void on_sauvola_thresholding_clicked(GtkWidget *widget, gpointer data)
+{
+  my_print("🔧 Applying Sauvola thresholding\n");
+  (void)widget; // Remove unused parameter warning
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  if (pixbuf == NULL)
+  {
+    my_print("❌ Failed to get pixbuf\n");
+    return;
+  }
+  SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
+  if (surface == NULL)
+  {
+    my_print("❌ Failed to convert pixbuf to SDL surface\n");
+    return;
+  }
+
+  convert_to_binarized_sauvola(surface, &param);
+  GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  display_pixbuf(data, new_pixbuf);
+  my_print("✅ Sauvola thresholding done\n");
+  SDL_FreeSurface(surface); // Free the surface
+}

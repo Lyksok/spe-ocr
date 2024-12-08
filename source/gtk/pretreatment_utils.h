@@ -39,5 +39,7 @@ void on_adaptive_thresholding_clicked(GtkWidget *widget, gpointer data);
 void on_otsu_thresholding_clicked(GtkWidget *widget, gpointer data);
 void on_bw_median_filter_clicked(GtkWidget *widget, gpointer data);
 void on_bw_gaussian_filter_clicked(GtkWidget *widget, gpointer data);
+void on_canny_clicked(GtkWidget *widget, gpointer data);
+void on_sauvola_thresholding_clicked(GtkWidget *widget, gpointer data);
 
 #endif // PRETREATMENT_UTILS_H
