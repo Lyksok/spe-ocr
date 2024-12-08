@@ -15,7 +15,7 @@ void on_grayscale_clicked(GtkWidget *widget, gpointer data) {
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  convert_to_grayscale(surface);
+  convert_to_grayscale(surface, get_parameters());
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
   display_pixbuf(data, new_pixbuf);
   printf("✅ Grayscale conversion done\n");
@@ -33,7 +33,7 @@ void on_binarize_clicked(GtkWidget *widget, gpointer data) {
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  convert_to_binarized_average(surface);
+  convert_to_binarized_average(surface, get_parameters());
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
   display_pixbuf(data, new_pixbuf);
   is_binarized = 1; // 1 == TRUE

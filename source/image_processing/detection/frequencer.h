@@ -5,6 +5,7 @@
 #include "structures.h"
 #include "../utils/helper.h"
 #include "bounding-box.h"
+#include "list.h"
 
 // Get nb of box per column and row
 void freq_box_nb(SDL_Surface* surface, struct list* box_list,
@@ -19,5 +20,6 @@ int freq_compute_minimal_distance(struct list* box, struct list* box_list);
 
 // Compute all the closer distances from each box to others
 int* freq_compute_all_minimal_distances(struct list* box_list);
+int dist2(Point p1, Point p2);
 
 #endif /* FREQUENCER_H */

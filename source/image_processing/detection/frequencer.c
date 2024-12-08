@@ -49,7 +49,7 @@ int* freq_most_frequent_tuple(SDL_Surface* surface, struct list* box_list)
             if(q_center.y>=p1.y && q_center.y<=p2.y)
                 tuple[1]++;
         }
-        if(tuple[0]!= || tuple[1]!=0)
+        if(tuple[0]!=0 || tuple[1]!=0)
             tuples[i++] = tuple;
     }
 
@@ -57,7 +57,7 @@ int* freq_most_frequent_tuple(SDL_Surface* surface, struct list* box_list)
     struct f_tuple* tuple_freq = calloc(i, sizeof(struct f_tuple));
     for(int j=0; j<i; j++)
     {
-        tuple_freq[j]={tuples[j],0};
+        tuple_freq[j]=(struct f_tuple){tuples[j],0};
     }
     for(int j=0; j<i-1; j++)
     {
@@ -126,7 +126,7 @@ int freq_most_frequent(int* freq_list, int size)
 int freq_get_median_from_array(int len, int* values)
 {
     // Sort the array
-    sort_array(&values, len, compare_ascending);
+    sort_array(&values, len);
     return values[len/2];
 }
 

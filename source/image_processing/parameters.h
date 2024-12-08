@@ -3,18 +3,11 @@
 
 struct parameters
 {
-    /* MAIN PROCEDURE */
-    int grayscale;
-    int erosion;
-    int dilation;
-    int average;
-    int adaptative;
-    int global;
-    int sauvola;
-    int gaussian;
-
     // grayscale
     int grayscale_m;
+
+    // list sorting tolerance
+    int list_tolerance;
 
     /* DENOISING */
     // denoising.c
@@ -36,6 +29,9 @@ struct parameters
     int filtering_t1;
     int filtering_t2;
     int filtering_n;
+
+    // gaussian_blur.c
+    int gaussian_w;
 
     /* THRESHOLDING */
     // average

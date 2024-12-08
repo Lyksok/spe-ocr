@@ -1,6 +1,6 @@
 #include "morphology.h"
 
-static void convolve_int(SDL_Surface* surface, int* mask, int w)
+void convolve_int(SDL_Surface* surface, int* mask, int w)
 {
     Uint8* pixels = get_gpixels_from_surface(surface);
     for(int j=0; j<surface->h; j++)

@@ -10,6 +10,6 @@ int max(int a, int b);
 int compare_ascending(const void* a, const void* b);
 
 // Sort array using compar comparison function
-void sort_array(int** arr, int len, int (*compar)(const void *, const void*));
+void sort_array(int** arr, int len);
 
 #endif /* HELPER_H */

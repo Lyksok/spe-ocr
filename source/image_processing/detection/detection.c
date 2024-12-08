@@ -1,254 +1,560 @@
 #include "detection.h"
+#include "bounding-box.h"
+#include "cluster-detection.h"
+#include "list.h"
+#include "point.h"
 
-// Compute all bounding_boxes
-
-/* Detects characters in the grid by filtering boxes
- * using their height and their width to find non-characters
- * Returns a new list with characters' boxes
- */
-struct list* detect_characters(SDL_Surface* surface, struct list* box_list, struct parameters* param)
+Point get_points_average(Point p1, Point p2)
 {
-    struct list* cpy = list_hard_copy(box_list);
-    filter_wrong_size_boxes_threshold(surface, cpy, param);
-    return cpy;
+    return (Point){(p1.x+p2.x)/2,(p1.y+p2.y)/2};
 }
 
-// Auxiliary function that marks the boxes depending if they are probably in
-// the grid or not
-// Return the number of marked boxes
-int _mark_boxes(struct list* box_list, int most_frequent_per_col,
-        int most_frequent_per_row)
+int ascending_bounding_box(BoundingBox* b1, BoundingBox* b2)
 {
-    printf("most_frequent_per_col=%i\n", most_frequent_per_col);
-    printf("most_frequent_per_row=%i\n", most_frequent_per_row);
-    int res=0;
-    // For each box, check if it can be an element of the grid
-    for(struct list* p=box_list->next; p!=NULL; p=p->next)
+    // Define the tolerance for the grid disparity
+    int tolerance = 5;
+    Point p1 = box_get_center(b1);
+    Point p2 = box_get_center(b2);
+
+    if(abs(p1.y - p2.y) <= tolerance)
     {
-        BoundingBox* box = p->box;
-        Point center = box_get_center(box);
-
-        // Marker list to detect grid columns
-        struct list* cur_col = list_new_list();
-        init_list(cur_col);
-
-        // Check if there is enough boxes in the same column as this box
-        // by counting the number of boxes that are in the column of the center
-        // of the box
-        int col_count=0;
-        for(struct list* p2=box_list->next; p2!=NULL; p2=p2->next)
+        if(abs(p1.x - p2.x) <= tolerance)
         {
-            BoundingBox* box2 = p2->box;
-            if(point_is_in_box_width(center, box2))
+            return 1;
+        }
+        if(p1.x <= p2.x)
+            return 1;
+        else
+            return 0;
+    }
+    if(p1.y <= p2.y)
+        return 1;
+    else
+        return 0;
+}
+
+/* Sort bounding boxes by ascending Y then X
+*/
+void sort_bounding_boxes(BoundingBox*** boxes, int len,
+	int (*asc)(BoundingBox*, BoundingBox*))
+{
+    int swapped = 0;
+    for(int i=0; i<len-1; i++)
+    {
+        swapped = 0;
+        for(int j=0; j<len-i-1; j++)
+        {
+            BoundingBox* b1 = (*boxes)[j];
+            BoundingBox* b2 = (*boxes)[j+1];
+            if(!asc(b1,b2))
             {
-                list_push_tail(cur_col, box2);
-                col_count++;
+                BoundingBox* tmp = (*boxes)[j];
+                (*boxes)[j] = (*boxes)[j+1];
+                (*boxes)[j+1] = tmp;
+                swapped = 1;
             }
         }
-        //printf("col_count=%i\n", col_count);
+        if(!swapped)
+            return;
+    }
+}
 
-        if(col_count < most_frequent_per_col)
+double dist(Point p1, Point p2)
+{
+    return sqrt(pow(p1.x-p2.x, 2)+pow(p1.y-p2.y, 2));
+}
+
+int is_already_closest_of(Point src_box, Point dest_box,
+	Point* src, Point* dest, int l)
+{
+    for(int i=0; i<l; i++)
+    {
+        if((point_are_equal(src_box, src[i])
+				&& point_are_equal(dest_box, dest[i]))
+            || (point_are_equal(dest_box, src[i])
+				&& point_are_equal(src_box, dest[i])))
         {
-            list_free_without_boxes(cur_col);
-            continue;
+            return 1;
         }
+        else
+            return 0;
+    }
+    return 0;
+}
 
-        // Marker list to detect grid rows
-        struct list* cur_row = list_new_list();
-        init_list(cur_row);
+BoundingBox* closest_bounding_boxes(BoundingBox* box, BoundingBox** boxes,
+	int len)
+{
+    Point p = box_get_center(box);
+    // Get the first distance
+    int i=0;
+    while(i<len && box_are_equal(box, boxes[i]))
+    {
+        i++;
+    }
+    Point q = box_get_center(boxes[i]);
+    BoundingBox* closest = boxes[i];
+    int min_dist = dist2(p, q);
 
-        // Check if there is enough boxes in the same row as this box
-        // by counting the number of boxes that are in the row of the center
-        // of the box
-        int row_count=0;
-        for(struct list* p2=box_list->next; p2!=NULL; p2=p2->next)
+    // Get the minimal distance
+    for(int j=i+1; j<len; j++)
+    {
+        if(!box_are_equal(box, boxes[j]))
         {
-            BoundingBox* box2 = p2->box;
-            if(point_is_in_box_height(center, box2))
+            q = box_get_center(boxes[j]);
+            double dist = dist2(p, q);
+            if(dist<min_dist)
             {
-                list_push_tail(cur_row, box2);
-                row_count++;
+                min_dist = dist;
+                closest = boxes[j];
             }
         }
+    }
+    return closest;
+}
 
-        //printf("row_count=%i\n", row_count);
-        // If there is enough boxes then mark them for later 
-        if(col_count >= most_frequent_per_col
-                && row_count >= most_frequent_per_row)
+void get_all_links(BoundingBox** boxes, int len, Point** src, Point** dest)
+{
+    for(int i=0; i<len; i++)
+    {
+        BoundingBox* closest = closest_bounding_boxes(boxes[i], boxes, len);
+        (*src)[i] = box_get_center(boxes[i]);
+        (*dest)[i] = box_get_center(closest);
+    }
+}
+
+Point get_closest_point(Point point, Point* points, int len)
+{
+    Point closest = points[0];
+    double min_dist = dist2(point, closest);
+    for(int i=1; i<len; i++)
+    {
+        double dist = dist2(point, points[i]);
+        if(dist<min_dist)
         {
-            for(struct list* m=cur_col->next; m!=NULL; m=m->next)
-            {
-                if(m->box->score==0)
-                    res++;
-                m->box->score += 1;
-            }
-            for(struct list* m=cur_row->next; m!=NULL; m=m->next)
-            {
-                if(m->box->score==0)
-                    res++;
-                m->box->score += 1;
-            }
+            min_dist = dist;
+            closest = points[i];
         }
+    }
+    return closest;
+}
 
-        list_free_without_boxes(cur_col);
-        list_free_without_boxes(cur_row);
+BoundingBox** get_char_boxes(struct list* char_boxes, int* res_len)
+{
+    BoundingBox** res = calloc(list_len(char_boxes),sizeof(BoundingBox*));
+    *res_len = list_len(char_boxes);
+    int i=0;
+    for(struct list* p=char_boxes->next; p!=NULL; p=p->next)
+    {
+        res[i++] = p->box;
     }
     return res;
 }
 
-// Filter boxes based on new probable grid results and search for new probable
-// grid results
-// If the output results are the same return 0
-// Else return 1
-int _refine_grid_size(SDL_Surface* surface, struct list* char_list, 
-        int* nb_box_per_col, int* nb_box_per_row,
-        int* most_frequent_per_col, int* most_frequent_per_row)
+void get_corners(Point* points, int len, Point** corners)
 {
-    int grid_width = *most_frequent_per_col;
-    int grid_height = *most_frequent_per_row;
+    Point top_left = points[0];
+    Point bottom_right = points[0];
 
-    struct list* tmp = list_new_list();
-    init_list(tmp);
-
-    // For each box in the list, if it is not in correct grid_width then
-    // don't process it
-    for(struct list* p=char_list; p!=NULL && p->next!=NULL; p=p->next)
+    for(int i=1; i<len; i++)
     {
-        BoundingBox* box = p->next->box;
-        if(nb_box_per_row[box_get_center(box).y]>=grid_width
-                && nb_box_per_col[box_get_center(box).x]>=grid_height)
-        {
-            list_push_tail(tmp, box);
-            printf("%ix%i\n", box_get_width(box),box_get_height(box));
-        }
+        // TOP LEFT
+        if(points[i].x<top_left.x || points[i].y<top_left.y)
+            top_left = points[i];
+
+        // BOTTOM RIGHT
+        if(points[i].x>bottom_right.x || points[i].y>bottom_right.y)
+            bottom_right = points[i];
     }
 
-    // Nb of box per col and row
-    freq_box_nb(surface, tmp, &nb_box_per_col, &nb_box_per_row); 
-
-    // Get most frequent nb of box per col and row
-    *most_frequent_per_col = freq_most_frequent(nb_box_per_col, surface->w);
-    *most_frequent_per_row = freq_most_frequent(nb_box_per_row, surface->h);
-
-    if(*most_frequent_per_col==grid_width
-            && *most_frequent_per_row==grid_height)
-        return 0;
-    else
-        return 1;
+    (*corners)[0] = top_left;
+    (*corners)[1] = bottom_right;
 }
 
-/* Check all vertices that are linked horizontally and vertically
-*/
-void find_horizontal_continuous_vertices(SDL_Surface* surface, struct list* char_list)
+BoundingBox* histo_grid_detect(SDL_Surface* surface)
 {
-    // HORIZONTALLY
-    int len = list_len(char_list);
+    struct list* char_boxes = list_new_list();
+    init_list(char_boxes);
+    compute_bounding_boxes(surface, char_boxes);
 
-    struct list* grid = list_hard_copy(char_list);
-    // For each box, compute all distances between each box on the same line of
-    // pixels
-    for(struct list* p=char_list->next; p!=NULL; p=p->next)
-    {
-        struct list* line = list_hard_copy(char_list);
-
-        // Distance list
-        int* distances = calloc(len, sizeof(int));
-        int i=0;
-        
-        // Get current box (p) boundaries
-        int y_min = p->box->p1.y;
-        int y_max = p->box->p2.y;
-        Point p_center = box_get_center(p->box);
-        for(struct list* q = line->next; q!=NULL; q=q->next)
-        {
-            // p current box, checking its line, remove from line all boxes
-            // that are not in its line
-            Point q_center = box_get_center(q->box);
-            if(p_center == q_center)
-                continue;
-
-            if(q_center.y>=y_max || q_center.y<=y_min)
-            {
-                q=q->prev;
-                list_remove(line, q->next);
-                continue;
-            }
-
-            distances[i++] = dist2(p_center, q_center);
-        }
-
-        
-    }
-    // Compute the average/median and std deviation
+    int len;
+    BoundingBox** boxes = get_char_boxes(char_boxes, &len);
     
+    int* col_histo;
+    int* row_histo;
+    freq_box_nb(surface, char_boxes, &col_histo, &row_histo);
+
+    Point* src = calloc(len, sizeof(Point));
+    Point* dest = calloc(len, sizeof(Point));
+    get_all_links(boxes, len, &src, &dest);
+
+    int col = freq_most_frequent(col_histo, surface->w);
+    int row = freq_most_frequent(row_histo, surface->h);
+    /*
+    printf("COL=%i\n", col);
+    printf("ROW=%i\n", row);
+    printf("Estimated dimensions of the grid:\n");
+    printf("%i x %i\n", get_most_frequent(row_histo, surface->h),
+		get_most_frequent(col_histo, surface->w));
+
+    for(int i=0; i<len; i++)
+    {
+        printf("%lf ",dist(src[i], dest[i]));
+    }
+    */
+
+    sort_bounding_boxes(&boxes, len, ascending_bounding_box);
+
+    BoundingBox* grid[col][row];
+    for(int i=0; i<col; i++)
+    {
+        for(int j=0; j<row; j++)
+        {
+            grid[i][j]=NULL;
+        }
+    }
+    int i_c = 0;
+    int j_c = 0;
+    int count = 0;
+    // For each bound box, check if center point is in correct bound
+    for(int i=0; i<len; i++)
+    {
+        BoundingBox* box = boxes[i];
+        Point center = box_get_center(box);
+
+        // Check columns
+        if(col_histo[center.x]>=col && row_histo[center.y]>=row)
+        {
+            if(i_c==col)
+                return NULL;
+            grid[i_c][j_c] = box;
+
+            j_c++;
+            if(j_c==row)
+            {
+                j_c=0;
+                i_c++;
+            }
+            count++;
+        }
+    }
+    //printf("Count: %i\n", count);
+
+    if(grid[0][0]==NULL || grid[col-1][row-1]==NULL)
+        return NULL;
+    Point top_left = grid[0][0]->p1;
+    Point bottom_right = grid[col-1][row-1]->p2;
+    BoundingBox* res = calloc(1, sizeof(BoundingBox));
+    res->p1 = top_left;
+    res->p2 = bottom_right;
+
+    return res;
 }
-        
-/* Try to find the grid
- * If found return the grid and set its width and height
- * Else return NULL
- */
-BoundingBox** detect_grid(SDL_Surface* surface, struct list* char_list,
-        int* width, int* height, struct parameters* param)
+
+int get_max_x(BoundingBox** boxes, int len)
 {
-    int tolerance = 5;
-    list_squarify_boxes(surface, char_list);
-
-    printf("EXPERIMENTAL RESULTS:\n");
-    int* dim = freq_most_frequent_tuple(surface, box_list);
-    printf("%ix%i\n", dim[0], dim[1]);
-
-    // Nb of box per col and row
-    int* nb_box_per_col;
-    int* nb_box_per_row;
-    freq_box_nb(surface, char_list, &nb_box_per_col, &nb_box_per_row); 
-
-    // Get most frequent nb of box per col and row
-    int most_frequent_per_col = freq_most_frequent(nb_box_per_col, surface->w);
-    int most_frequent_per_row = freq_most_frequent(nb_box_per_row, surface->h);
-
-    int i=10;
-    while(_refine_grid_size(surface, char_list,
-                nb_box_per_col, nb_box_per_row,
-                &most_frequent_per_col, &most_frequent_per_row)
-            && i>=0)
+    int max_x = boxes[0]->p2.x;
+    for(int i=1; i<len; i++)
     {
-        // Wait until grid size stabilize
-        i--;
+        int x = boxes[i]->p2.x;
+        if(x>max_x)
+            max_x = x;
     }
-    if(i<0)
-        printf("Terminated refine\n");
+    return max_x;
+}
 
-    // Sort the list of characters to find "lines"
-    list_sort(char_list, tolerance);
-
-    // Mark the boxes that are probably in the grid
-    int marked = 
-        _mark_boxes(char_list, most_frequent_per_col, most_frequent_per_row);
-
-    int probable_nb_box = most_frequent_per_col*most_frequent_per_row;
-    if(marked==probable_nb_box)
+int get_max_y(BoundingBox** boxes, int len)
+{
+    int max_y = boxes[0]->p2.y;
+    for(int i=1; i<len; i++)
     {
-        printf("Probably found the grid\n");
+        int y = boxes[i]->p2.y;
+        if(y>max_y)
+            max_y = y;
     }
-    else
+    return max_y;
+}
+
+int get_min_x(BoundingBox** boxes, int len)
+{
+    int min_x = boxes[0]->p1.x;
+    for(int i=1; i<len; i++)
     {
-        if(marked>probable_nb_box)
+        int x = boxes[i]->p1.x;
+        if(x<min_x)
+            min_x = x;
+    }
+    return min_x;
+}
+
+int get_min_y(BoundingBox** boxes, int len)
+{
+    int min_y = boxes[0]->p1.y;
+    for(int i=1; i<len; i++)
+    {
+        int y = boxes[i]->p1.y;
+        if(y<min_y)
+            min_y = y;
+    }
+    return min_y;
+}
+
+int is_in_box(BoundingBox* box, Point point)
+{
+    if(box!=NULL)
+    {
+        // x axis
+        if(box->p2.x>=point.x && box->p1.x<=point.x)
         {
-            printf("Need more filtering to find the grid\n");
-            return NULL;
+            // y axis
+            if(box->p2.y>=point.y && box->p1.y<=point.y)
+            {
+                return 1;
+            }
         }
-        else
+    }
+    return 0;
+}
+
+int is_in_boxes(BoundingBox** boxes, int len, Point point)
+{
+    for (int i=0; i<len; i++)
+    {
+        if(boxes[i]!=NULL)
         {
-            printf("Cannot find the grid(marked=%i)\n", marked);
-            return NULL;
+            BoundingBox* box = boxes[i];
+            if(is_in_box(box, point)==1)
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+BoundingBox* histo_word_list_detect(SDL_Surface* surface)
+{
+    struct list* char_boxes = list_new_list();
+    init_list(char_boxes);
+    compute_bounding_boxes(surface, char_boxes);
+
+    int len;
+    BoundingBox** boxes = get_char_boxes(char_boxes, &len);
+
+    BoundingBox* grid_box = histo_grid_detect(surface);
+    
+    int* col_histo;
+    int* row_histo;
+    freq_box_nb(surface, char_boxes, &col_histo, &row_histo);
+
+    int col = freq_most_frequent(col_histo, surface->w);
+    int row = freq_most_frequent(row_histo, surface->h);
+
+    int new_len = len - col*row;
+
+    BoundingBox** word_list_boxes = calloc(new_len,sizeof(BoundingBox*));
+   
+    int c=0;
+    for(int i=0; i<len; i++)
+    {
+        BoundingBox* box = boxes[i];
+        if(!is_in_boxes(&grid_box, 1, box_get_center(box)))
+        {
+            word_list_boxes[c] = box;
+            c++;
+        }
+    }
+    BoundingBox* res = malloc(1*sizeof(BoundingBox));
+    Point p1 = {get_min_x(word_list_boxes, new_len),
+		get_min_y(word_list_boxes, new_len)};
+    Point p2 = {get_max_x(word_list_boxes, new_len),
+		get_max_y(word_list_boxes, new_len)};
+    *res = (BoundingBox){p1,p2};
+
+    return res;
+}
+
+int count_except_null(int* histogram, int len)
+{
+    int count = 0;
+    int i=0;
+    // Remove trailing 0
+    while(i<len && histogram[i]==0)
+        i++;
+
+    // Count when 0 appear
+    while(i<len)
+    {
+        while(i<len && histogram[i]!=0)
+            i++;
+
+        count++;
+        while(i<len && histogram[i]==0)
+            i++;
+    }
+
+    return count;
+}
+
+int* get_words_length(int* histogram, int len, int nb_words,
+	int** words_height)
+{
+    int* res = calloc(nb_words, sizeof(int));
+    int c=0;
+    int i=0;
+    // Remove trailing 0
+    while(i<len && histogram[i]==0)
+        i++;
+
+    // Count when 0 appear
+    while(i<len)
+    {
+        res[c]=histogram[i];
+        (*words_height)[c] = i;
+        while(i<len && histogram[i]!=0)
+            i++;
+        c++;
+        while(i<len && histogram[i]==0)
+            i++;
+    }
+    return res;
+}
+
+int* get_row_bounded_box_histogram(BoundingBox** boxes, BoundingBox* box,
+	int len)
+{
+    int* histogram = calloc(box->p2.y,sizeof(int));
+
+    for(int j=box->p1.y; j<box->p2.y; j++)
+    {
+        for(int i=0; i<len; i++)
+        {
+            Point point = {box_get_center(boxes[i]).x,j};
+            if(is_in_box(boxes[i], point))
+            {
+                histogram[j]+=1;
+            }
+        }
+    }
+    return histogram;
+}
+
+BoundingBox** histo_words_detect(SDL_Surface* surface, int* word_count)
+{
+    struct list* char_boxes = list_new_list();
+    init_list(char_boxes);
+    compute_bounding_boxes(surface, char_boxes);
+
+    int len;
+    BoundingBox** boxes = get_char_boxes(char_boxes, &len);
+
+    BoundingBox* grid_box = histo_grid_detect(surface);
+    
+    int* col_histo;
+    int* row_histo;
+    freq_box_nb(surface, char_boxes, &col_histo, &row_histo);
+
+    int col = freq_most_frequent(col_histo, surface->w);
+    int row = freq_most_frequent(row_histo, surface->h);
+
+    BoundingBox* word_list = histo_word_list_detect(surface);
+
+    int new_len = len - col*row;
+
+    BoundingBox** word_list_boxes = calloc(new_len,sizeof(BoundingBox*));
+   
+    int c=0;
+    for(int i=0; i<len; i++)
+    {
+        BoundingBox* box = boxes[i];
+        if(!is_in_boxes(&grid_box, 1, box_get_center(box)))
+        {
+            word_list_boxes[c] = box;
+            c++;
         }
     }
 
-    // Create the grid and initialize with 0 (NULL)
-    BoundingBox** grid = calloc(most_frequent_per_col*most_frequent_per_row,
-            sizeof(BoundingBox*));
+    sort_bounding_boxes(&word_list_boxes, new_len, ascending_bounding_box);
 
-    *width = most_frequent_per_row;
-    *height = most_frequent_per_col;
-    return grid;
+    BoundingBox* word_list_box = malloc(1*sizeof(BoundingBox));
+    Point p1 = {get_min_x(word_list_boxes, new_len),
+		get_min_y(word_list_boxes, new_len)};
+    Point p2 = {get_max_x(word_list_boxes, new_len),
+		get_max_y(word_list_boxes, new_len)};
+    *word_list_box = (BoundingBox){p1,p2};
+
+    int* col_words_histo = get_row_bounded_box_histogram(word_list_boxes,
+		word_list_box, new_len);
+
+    /*
+    for(int i=0; i<word_list_box->p2.y-word_list_box->p1.y; i++)
+    {
+        printf("%i\n", col_words_histo[i]);
+    }
+    */
+
+    *word_count = count_except_null(col_words_histo, word_list_box->p2.y);
+
+    int* words_height = calloc(*word_count, sizeof(int));
+    int* word_lengths = get_words_length(col_words_histo, word_list_box->p2.y,
+		*word_count, &words_height);
+
+    BoundingBox** res = calloc(*word_count, sizeof(BoundingBox*));
+
+    for(int i=0; i<*word_count; i++)
+    {
+        int c=0;
+        Point p = {0,words_height[i]};
+        BoundingBox** word_box = calloc(word_lengths[i], sizeof(BoundingBox*));
+
+        // Find the full word
+        for(int j=0; j<new_len; j++)
+        {
+            BoundingBox* box = word_list_boxes[j];
+            p.x = box_get_center(box).x;
+            if(is_in_boxes(&box, 1, p))
+            {
+                word_box[c] = box;
+                c++;
+            }
+        }
+
+        if(c!=word_lengths[i])
+            return NULL;
+
+        BoundingBox* word_res = calloc(1, sizeof(BoundingBox));
+        word_res->p1 = word_box[0]->p1;
+        word_res->p2 = word_box[word_lengths[i]-1]->p2;
+
+        // freeing because not useful for now but useful for final projet
+        //free_boxes(word_box, word_lengths[i]);
+
+        res[i]=word_res;
+    }
+
+    free(col_words_histo);
+    free(row_histo);
+    free(col_histo);
+    free(words_height);
+    free(word_lengths);
+    free(word_list_box);
+    free(word_list);
+    free(grid_box);
+
+    return res;
+}
+
+BoundingBox** get_word_boxes(SDL_Surface* surface, int* word_count)
+{
+    return histo_words_detect(surface, word_count);
+}
+
+BoundingBox* get_word_list_box(SDL_Surface* surface)
+{
+    return histo_word_list_detect(surface);
+}
+
+BoundingBox* get_grid_box(SDL_Surface* surface)
+{
+    return histo_grid_detect(surface);
 }
