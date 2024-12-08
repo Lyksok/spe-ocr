@@ -8,6 +8,7 @@
 #include "pretreatment_utils.h"
 #include "rotation_utils.h"
 #include "../image_processing/utils/converting.h"
+#include "../image_processing/image_processing.h"
 
 void on_grayscale_clicked(GtkWidget *widget, gpointer data);
 void on_binarize_clicked(GtkWidget *widget, gpointer data);

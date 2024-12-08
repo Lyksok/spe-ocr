@@ -20,7 +20,7 @@ int compare_ascending(const void* a, const void* b)
     return (*(int*)a - *(int*)b);
 }
 
-void sort_array(int** arr, int len, int (*compar)(const void *, const void*))
+void sort_array(int** arr, int len)
 {
     qsort(*arr, len, sizeof(int), compare_ascending);
 }
