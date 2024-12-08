@@ -51,6 +51,11 @@
     <property name="can-focus">False</property>
     <property name="stock">gtk-execute</property>
   </object>
+  <object class="GtkImage" id="image18">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-execute</property>
+  </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -192,6 +197,14 @@
                         <property name="image">image4</property>
                         <property name="use-stock">False</property>
                         <signal name="activate" handler="on_gaussian_filter_clicked" object="image_widget" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="sauvola_button">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image18</property>
+                        <property name="use-stock">False</property>
                       </object>
                     </child>
                   </object>
