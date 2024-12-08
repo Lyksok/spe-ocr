@@ -13,13 +13,11 @@
 #include "../image_processing/edge_detection/canny.h"
 // #include "../image_processing/denoising/erosion.h" // Excluded due to errors
 #include "../image_processing/denoising/pixel_filter.h"
-#include "../image_processing/detection/list.h"
-#include "../image_processing/detection/structures.h"
+
 #include "../image_processing/utils/sdl_utils.h"
 #include "../image_processing/main.c" // for the parameters
 #include "../image_processing/utils/converting.h"
 #include "../image_processing/parameters.h"
-#include "../image_processing/image_processing.h"
 #include "../image_processing/utils/histograms.h"
 #include "my_print.h"
 
@@ -39,5 +37,7 @@ void on_adaptive_thresholding_clicked(GtkWidget *widget, gpointer data);
 void on_otsu_thresholding_clicked(GtkWidget *widget, gpointer data);
 void on_bw_median_filter_clicked(GtkWidget *widget, gpointer data);
 void on_bw_gaussian_filter_clicked(GtkWidget *widget, gpointer data);
+void on_canny_clicked(GtkWidget *widget, gpointer data);
+void on_sauvola_thresholding_clicked(GtkWidget *widget, gpointer data);
 
 #endif // PRETREATMENT_UTILS_H

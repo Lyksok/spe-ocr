@@ -243,7 +243,7 @@ void on_auto_rotate_clicked(GtkWidget *widget, gpointer data)
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
 
   // Detect the rotation angle
-  double angle = auto_detect_rotation_angle(surface);
+  double angle = auto_detect_rotation_angle(surface, &param);
 
   // Log the detected angle
   my_print("📐 Detected rotation angle: %.2f degrees\n", angle);

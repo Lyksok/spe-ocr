@@ -46,7 +46,7 @@ source/gtk/main.c: At top level:
 source/gtk/main.c:46:5: error: redefinition of ‘main’
    46 | int main(int argc, char *argv[])
       |     ^~~~
-In file included from source/gtk/pretreatment_utils.h:19,
+In file included from source/gtk/pretreatment_utils.h:18,
                  from source/gtk/main.h:9:
 source/gtk/../image_processing/main.c:51:5: note: previous definition of ‘main’ with type ‘int(int,  char **)’
    51 | int main(int argc, char **argv)
@@ -96,6 +96,10 @@ source/gtk/pretreatment_utils.c: In function ‘on_canny_clicked’:
 source/gtk/pretreatment_utils.c:298:34: error: ‘param’ undeclared (first use in this function)
   298 |   canny_edge_detection(surface, &param);
       |                                  ^~~~~
+source/gtk/pretreatment_utils.c: In function ‘on_sauvola_thresholding_clicked’:
+source/gtk/pretreatment_utils.c:322:42: error: ‘param’ undeclared (first use in this function)
+  322 |   convert_to_binarized_sauvola(surface, &param);
+      |                                          ^~~~~
 In file included from /usr/include/gtk-3.0/gtk/gtkentry.h:42,
                  from /usr/include/gtk-3.0/gtk/gtktreeview.h:29,
                  from /usr/include/gtk-3.0/gtk/gtkcombobox.h:27,
@@ -112,5 +116,9 @@ source/gtk/rotation_utils.c:108:23: note: in expansion of macro ‘GTK_IMAGE’
       |                       ^~~~~~~~~
 source/gtk/rotation_utils.c: In function ‘on_auto_rotate_clicked’:
 source/gtk/rotation_utils.c:246:18: warning: implicit declaration of function ‘auto_detect_rotation_angle’ [-Wimplicit-function-declaration]
-  246 |   double angle = auto_detect_rotation_angle(surface);
+  246 |   double angle = auto_detect_rotation_angle(surface, &param);
       |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+source/gtk/rotation_utils.c:246:55: error: ‘param’ undeclared (first use in this function)
+  246 |   double angle = auto_detect_rotation_angle(surface, &param);
+      |                                                       ^~~~~
+source/gtk/rotation_utils.c:246:55: note: each undeclared identifier is reported only once for each function it appears in

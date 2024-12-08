@@ -11,7 +11,7 @@
 #include <SDL2/SDL.h>
 #include "main.h"
 #include "my_print.h"
-#include <SDL2/SDL2_rotozoom.h> // plan de secours
+// #include <SDL2/SDL2_rotozoom.h> // plan de secours
 
 // CONSTANTS
 #define PI 3.1415926535897932

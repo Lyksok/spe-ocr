@@ -51,6 +51,11 @@
     <property name="can-focus">False</property>
     <property name="stock">gtk-execute</property>
   </object>
+  <object class="GtkImage" id="image18">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-execute</property>
+  </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -82,11 +87,6 @@
     <property name="stock">gtk-execute</property>
   </object>
   <object class="GtkImage" id="image8">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="stock">gtk-execute</property>
-  </object>
-  <object class="GtkImage" id="image9">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="stock">gtk-execute</property>
@@ -228,6 +228,16 @@
                         <signal name="activate" handler="on_otsu_thresholding_clicked" object="image_widget" swapped="no"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="sauvola_menu">
+                        <property name="label">Sauvola</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image18</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_sauvola_thresholding_clicked" object="image_widget" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -242,7 +252,7 @@
                   <object class="GtkMenu">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                     <child>
+                    <child>
                       <object class="GtkImageMenuItem" id="Canny edge detection">
                         <property name="label">Canny edge detection</property>
                         <property name="visible">True</property>
@@ -359,7 +369,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
-                          <signal name="clicked" handler="on_rotate_left_clicked" object="image_widget" swapped="no"/>
+                        <signal name="clicked" handler="on_rotate_left_clicked" object="image_widget" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -438,6 +448,11 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkImage" id="image9">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-execute</property>
   </object>
   <object class="GtkApplicationWindow" id="window_solver">
     <property name="can-focus">False</property>
