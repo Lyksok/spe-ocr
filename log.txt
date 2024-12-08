@@ -1,124 +1,90 @@
 source/gtk/integration_solver.c: In function ‘create_solver_window’:
-source/gtk/integration_solver.c:52:16: warning: variable ‘widgets’ set but not used [-Wunused-but-set-variable]
-   52 |     GtkWidget *widgets[3];
-      |                ^~~~~~~
-source/gtk/integration_solver.c:49:16: warning: variable ‘list_of_words_entry’ set but not used [-Wunused-but-set-variable]
-   49 |     GtkWidget *list_of_words_entry;
-      |                ^~~~~~~~~~~~~~~~~~~
-source/gtk/integration_solver.c:43:38: warning: unused parameter ‘widget’ [-Wunused-parameter]
-   43 | void create_solver_window(GtkWidget *widget, gpointer data)
+source/gtk/integration_solver.c:53:14: warning: variable ‘widgets’ set but not used [-Wunused-but-set-variable]
+   53 |   GtkWidget *widgets[3];
+      |              ^~~~~~~
+source/gtk/integration_solver.c:50:14: warning: variable ‘list_of_words_entry’ set but not used [-Wunused-but-set-variable]
+   50 |   GtkWidget *list_of_words_entry;
+      |              ^~~~~~~~~~~~~~~~~~~
+source/gtk/integration_solver.c:45:38: warning: unused parameter ‘widget’ [-Wunused-parameter]
+   45 | void create_solver_window(GtkWidget *widget, gpointer data) {
       |                           ~~~~~~~~~~~^~~~~~
-source/gtk/integration_solver.c:43:55: warning: unused parameter ‘data’ [-Wunused-parameter]
-   43 | void create_solver_window(GtkWidget *widget, gpointer data)
+source/gtk/integration_solver.c:45:55: warning: unused parameter ‘data’ [-Wunused-parameter]
+   45 | void create_solver_window(GtkWidget *widget, gpointer data) {
       |                                              ~~~~~~~~~^~~~
 source/gtk/main.c: In function ‘on_window_main_destroy’:
 source/gtk/main.c:6:40: warning: unused parameter ‘widget’ [-Wunused-parameter]
-    6 | void on_window_main_destroy(GtkWidget *widget, gpointer data)
+    6 | void on_window_main_destroy(GtkWidget *widget, gpointer data) {
       |                             ~~~~~~~~~~~^~~~~~
 source/gtk/main.c:6:57: warning: unused parameter ‘data’ [-Wunused-parameter]
-    6 | void on_window_main_destroy(GtkWidget *widget, gpointer data)
+    6 | void on_window_main_destroy(GtkWidget *widget, gpointer data) {
       |                                                ~~~~~~~~~^~~~
 source/gtk/main.c: In function ‘on_window_configure_event’:
-source/gtk/main.c:38:3: warning: ‘gdk_screen_get_width’ is deprecated [-Wdeprecated-declarations]
-   38 |   gint screen_width = gdk_screen_get_width(screen);
+source/gtk/main.c:34:3: warning: ‘gdk_screen_get_width’ is deprecated [-Wdeprecated-declarations]
+   34 |   gint screen_width = gdk_screen_get_width(screen);
       |   ^~~~
 In file included from /usr/include/gtk-3.0/gdk/gdkapplaunchcontext.h:31,
                  from /usr/include/gtk-3.0/gdk/gdk.h:32,
                  from /usr/include/gtk-3.0/gtk/gtk.h:30,
+                 from source/gtk/my_print.h:5,
+                 from source/gtk/conversion_utils.h:5,
                  from source/gtk/main.h:4,
                  from source/gtk/main.c:1:
 /usr/include/gtk-3.0/gdk/gdkscreen.h:58:14: note: declared here
    58 | gint         gdk_screen_get_width             (GdkScreen   *screen);
       |              ^~~~~~~~~~~~~~~~~~~~
-source/gtk/main.c:39:3: warning: ‘gdk_screen_get_height’ is deprecated [-Wdeprecated-declarations]
-   39 |   gint screen_height = gdk_screen_get_height(screen);
+source/gtk/main.c:35:3: warning: ‘gdk_screen_get_height’ is deprecated [-Wdeprecated-declarations]
+   35 |   gint screen_height = gdk_screen_get_height(screen);
       |   ^~~~
 /usr/include/gtk-3.0/gdk/gdkscreen.h:60:14: note: declared here
    60 | gint         gdk_screen_get_height            (GdkScreen   *screen);
       |              ^~~~~~~~~~~~~~~~~~~~~
-source/gtk/main.c:35:65: warning: unused parameter ‘event’ [-Wunused-parameter]
-   35 | gboolean on_window_configure_event(GtkWidget *widget, GdkEvent *event, gpointer data)
+source/gtk/main.c:31:65: warning: unused parameter ‘event’ [-Wunused-parameter]
+   31 | gboolean on_window_configure_event(GtkWidget *widget, GdkEvent *event,
       |                                                       ~~~~~~~~~~^~~~~
-source/gtk/main.c:35:81: warning: unused parameter ‘data’ [-Wunused-parameter]
-   35 | gboolean on_window_configure_event(GtkWidget *widget, GdkEvent *event, gpointer data)
-      |                                                                        ~~~~~~~~~^~~~
+source/gtk/main.c:32:45: warning: unused parameter ‘data’ [-Wunused-parameter]
+   32 |                                    gpointer data) {
+      |                                    ~~~~~~~~~^~~~
 source/gtk/main.c: At top level:
-source/gtk/main.c:46:5: error: redefinition of ‘main’
-   46 | int main(int argc, char *argv[])
+source/gtk/main.c:43:5: error: redefinition of ‘main’
+   43 | int main(int argc, char *argv[]) {
       |     ^~~~
 In file included from source/gtk/pretreatment_utils.h:18,
                  from source/gtk/main.h:9:
-source/gtk/../image_processing/main.c:51:5: note: previous definition of ‘main’ with type ‘int(int,  char **)’
-   51 | int main(int argc, char **argv)
+source/gtk/../image_processing/main.c:45:5: note: previous definition of ‘main’ with type ‘int(int,  char **)’
+   45 | int main(int argc, char **argv) {
       |     ^~~~
 source/gtk/main.c: In function ‘main’:
-source/gtk/main.c:143:3: warning: ‘gdk_screen_get_width’ is deprecated [-Wdeprecated-declarations]
-  143 |   gint screen_width = gdk_screen_get_width(screen);
+source/gtk/main.c:154:3: warning: ‘gdk_screen_get_width’ is deprecated [-Wdeprecated-declarations]
+  154 |   gint screen_width = gdk_screen_get_width(screen);
       |   ^~~~
 /usr/include/gtk-3.0/gdk/gdkscreen.h:58:14: note: declared here
    58 | gint         gdk_screen_get_width             (GdkScreen   *screen);
       |              ^~~~~~~~~~~~~~~~~~~~
-source/gtk/main.c:144:3: warning: ‘gdk_screen_get_height’ is deprecated [-Wdeprecated-declarations]
-  144 |   gint screen_height = gdk_screen_get_height(screen);
+source/gtk/main.c:155:3: warning: ‘gdk_screen_get_height’ is deprecated [-Wdeprecated-declarations]
+  155 |   gint screen_height = gdk_screen_get_height(screen);
       |   ^~~~
 /usr/include/gtk-3.0/gdk/gdkscreen.h:60:14: note: declared here
    60 | gint         gdk_screen_get_height            (GdkScreen   *screen);
       |              ^~~~~~~~~~~~~~~~~~~~~
-source/gtk/pretreatment_utils.c: In function ‘on_grayscale_clicked’:
-source/gtk/pretreatment_utils.c:66:34: error: ‘param’ undeclared (first use in this function)
-   66 |   convert_to_grayscale(surface, &param);
-      |                                  ^~~~~
-source/gtk/pretreatment_utils.c:66:34: note: each undeclared identifier is reported only once for each function it appears in
-source/gtk/pretreatment_utils.c: In function ‘on_binarize_clicked’:
-source/gtk/pretreatment_utils.c:85:42: error: ‘param’ undeclared (first use in this function)
-   85 |   convert_to_binarized_average(surface, &param);
-      |                                          ^~~~~
-source/gtk/pretreatment_utils.c: In function ‘on_median_filter_clicked’:
-source/gtk/pretreatment_utils.c:177:27: error: ‘param’ undeclared (first use in this function)
-  177 |   median_filter(surface, &param);
-      |                           ^~~~~
-source/gtk/pretreatment_utils.c: In function ‘on_average_thresholding_clicked’:
-source/gtk/pretreatment_utils.c:227:50: error: ‘count_by_pixel’ undeclared (first use in this function)
-  227 |   create_histogram_of_pixel(surface, &histogram, count_by_pixel);
-      |                                                  ^~~~~~~~~~~~~~
-source/gtk/pretreatment_utils.c:230:41: error: ‘param’ undeclared (first use in this function)
-  230 |   convert_to_binarized_global(surface, &param);
-      |                                         ^~~~~
-source/gtk/pretreatment_utils.c: In function ‘on_adaptive_thresholding_clicked’:
-source/gtk/pretreatment_utils.c:256:45: error: ‘param’ undeclared (first use in this function)
-  256 |   convert_to_binarized_adaptative(surface, &param);
-      |                                             ^~~~~
-source/gtk/pretreatment_utils.c: In function ‘on_otsu_thresholding_clicked’:
-source/gtk/pretreatment_utils.c:269:41: error: ‘param’ undeclared (first use in this function)
-  269 |   convert_to_binarized_global(surface, &param);
-      |                                         ^~~~~
-source/gtk/pretreatment_utils.c: In function ‘on_canny_clicked’:
-source/gtk/pretreatment_utils.c:298:34: error: ‘param’ undeclared (first use in this function)
-  298 |   canny_edge_detection(surface, &param);
-      |                                  ^~~~~
-source/gtk/pretreatment_utils.c: In function ‘on_sauvola_thresholding_clicked’:
-source/gtk/pretreatment_utils.c:322:42: error: ‘param’ undeclared (first use in this function)
-  322 |   convert_to_binarized_sauvola(surface, &param);
-      |                                          ^~~~~
 In file included from /usr/include/gtk-3.0/gtk/gtkentry.h:42,
                  from /usr/include/gtk-3.0/gtk/gtktreeview.h:29,
                  from /usr/include/gtk-3.0/gtk/gtkcombobox.h:27,
                  from /usr/include/gtk-3.0/gtk/gtkappchooserbutton.h:29,
                  from /usr/include/gtk-3.0/gtk/gtk.h:42,
+                 from source/gtk/my_print.h:5,
+                 from source/gtk/image_utils.h:5,
+                 from source/gtk/main.h:5,
+                 from source/gtk/conversion_utils.h:4,
                  from source/gtk/rotation_utils.h:6,
                  from source/gtk/rotation_utils.c:1:
 source/gtk/rotation_utils.c: In function ‘on_rotate_right_clicked’:
 /usr/include/gtk-3.0/gtk/gtkimage.h:40:41: warning: initialization of ‘GdkPixbuf *’ {aka ‘struct _GdkPixbuf *’} from incompatible pointer type ‘GtkImage *’ {aka ‘struct _GtkImage *’} [-Wincompatible-pointer-types]
    40 | #define GTK_IMAGE(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_IMAGE, GtkImage))
       |                                         ^
-source/gtk/rotation_utils.c:108:23: note: in expansion of macro ‘GTK_IMAGE’
-  108 |   GdkPixbuf *pixbuf = GTK_IMAGE(data);
+source/gtk/rotation_utils.c:117:23: note: in expansion of macro ‘GTK_IMAGE’
+  117 |   GdkPixbuf *pixbuf = GTK_IMAGE(data);
       |                       ^~~~~~~~~
 source/gtk/rotation_utils.c: In function ‘on_auto_rotate_clicked’:
-source/gtk/rotation_utils.c:246:18: warning: implicit declaration of function ‘auto_detect_rotation_angle’ [-Wimplicit-function-declaration]
-  246 |   double angle = auto_detect_rotation_angle(surface, &param);
+source/gtk/rotation_utils.c:266:18: warning: implicit declaration of function ‘auto_detect_rotation_angle’ [-Wimplicit-function-declaration]
+  266 |   double angle = auto_detect_rotation_angle(surface, &param);
       |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~
-source/gtk/rotation_utils.c:246:55: error: ‘param’ undeclared (first use in this function)
-  246 |   double angle = auto_detect_rotation_angle(surface, &param);
-      |                                                       ^~~~~
-source/gtk/rotation_utils.c:246:55: note: each undeclared identifier is reported only once for each function it appears in

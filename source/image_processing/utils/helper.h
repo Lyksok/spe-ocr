@@ -7,9 +7,9 @@ int min(int a, int b);
 int max(int a, int b);
 
 // Sort ascending comparison function
-int compare_ascending(const void* a, const void* b);
+int compare_ascending(const void *a, const void *b);
 
 // Sort array using compar comparison function
-void sort_array(int** arr, int len);
+void sort_array(int **arr, int len);
 
 #endif /* HELPER_H */

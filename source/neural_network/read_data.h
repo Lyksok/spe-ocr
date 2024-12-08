@@ -1,5 +1,5 @@
-#ifndef READ_DATA_H 
-#define READ_DATA_H 
+#ifndef READ_DATA_H
+#define READ_DATA_H
 
 #include <dirent.h>
 #include <errno.h>

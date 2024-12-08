@@ -1,8 +1,8 @@
 #ifndef SPLASH_SCREEN_H
 #define SPLASH_SCREEN_H
 
-#include <gtk/gtk.h>
 #include "main.h"
+#include <gtk/gtk.h>
 
 // CONSTANTS
 #define SPLASH_IMAGE_PATH "images/splash_screen_v2024_1.png"

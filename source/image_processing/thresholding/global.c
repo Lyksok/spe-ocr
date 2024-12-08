@@ -106,8 +106,7 @@ size_t get_optimal_threshold(SDL_Surface *surface) {
   return max_threshold;
 }
 
-void global_thresholding(SDL_Surface* surface, struct parameters* param)
-{
+void global_thresholding(SDL_Surface *surface, struct parameters *param) {
   // Intialize parameters
   (void)param;
 

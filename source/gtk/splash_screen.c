@@ -5,8 +5,7 @@
  * @param app The GtkApplication instance.
  * @note The splash screen is destroyed after a timeout.
  */
-void show_splash_screen(GtkApplication *app)
-{
+void show_splash_screen(GtkApplication *app) {
   printf("🖼️ Showing splash screen\n");
   GtkWidget *splash_window, *splash_img;
 

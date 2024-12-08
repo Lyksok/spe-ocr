@@ -3,13 +3,13 @@
 
 #include "structures.h"
 
-int box_are_equal(BoundingBox* b1, BoundingBox* b2);
-void box_expand_coord(BoundingBox* box, int x, int y);
-void box_init_coord(BoundingBox* box, int x, int y);
-void box_init_coord_from_box(BoundingBox* src, BoundingBox* dst);
-int box_get_height(BoundingBox* box);
-int box_get_width(BoundingBox* box);
-Point box_get_center(BoundingBox* box);
+int box_are_equal(BoundingBox *b1, BoundingBox *b2);
+void box_expand_coord(BoundingBox *box, int x, int y);
+void box_init_coord(BoundingBox *box, int x, int y);
+void box_init_coord_from_box(BoundingBox *src, BoundingBox *dst);
+int box_get_height(BoundingBox *box);
+int box_get_width(BoundingBox *box);
+Point box_get_center(BoundingBox *box);
 
 /*
 // Structure comparisons

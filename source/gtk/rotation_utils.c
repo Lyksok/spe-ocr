@@ -4,6 +4,8 @@
 double left_angle = DEFAULT_LEFT_ANGLE;
 double right_angle = DEFAULT_RIGHT_ANGLE;
 
+struct parameters param;
+
 void on_left_angle_entry_activate(GtkEntry *entry, gpointer data)
 {
   if (!entry || !data)
@@ -37,7 +39,8 @@ void on_right_angle_entry_activate(GtkEntry *entry, gpointer data)
   *angle = g_ascii_strtod(angle_text, NULL); // convert string to double
 }
 /**
- * @brief Callback function to handle the "activate" signal of the GtkEntry widgets.
+ * @brief Callback function to handle the "activate" signal of the GtkEntry
+ * widgets.
  * @param entry The GtkEntry widget.
  * @param data Pointer to the rotation angle macro to update.
  */
@@ -64,8 +67,11 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
 
   // Create an SDL texture from the surface
-  SDL_Window *window = SDL_CreateWindow("Rotation", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, surface->w, surface->h, SDL_WINDOW_HIDDEN);
-  SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+  SDL_Window *window = SDL_CreateWindow("Rotation", SDL_WINDOWPOS_UNDEFINED,
+                                        SDL_WINDOWPOS_UNDEFINED, surface->w,
+                                        surface->h, SDL_WINDOW_HIDDEN);
+  SDL_Renderer *renderer =
+      SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
   SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
 
   // Set up the destination rectangle
@@ -74,12 +80,15 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
   // Render the texture with rotation
   SDL_SetRenderTarget(renderer, NULL);
   SDL_RenderClear(renderer);
-  SDL_RenderCopyEx(renderer, texture, NULL, &dstrect, angle, NULL, SDL_FLIP_NONE);
+  SDL_RenderCopyEx(renderer, texture, NULL, &dstrect, angle, NULL,
+                   SDL_FLIP_NONE);
   SDL_RenderPresent(renderer);
 
   // Read the pixels from the renderer into a new surface
-  SDL_Surface *rotated_surface = SDL_CreateRGBSurfaceWithFormat(0, surface->w, surface->h, 32, SDL_PIXELFORMAT_RGBA32);
-  SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_RGBA32, rotated_surface->pixels, rotated_surface->pitch);
+  SDL_Surface *rotated_surface = SDL_CreateRGBSurfaceWithFormat(
+      0, surface->w, surface->h, 32, SDL_PIXELFORMAT_RGBA32);
+  SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_RGBA32,
+                       rotated_surface->pixels, rotated_surface->pitch);
 
   // Convert the rotated surface back to GdkPixbuf
   GdkPixbuf *rotated_pixbuf = sdl_surface_to_gdk_pixbuf(rotated_surface);
@@ -109,8 +118,11 @@ void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
 
   // Create an SDL texture from the surface
-  SDL_Window *window = SDL_CreateWindow("Rotation", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, surface->w, surface->h, SDL_WINDOW_HIDDEN);
-  SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+  SDL_Window *window = SDL_CreateWindow("Rotation", SDL_WINDOWPOS_UNDEFINED,
+                                        SDL_WINDOWPOS_UNDEFINED, surface->w,
+                                        surface->h, SDL_WINDOW_HIDDEN);
+  SDL_Renderer *renderer =
+      SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
   SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
 
   // Set up the destination rectangle
@@ -119,12 +131,15 @@ void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
   // Render the texture with rotation
   SDL_SetRenderTarget(renderer, NULL);
   SDL_RenderClear(renderer);
-  SDL_RenderCopyEx(renderer, texture, NULL, &dstrect, angle, NULL, SDL_FLIP_NONE);
+  SDL_RenderCopyEx(renderer, texture, NULL, &dstrect, angle, NULL,
+                   SDL_FLIP_NONE);
   SDL_RenderPresent(renderer);
 
   // Read the pixels from the renderer into a new surface
-  SDL_Surface *rotated_surface = SDL_CreateRGBSurfaceWithFormat(0, surface->w, surface->h, 32, SDL_PIXELFORMAT_RGBA32);
-  SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_RGBA32, rotated_surface->pixels, rotated_surface->pitch);
+  SDL_Surface *rotated_surface = SDL_CreateRGBSurfaceWithFormat(
+      0, surface->w, surface->h, 32, SDL_PIXELFORMAT_RGBA32);
+  SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_RGBA32,
+                       rotated_surface->pixels, rotated_surface->pitch);
 
   // Convert the rotated surface back to GdkPixbuf
   GdkPixbuf *rotated_pixbuf = sdl_surface_to_gdk_pixbuf(rotated_surface);
@@ -156,8 +171,10 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
   double angle_rad = angle * PI / 180.0;
   double cos_angle = cos(angle_rad);
   double sin_angle = sin(angle_rad);
-  int dst_width = (int)(fabs(src_width * cos_angle) + fabs(src_height * sin_angle));
-  int dst_height = (int)(fabs(src_width * sin_angle) + fabs(src_height * cos_angle));
+  int dst_width =
+      (int)(fabs(src_width * cos_angle) + fabs(src_height * sin_angle));
+  int dst_height =
+      (int)(fabs(src_width * sin_angle) + fabs(src_height * cos_angle));
 
   int n_channels = gdk_pixbuf_get_n_channels(src_pixbuf);
 
@@ -166,10 +183,13 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
          src_width, src_height, dst_width, dst_height, n_channels);
 
   // Ensure dst_pixbuf has the correct dimensions
-  if (gdk_pixbuf_get_width(dst_pixbuf) != dst_width || gdk_pixbuf_get_height(dst_pixbuf) != dst_height)
+  if (gdk_pixbuf_get_width(dst_pixbuf) != dst_width ||
+      gdk_pixbuf_get_height(dst_pixbuf) != dst_height)
   {
     g_object_unref(dst_pixbuf);
-    dst_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(src_pixbuf), 8, dst_width, dst_height);
+    dst_pixbuf =
+        gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(src_pixbuf),
+                       8, dst_width, dst_height);
   }
 
   guchar *src_pixels = gdk_pixbuf_get_pixels(src_pixbuf);
@@ -186,7 +206,8 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
       double src_y = (x - dst_width / 2) * sin_angle +
                      (y - dst_height / 2) * cos_angle + src_height / 2;
 
-      if (src_x >= 0 && src_x < src_width - 1 && src_y >= 0 && src_y < src_height - 1)
+      if (src_x >= 0 && src_x < src_width - 1 && src_y >= 0 &&
+          src_y < src_height - 1)
       {
         int x1 = (int)src_x;
         int y1 = (int)src_y;
@@ -214,10 +235,8 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
           guchar *p4 = src_pixels + y2 * src_rowstride + x2 * n_channels + c;
 
           // Bilinear interpolation
-          double value = (1 - dx) * (1 - dy) * (*p1) +
-                         dx * (1 - dy) * (*p2) +
-                         (1 - dx) * dy * (*p3) +
-                         dx * dy * (*p4);
+          double value = (1 - dx) * (1 - dy) * (*p1) + dx * (1 - dy) * (*p2) +
+                         (1 - dx) * dy * (*p3) + dx * dy * (*p4);
 
           dst_pixels[y * dst_rowstride + x * n_channels + c] = (guchar)value;
         }
@@ -226,7 +245,8 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
       {
         for (int c = 0; c < n_channels; c++)
         {
-          dst_pixels[y * dst_rowstride + x * n_channels + c] = 0; // Set to black or transparent
+          dst_pixels[y * dst_rowstride + x * n_channels + c] =
+              0; // Set to black or transparent
         }
       }
     }
@@ -251,7 +271,8 @@ void on_auto_rotate_clicked(GtkWidget *widget, gpointer data)
   // Rotate the image by the detected angle
   int width = gdk_pixbuf_get_width(pixbuf);
   int height = gdk_pixbuf_get_height(pixbuf);
-  GdkPixbuf *new_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
+  GdkPixbuf *new_pixbuf =
+      gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
   rotate_pixbuf(pixbuf, new_pixbuf, angle);
   display_pixbuf(data, new_pixbuf);
 

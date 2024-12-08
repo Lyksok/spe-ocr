@@ -42,22 +42,19 @@ void histogram_of_pixels(SDL_Surface *surface, int **histogram) {
   create_histogram_of_pixel(surface, histogram, count_by_pixel);
 }
 
-void get_bounding_box_freq_histograms(SDL_Surface* surface,
-		BoundingBox** boxes, int size, int** column_histo, int** row_histo)
-{
+void get_bounding_box_freq_histograms(SDL_Surface *surface, BoundingBox **boxes,
+                                      int size, int **column_histo,
+                                      int **row_histo) {
   (void)size;
-  	for (int j = 0; j < surface->h; j++)
-	{
-    	for (int i = 0; i < surface->w; i++)
-		{
-            BoundingBox* box = boxes[j*surface->w+i];
-            Point point = (Point){i,j};
-			if(box->p2.x >= point.x && box->p1.x <= point.x 
-					&& box->p2.y >= point.y && box->p1.y <= point.y)
-			{
-				(*column_histo)[i]++;
-				(*row_histo)[j]++;
-			}
-		}
-	}
+  for (int j = 0; j < surface->h; j++) {
+    for (int i = 0; i < surface->w; i++) {
+      BoundingBox *box = boxes[j * surface->w + i];
+      Point point = (Point){i, j};
+      if (box->p2.x >= point.x && box->p1.x <= point.x &&
+          box->p2.y >= point.y && box->p1.y <= point.y) {
+        (*column_histo)[i]++;
+        (*row_histo)[j]++;
+      }
+    }
+  }
 }

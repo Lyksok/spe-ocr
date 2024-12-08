@@ -6,7 +6,7 @@
 #include "convertion.h"
 #include "neural_structures.h"
 
-//extern const int dimension;
+// extern const int dimension;
 
 #define nLayers 2
 #define nInputs (dimension * dimension)
@@ -30,10 +30,10 @@ void RecoverSecondLayer(Layer *l, const char *fweight, const char *fbias);
 void DestroyLayer(Layer *layer);
 TrainingData *CreateData();
 TrainingData *LinkData(TrainingData *d1, TrainingData *d2);
-void DestroyData(TrainingData* data);
+void DestroyData(TrainingData *data);
 Network *CreateNet(int numLayers, int lr);
-Network *RecoverNet(const char *fw1, const char *fb1,
-		const char *fw2, const char *fb2);
+Network *RecoverNet(const char *fw1, const char *fb1, const char *fw2,
+                    const char *fb2);
 void DestroyNet(Network *network);
 
 #endif

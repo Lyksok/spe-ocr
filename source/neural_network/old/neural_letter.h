@@ -29,7 +29,7 @@ double init_weights();
 void train();
 
 void forward(int i, double training_inputs[numTrainingSets][numInputs]);
-//void forward(int i);
+// void forward(int i);
 
 void backward(int i);
 

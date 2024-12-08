@@ -1,11 +1,13 @@
 #ifndef READ_H
 #define READ_H
 
+#include <stdio.h>
 typedef struct Words Words;
-struct Words {
-	char *w;
-	int len;
-	Words *next;
+struct Words
+{
+  char *w;
+  int len;
+  Words *next;
 };
 
 Words *CreateWord(int len, char *word);

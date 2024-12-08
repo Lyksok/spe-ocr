@@ -5,54 +5,46 @@
 #include <string.h>
 
 #include "../detection-and-segmentation/detection.h"
-#include "detection/list.h"
-#include "detection/structures.h"
 #include "../detection-and-segmentation/segmentation.h"
 #include "binarization/binarizing.h"
+#include "detection/list.h"
+#include "detection/structures.h"
 #include "image_processing.h"
 
-void draw_rect(SDL_Renderer *renderer, int rect[4])
-{
-	if(SDL_SetRenderDrawColor(renderer, 0, 255, 0, SDL_ALPHA_OPAQUE))
-	    errx(EXIT_FAILURE, "Failed to set render draw color: %s", SDL_GetError());
-	SDL_Rect r;
-	r.x = rect[0];
-	r.y = rect[1];
-	r.w = rect[2];
-	r.h = rect[3];
-	if(SDL_RenderDrawRect(renderer, &r))
-	    errx(EXIT_FAILURE, "Failed to fill the rectangle: %s", SDL_GetError());
+void draw_rect(SDL_Renderer *renderer, int rect[4]) {
+  if (SDL_SetRenderDrawColor(renderer, 0, 255, 0, SDL_ALPHA_OPAQUE))
+    errx(EXIT_FAILURE, "Failed to set render draw color: %s", SDL_GetError());
+  SDL_Rect r;
+  r.x = rect[0];
+  r.y = rect[1];
+  r.w = rect[2];
+  r.h = rect[3];
+  if (SDL_RenderDrawRect(renderer, &r))
+    errx(EXIT_FAILURE, "Failed to fill the rectangle: %s", SDL_GetError());
 }
 
-void draw_rects(SDL_Renderer* renderer, int rect[][4], size_t len)
-{
-    for(size_t i=0; i<len; i++)
-    {
-        draw_rect(renderer,rect[i]);
-    }
+void draw_rects(SDL_Renderer *renderer, int rect[][4], size_t len) {
+  for (size_t i = 0; i < len; i++) {
+    draw_rect(renderer, rect[i]);
+  }
 }
 
-void draw_line(SDL_Renderer *renderer, Point p1, Point p2)
-{
-    if(SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE))
-	errx(EXIT_FAILURE, "Failed to set render draw color: %s", SDL_GetError());
-    if(SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y))
-	errx(EXIT_FAILURE, "Failed to draw line: %s", SDL_GetError());
+void draw_line(SDL_Renderer *renderer, Point p1, Point p2) {
+  if (SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE))
+    errx(EXIT_FAILURE, "Failed to set render draw color: %s", SDL_GetError());
+  if (SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y))
+    errx(EXIT_FAILURE, "Failed to draw line: %s", SDL_GetError());
 }
 
-void draw_lines(SDL_Renderer* renderer, Point* src, Point* dest, int len)
-{
-    for(int i=0; i<len; i++)
-    {
-        draw_line(renderer, src[i], dest[i]);
-    }
+void draw_lines(SDL_Renderer *renderer, Point *src, Point *dest, int len) {
+  for (int i = 0; i < len; i++) {
+    draw_line(renderer, src[i], dest[i]);
+  }
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   if (argc != 3 && argc != 4)
-    errx(EXIT_FAILURE,
-         "Usage: <image-file> <detection/segmentation>");
+    errx(EXIT_FAILURE, "Usage: <image-file> <detection/segmentation>");
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
     errx(EXIT_FAILURE, "%s", SDL_GetError());
@@ -73,8 +65,7 @@ int main(int argc, char **argv)
     errx(EXIT_FAILURE, "%s", SDL_GetError());
   SDL_Surface *surface = SDL_ConvertSurfaceFormat(t, SDL_PIXELFORMAT_RGB888, 0);
   SDL_FreeSurface(t);
-  if (surface == NULL)
-  {
+  if (surface == NULL) {
     errx(EXIT_FAILURE, "%s", SDL_GetError());
   }
 
@@ -83,21 +74,16 @@ int main(int argc, char **argv)
   invert_colors(surface);
 
   int is_detection = 1;
-  if (strcmp(argv[2], "detection") == 0)
-  {
+  if (strcmp(argv[2], "detection") == 0) {
     is_detection = 1;
-  }
-  else if (strcmp(argv[2], "segmentation") == 0)
-  {
+  } else if (strcmp(argv[2], "segmentation") == 0) {
     BoundingBox *grid_box = get_grid_box(surface, get_parameters());
     save_bounding_box(surface, grid_box);
     free(grid_box);
-  }
-  else
+  } else
     errx(EXIT_FAILURE, "Usage: <image-file> <detection/segmentation>");
 
-  if (!is_detection)
-  {
+  if (!is_detection) {
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
     SDL_FreeSurface(surface);
     SDL_DestroyRenderer(renderer);
@@ -115,12 +101,14 @@ int main(int argc, char **argv)
   (void)grid;
 
   int number_of_characters;
-  BoundingBox **characters = get_char_boxes(surface, &number_of_characters, get_parameters());
+  BoundingBox **characters =
+      get_char_boxes(surface, &number_of_characters, get_parameters());
   (void)characters;
   BoundingBox *grid_box = get_grid_box(surface, get_parameters());
   BoundingBox *word_list = get_word_list_box(surface, get_parameters());
   int word_count;
-  BoundingBox **words_b = get_word_boxes(surface, &word_count, get_parameters());
+  BoundingBox **words_b =
+      get_word_boxes(surface, &word_count, get_parameters());
 
   SDL_SetWindowSize(window, surface->w, surface->h);
   SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -129,26 +117,32 @@ int main(int argc, char **argv)
   SDL_RenderPresent(renderer);
 
   SDL_Event event;
-  while (1)
-  {
+  while (1) {
     int width;
     int height;
     SDL_GetWindowSize(window, &width, &height);
 
-    for (int i = 0; i < word_count; i++)
-    {
-      int x1 = (int)((double)words_b[i]->p1.x / (double)surface->w * (double)width);
-      int y1 = (int)((double)words_b[i]->p1.y / (double)surface->h * (double)height);
-      int x2 = (int)((double)words_b[i]->p2.x / (double)surface->w * (double)width);
-      int y2 = (int)((double)words_b[i]->p2.y / (double)surface->h * (double)height);
+    for (int i = 0; i < word_count; i++) {
+      int x1 =
+          (int)((double)words_b[i]->p1.x / (double)surface->w * (double)width);
+      int y1 =
+          (int)((double)words_b[i]->p1.y / (double)surface->h * (double)height);
+      int x2 =
+          (int)((double)words_b[i]->p2.x / (double)surface->w * (double)width);
+      int y2 =
+          (int)((double)words_b[i]->p2.y / (double)surface->h * (double)height);
       int rect[] = {x1, y1, x2 - x1, y2 - y1};
       draw_rect(renderer, rect);
     }
-    
-    int x1 = (int)((double)word_list->p1.x / (double)surface->w * (double)width);
-    int y1 = (int)((double)word_list->p1.y / (double)surface->h * (double)height);
-    int x2 = (int)((double)word_list->p2.x / (double)surface->w * (double)width);
-    int y2 = (int)((double)word_list->p2.y / (double)surface->h * (double)height);
+
+    int x1 =
+        (int)((double)word_list->p1.x / (double)surface->w * (double)width);
+    int y1 =
+        (int)((double)word_list->p1.y / (double)surface->h * (double)height);
+    int x2 =
+        (int)((double)word_list->p2.x / (double)surface->w * (double)width);
+    int y2 =
+        (int)((double)word_list->p2.y / (double)surface->h * (double)height);
     int rect[] = {x1, y1, x2 - x1, y2 - y1};
     draw_rect(renderer, rect);
 
@@ -162,8 +156,7 @@ int main(int argc, char **argv)
     SDL_RenderPresent(renderer);
 
     SDL_WaitEvent(&event);
-    switch (event.type)
-    {
+    switch (event.type) {
     case SDL_QUIT:
       SDL_QuitSubSystem(SDL_INIT_VIDEO);
       SDL_FreeSurface(surface);
@@ -176,8 +169,7 @@ int main(int argc, char **argv)
       return EXIT_SUCCESS;
 
     case SDL_WINDOWEVENT:
-      if (event.window.event == SDL_WINDOWEVENT_RESIZED)
-      {
+      if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
         SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_RenderPresent(renderer);
       }

@@ -1,7 +1,10 @@
 #include "pretreatment_utils.h"
+
 /***************************************************************
  *   MULTIPURPOSE BUTTON "RUN" FOR PIPELINE DEMONSTRATION
  ***************************************************************/
+
+struct parameters param;
 void on_run_clicked(GtkWidget *button, gpointer data)
 {
   GtkWidget *image_widget = GTK_WIDGET(data);

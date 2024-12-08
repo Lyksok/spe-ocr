@@ -1,8 +1,8 @@
 #ifndef CSV_H
 #define CSV_H
 
-#include "setup.h"
 #include "neural_structures.h"
+#include "setup.h"
 
 #define MAX_FIELDS nInputs
 #define MAX_FIELD_LEN 7
@@ -13,9 +13,8 @@
 
 void WriteCsvWeight(const char *filename, Layer l);
 void WriteCsvBiases(const char *filename, Layer l);
-int ParseLine(const char *line,
-                int max_fields,
-                char fields[max_fields][MAX_FIELD_LEN]);
+int ParseLine(const char *line, int max_fields,
+              char fields[max_fields][MAX_FIELD_LEN]);
 void ReadCsvWeigths(const char *filename, Layer *layer, int max_weights);
 void ReadCsvBiases(const char *filename, Layer *layer, int max_neurons);
 

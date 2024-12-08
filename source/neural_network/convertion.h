@@ -3,9 +3,9 @@
 
 #include <SDL2/SDL.h>
 
-#include "convertion.h"
 #include "../gtk/conversion_utils.h"
 #include "../gtk/image_utils.h"
+#include "convertion.h"
 #include "neural_structures.h"
 
 #define dimension 13

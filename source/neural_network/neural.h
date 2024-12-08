@@ -11,7 +11,7 @@ void Forward(int length, Network *net, int i);
 
 void Backward(Network *net, TrainingData data, int i);
 
-//void Result(Network net, TrainingData data, int nbrun);
+// void Result(Network net, TrainingData data, int nbrun);
 double Result(TrainingData *data, Network net, int run);
 
 void Train(int nbrun, Network *net, TrainingData *data);

@@ -3,28 +3,25 @@
 
 #include <stdio.h>
 
-typedef struct
-{
-    int x;
-    int y;
+typedef struct {
+  int x;
+  int y;
 } Point;
 
-typedef struct BoundingBox
-{
-    Point p1;
-    Point p2;
-    long id;
-    Point start;
-    int score;
-    int pixel_nb;
+typedef struct BoundingBox {
+  Point p1;
+  Point p2;
+  long id;
+  Point start;
+  int score;
+  int pixel_nb;
 } BoundingBox;
 
-struct list
-{
-    struct list* next;
-    struct list* prev;
-    struct BoundingBox* box;
-    size_t len;
+struct list {
+  struct list *next;
+  struct list *prev;
+  struct BoundingBox *box;
+  size_t len;
 };
 
 #endif /* STRUCTURES_H */
