@@ -19,12 +19,11 @@ double init_weights()
 	return ((double)rand()) / ((double)RAND_MAX);
 }
 
-void shuffle(int *array, size_t n)
+/*void shuffle(int *array, size_t n)
 {
 	if(n > 1)
 	{
-		size_t i;
-		for (i = 0; i < n - 1; i++)
+        for (size_t i = 0; i < n - 1; i++)
 		{
 			size_t j = i + rand() / (RAND_MAX / (n - 1) + 1);
 			int t = array[j];
@@ -32,7 +31,7 @@ void shuffle(int *array, size_t n)
 			array[i] = t;
 		}
 	}
-}
+}*/
 
 #define numInputs 2
 #define numHiddenNodes 3
@@ -92,7 +91,7 @@ int main(void)
 
 	for(int epoch = 0; epoch < numberOfEpochs; epoch++)
 	{
-		shuffle(trainingSetOrder, numTrainingSets);
+		//shuffle(trainingSetOrder, numTrainingSets);
 
 		for (int x = 0; x < numTrainingSets; x++)
 		{
