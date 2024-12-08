@@ -134,13 +134,13 @@ void RecoverSecondLayer(Layer *l, const char *fweight, const char *fbias)
         return;
 }
 
-Layer *CreateFirstLayer(int len, int nn)
+Layer *CreateFirstLayer(int ni, int nn)
 {
         Layer *layer = malloc(sizeof(Layer));
 	layer->numNeurons = nn;
-	layer->numWeights = len;
+	layer->numWeights = ni;
         layer->neurons = malloc(nn * sizeof(Neuron*));
-	layer->inputs = calloc(len, sizeof(double));
+	layer->inputs = calloc(ni, sizeof(double));
 	layer->weights = malloc(layer->numNeurons * sizeof(double*));
 	for (int n = 0; n < layer->numNeurons; n++)
 	{
@@ -156,8 +156,8 @@ Layer *CreateFirstLayer(int len, int nn)
 
 Layer *CreateLayer(Layer *l, int nn)
 {
-	int len = l->numNeurons;
-        Layer *layer = CreateFirstLayer(len, nn);
+	int ni = l->numNeurons;
+        Layer *layer = CreateFirstLayer(ni, nn);
 	layer->prev = l;
 	l->next = layer;
 	layer->next = NULL;
@@ -232,7 +232,7 @@ Network *CreateNet(int numLayers, int lr)
 	network->layers = l;
         for (int i = 1; i < numLayers; i++)
         {
-		l = CreateLayer(l, nNodes);
+		l = CreateLayer(l, nOut);
         }
 
 	network->lr = lr;

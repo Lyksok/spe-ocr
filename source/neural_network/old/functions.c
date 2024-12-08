@@ -110,6 +110,22 @@ void Softmax(int length, double **mat)
         }
 }
 
+void Softmax(int length, double **mat);
+
+void Softmax(int length, double **mat)
+{
+        double sum = 0;
+        for (int n = 0; n < length; n++)
+        {
+                *mat[n] = exp(*mat[n]);
+                sum += *mat[n];
+        }
+        for (int n = 0; n < length; n++)
+        {
+                *mat[n] = (*mat[n]) / sum;
+        }
+}
+
 double sigmoid(double x);
 
 double sigmoid(double x)
@@ -122,6 +138,17 @@ double dSigmoid(double x);
 double dSigmoid(double x)
 {
         return x * (1 - x);
+}
+
+void Copy(int len, double *src, double **dest);
+
+void Copy(int len, double *src, double **dest)
+{
+        for (int l = 0; l < len; l++)
+        {
+                *dest[l] = src[l];
+        }
+        return;
 }
 
 void forward(int i, double **training_inputs);
@@ -176,6 +203,105 @@ void backward(int i, const double lr, double **training_output)
         deltaHidden[j] = error * dSigmoid(hiddenLayer[j]);
     }
     change_weights(lr, deltaOutput, deltaHidden);
+}
+
+void Backward(Network *net, TrainingData data, int i);
+
+void Backward(Network *net, TrainingData data, int i)
+{
+        Layer *l = net->layers;
+        for (; l->next != NULL; l = l->next)
+        {}
+
+        double *errors = calloc(26, sizeof(double));
+        if (errors == NULL)
+        {
+                printf("Backward() -> Calloc()\n");
+                return;
+        }
+        for (int n = 0; n < 26; n++)
+        {
+                double r = (data.expected - 'A' == n) ? 1 : 0;
+                errors[n] += Cost(net->outputs[i][n], r);
+        }
+        for (; l != NULL; l = l->prev)
+        {
+                int nb = l->numNeurons;
+                double *err = calloc(nb, sizeof(double));
+                if (err == NULL)
+                {
+                        printf("Backward() -> Calloc()\n");
+                        return;
+                }
+                for (int n = 0; n < nb; n++)
+                {
+                        double nerr = 0;
+                        for (int x = 0; x < l->numWeights; x++)
+                        {
+                                double w = l->weights[n][x];
+                                nerr += err[n] * w;
+                        }
+                        double v = l->neurons[n]->value;
+                        nerr *= dSigmoid(v);
+                        err[n] += nerr;
+                }
+                Update(l, errors, net->lr);
+                free(errors);
+                errors = err;
+        }
+        free(errors);
+}
+
+void Update(Layer *l, double *errors, int lr);
+
+void Update(Layer *l, double *errors, int lr) {
+        for (int n = 0; n < l->numNeurons; n++)
+        {
+                printf("updating neuron %i\n", n);
+                double e = errors[n];
+                for (int i = 0; i < l->numWeights; i++)
+                {
+                        double w = l->weights[n][i];
+                        double in = l->inputs[i];
+                        l->weights[n][i] = w - lr * e * in;
+                }
+                double b = l->neurons[n]->bias;
+                l->neurons[n]->bias = b - lr * e;
+        }
+        return;
+}
+
+double Result(TrainingData data, Network net, int run);
+
+double Result(TrainingData data, Network net, int run)
+{
+        int succ = 0;
+        TrainingData *cur = &data;
+        int i = 0;
+        for (; cur != NULL; cur = cur->next)
+        {
+                double r = net.outputs[run][0];
+                char res = 0;
+                for (char c = 1; c < 26; c++)
+                {
+                        double rr = GetMax(r, net.outputs[run][(int)c]);
+                        if (r != rr)
+                                res = c;
+                        r = rr;
+                }
+                char *got = "Predicted Output =";
+                char *want = "Expected Output =";
+                res += 'A';
+                char eres = cur->expected;
+                printf("Run %i : %s %c | %s %c\n",
+                        run, got, res, want, eres);
+                if (res == eres)
+                        succ += 1;
+                i++;
+        }
+        double acc = (i != 0) ? (double) succ/i : 0;
+        printf("Accuracy for this set : %f\n", acc);
+        return acc;
 }
 
 void change_weights(const double lr,

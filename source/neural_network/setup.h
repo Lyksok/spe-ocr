@@ -22,7 +22,7 @@ void RecoverBiases(Layer l, int nodes, double arr[nodes]);
 void PrintData(Network net);
 Neuron *CreateNeuron();
 void DestroyNeuron(Neuron *n);
-Layer *CreateFirstLayer(int len, int nn);
+Layer *CreateFirstLayer(int ni, int nn);
 Layer *CreateLayer(Layer *l, int nn);
 void SaveLayers(Layer *first);
 Layer *RecoverFirstLayer(const char *fweight, const char *fbias);
