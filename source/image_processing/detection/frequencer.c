@@ -20,13 +20,13 @@ void freq_box_nb(SDL_Surface* surface, struct list* box_list,
     }
 }  
 
-static struct f_tuple
+struct f_tuple
 {
     int* tuple;
     int nb;
 };
 
-int* freq_most_frequent_tuple(SDL_Surface* surface, struct list* box_list)
+int* freq_most_frequent_tuple(struct list* box_list)
 {
     int i=0;
     int** tuples = calloc(list_len(box_list), sizeof(int*));

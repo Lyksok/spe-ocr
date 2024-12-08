@@ -10,7 +10,7 @@
 #include "detection/list.h"
 #include "detection/bounding-box.h"
 #include "detection/filtering.h"
-#include "detection/cluster-detection.h"
+#include "../detection-and-segmentation/cluster-detection.h"
 #include "denoising/morphology.h"
 #include "binarization/binarizing.h"
 

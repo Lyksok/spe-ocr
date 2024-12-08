@@ -36,7 +36,7 @@ static int w=3;
 
 void dilate_surface(SDL_Surface* surface, struct parameters* param)
 {
-    int* mask;
+    int* mask = dilation_mask_cross;
     if(param->dilation_m==0)
         mask = dilation_mask_cross;
     else if(param->dilation_m==1)
@@ -73,7 +73,7 @@ static int erosion_mask_full[9] = {1};
 
 void erode_surface(SDL_Surface* surface, struct parameters* param)
 {
-    int* mask;
+    int* mask = erosion_mask_cross;
     if(param->erosion_m==0)
         mask = erosion_mask_cross;
     else if(param->erosion_m==1)

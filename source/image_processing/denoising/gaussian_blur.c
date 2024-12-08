@@ -58,7 +58,7 @@ static void convolve_surface(SDL_Surface *surface, double *mask)
 void gaussian_blur(SDL_Surface* surface, struct parameters* param)
 {
     w = param->gaussian_w;
-    double* mask;
+    double* mask = mask_3x3;
     if(w == 3)
         mask = mask_3x3;
     else if(w == 5)
