@@ -33,11 +33,32 @@ are repeatedly adjusted to minimize the difference
 between the actual output vector of the net
 and the desired output vector.
 
+----- CSV -----
+fgets() :
+	char *fgets(char *str, int n, FILE *stream);
+	str: pointer to buffer where the string will be stored
+	n: max number of char to read (including \0)
+	stream: input stream to read from
+	reads up to n-1 characters
+	OR up till a newline (\n) / end-of-file (EOF) is encountered
+	append \0 at the end (if \n was read, it will be included)
+	return NULL if no char was read
+fopen() :
+	If the file specified by filename does not exist, it will be created.
+	If the file already exists, it will be overwritten,
+	meaning its contents will be cleared.
+
 ----- TODOs -----
 TODO: find how to train the network (Louis's script can help)
 TODO: check wether the transformation from image to list is working correctly
 TODO: actually test stuff
 TODO: search how to store the "old" network (to reuse)
+
+TODO: finish the csv stuff
+TODO: convert everything so that it makes use of the csv files
+TODO: check for a correct number of neurons in a layer
+TODO: change name of structures.h ?
+to make sure of no problems with structures.h if det-seg
 
 ----- NB -----
 /!\ if a function was completely erased or modified
