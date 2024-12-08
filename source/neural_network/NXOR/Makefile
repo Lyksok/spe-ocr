@@ -2,7 +2,8 @@ EXEC = nxor
 
 CC = gcc
 
-CFLAGS = -Wall -Wextra -g
+DEBUG = -fsanitize=address -g
+CFLAGS = -Wall -Wextra $(DEBUG)
 
 SRC = neural_nxor.c
 
