@@ -1,14 +1,14 @@
 #include "my_print.h"
 
-extern GtkBuilder *builder;
 GtkWidget *log_view = NULL;
 
-void init_log_view(const char *ui_file) {
-  builder = gtk_builder_new_from_file(ui_file);
-  log_view = GTK_WIDGET(gtk_builder_get_object(builder, "log_view"));
+void init_log_view(GtkWidget *log_view_widget)
+{
+  log_view = log_view_widget;
 }
 
-void my_print(const char *format, ...) {
+void my_print(const char *format, ...)
+{
   va_list args;
   va_start(args, format);
 
@@ -23,13 +23,14 @@ void my_print(const char *format, ...) {
 
   // Allocate buffer dynamically
   char *buffer = malloc(len + 1);
-  if (buffer) {
+  if (buffer)
+  {
     vsnprintf(buffer, len + 1, format, args);
 
     // Print to GtkTextView if log_view is initialized
-    if (log_view) {
-      GtkTextBuffer *text_buffer =
-          gtk_text_view_get_buffer(GTK_TEXT_VIEW(log_view));
+    if (log_view)
+    {
+      GtkTextBuffer *text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(log_view));
       GtkTextIter end;
       gtk_text_buffer_get_end_iter(text_buffer, &end);
       gtk_text_buffer_insert(text_buffer, &end, buffer, -1);

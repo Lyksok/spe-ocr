@@ -7,6 +7,6 @@
 #include <stdio.h>
 
 void my_print(const char *format, ...); // The '...' is a variadic argument
-void init_log_view(const char *ui_file);
+void init_log_view(GtkWidget *log_view_widget);
 
 #endif

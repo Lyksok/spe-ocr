@@ -28,5 +28,6 @@ void on_rotate_right_clicked(GtkWidget *widget, gpointer data);
 void on_left_angle_entry_activate(GtkEntry *entry, gpointer data);
 void on_right_angle_entry_activate(GtkEntry *entry, gpointer data);
 void on_auto_rotate_clicked(GtkWidget *widget, gpointer data);
+void on_angle_entry_activate(GtkEntry *entry, gpointer data);
 
 #endif // ROTATION_UTILS_H
