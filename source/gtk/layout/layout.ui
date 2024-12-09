@@ -388,6 +388,7 @@
                         <property name="can-focus">True</property>
                         <property name="placeholder-text" translatable="yes">Enter left angle</property>
                         <signal name="activate" handler="on_left_angle_entry_activate" swapped="no"/>
+                        <signal name="changed" handler="on_left_angle_entry_activate" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -414,6 +415,8 @@
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="placeholder-text" translatable="yes">Enter right angle</property>
+                        <signal name="activate" handler="on_right_angle_entry_activate" swapped="no"/>
+                        <signal name="changed" handler="on_right_angle_entry_activate" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>

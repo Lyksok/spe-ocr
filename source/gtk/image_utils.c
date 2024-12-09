@@ -22,9 +22,9 @@ void process_and_display_image(GtkWidget *image_widget, GdkPixbuf *pixbuf)
   printf("Final pixbuf with alpha borders created\n");
 
   // Display the final image with alpha borders
-  gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), final_pixbuf);
+  display_pixbuf(image_widget, final_pixbuf);
   printf("Image set in image_widget\n");
-  // GTK_IMAGE(gtk_image_new_from_pixbuf(pixbuf));
+
   g_object_unref(final_pixbuf);
   printf("Freed final pixbuf\n");
 }

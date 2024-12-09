@@ -1,7 +1,7 @@
 #include "main.h"
 
 /**
- * @brief Callback function to destroy the main window.
+ * @brief Callback function to destroy the main window_main.
  */
 void on_window_main_destroy(GtkWidget *widget, gpointer data)
 {
@@ -32,7 +32,7 @@ gboolean destroy_widget(gpointer widget)
 }
 
 /**
- * @brief Callback function to handle window resize events.
+ * @brief Callback function to handle window_main resize events.
  */
 gboolean on_window_configure_event(GtkWidget *widget, GdkEvent *event,
                                    gpointer data)
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
   G_CALLBACK(on_angle_entry_activate), &right_angle); // updates when the user
   presses enter
    */
-  GtkWidget *window;
+  GtkWidget *window_main;
   GtkWidget *image_widget;
   GdkPixbuf *pixbuf;
 
@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
   builder = gtk_builder_new_from_file("source/gtk/layout/layout.ui");
   init_log_view("source/gtk/layout/layout.ui");
 
-  // Get the main window
-  window = GTK_WIDGET(gtk_builder_get_object(builder, "window_main"));
+  // Get the main window_main
+  window_main = GTK_WIDGET(gtk_builder_get_object(builder, "window_main"));
 
   // Get the image widget
   image_widget = GTK_WIDGET(gtk_builder_get_object(builder, "image_widget"));
@@ -97,18 +97,20 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  // Connect signals defined in the UI file
+  // // Connect signals defined in the UI file
   gtk_builder_connect_signals(builder, NULL);
   // Connect rotation signals
   GtkWidget *left_angle_enter =
       GTK_WIDGET(gtk_builder_get_object(builder, "left_angle_enter"));
   g_signal_connect(left_angle_enter, "clicked",
                    G_CALLBACK(on_rotate_left_clicked), image_widget);
+  g_object_set_data(G_OBJECT(left_angle_enter), "image_widget", image_widget);
 
   GtkWidget *right_angle_enter =
       GTK_WIDGET(gtk_builder_get_object(builder, "right_angle_enter"));
   g_signal_connect(right_angle_enter, "clicked",
                    G_CALLBACK(on_rotate_right_clicked), image_widget);
+  g_object_set_data(G_OBJECT(right_angle_enter), "image_widget", image_widget);
 
   GtkWidget *run_button = GTK_WIDGET(gtk_builder_get_object(builder, "run"));
   // Set expand property to FALSE for the buttons
@@ -167,8 +169,8 @@ int main(int argc, char *argv[])
   gint screen_width = gdk_screen_get_width(screen);
   gint screen_height = gdk_screen_get_height(screen);
 
-  // Set the window size to half the screen size
-  gtk_window_set_default_size(GTK_WINDOW(window), screen_width, screen_height);
+  // Set the window_main size to half the screen size
+  gtk_window_set_default_size(GTK_WINDOW(window_main), screen_width, screen_height);
 
   // Load a sample image and set it to the image widget
   pixbuf = gdk_pixbuf_new_from_file("images/Logo_OCR_WS_fanette.png", NULL);
@@ -192,8 +194,8 @@ int main(int argc, char *argv[])
                                             GTK_STYLE_PROVIDER_PRIORITY_USER);
   g_object_unref(css_provider);
 
-  // Show the main window
-  gtk_widget_show_all(window);
+  // Show the main window_main
+  gtk_widget_show_all(window_main);
 
   // Start the GTK main loop
   gtk_main();
