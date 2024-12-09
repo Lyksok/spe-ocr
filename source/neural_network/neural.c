@@ -255,8 +255,9 @@ int main(int argc, char **argv) {
     int nbrun = atoi(argv[2]);
     Train(nbrun, network, data);
 
+    SaveLayers(network->layers);
     DestroyData(data);
-    //		PrintData(*network);
+    //PrintData(*network);
     DestroyNet(network);
     return 0;
   } else if (!(strcmp(argv[1], "recover"))) {

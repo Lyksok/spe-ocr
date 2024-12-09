@@ -23,14 +23,14 @@ TrainingData *ReadDirectory(const char *directory) {
     if (entry->d_type != DT_DIR && strcmp(entry->d_name, ".") &&
         strcmp(entry->d_name, "..")) {
       size_t len = strlen(entry->d_name);
-      //			printf("png is %s\n", entry->d_name);
+      //printf("png is %s\n", entry->d_name);
       // char name[len+10];
       // strcpy(name, entry->d_name);
       if ((len > 4) && (entry->d_name[len - 4] == '.') &&
           (entry->d_name[len - 3] == 'p') && (entry->d_name[len - 2] == 'n') &&
           (entry->d_name[len - 1] == 'g'))
-      //			&& (name[len-4] == '.') && (name[len-3] == 'p')
-      //			&& (name[len-2] == 'n') && (name[len-1] == 'g'))
+      //&& (name[len-4] == '.') && (name[len-3] == 'p')
+      //&& (name[len-2] == 'n') && (name[len-1] == 'g'))
       {
         // process image
         char path[len + p_len + 10];
@@ -43,7 +43,7 @@ TrainingData *ReadDirectory(const char *directory) {
           char letter = entry->d_name[0];
           if (letter >= 'a' && letter <= 'z')
             letter -= 32;
-          //					printf("letter is %c, had %c\n", letter,
+          //printf("letter is %c, had %c\n", letter,
           //entry->d_name[0]);
           data->expected = letter;
           SDL_to_list(surface, nInputs, &(data->inputs));
@@ -51,10 +51,10 @@ TrainingData *ReadDirectory(const char *directory) {
           if (first == NULL) {
             first = data;
           }
-          //					printf("letter is %c\n",
+          //printf("letter is %c\n",
           //data.expected);
           cur = cur->next;
-          //					printf("finished processing this
+          //printf("finished processing this
           //data\n");
         }
       }
