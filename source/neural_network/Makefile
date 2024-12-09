@@ -5,7 +5,8 @@ CC = gcc
 
 #FLAGS = -Wall -Wextra
 #BFLAGS = -Wall -Wextra -Werror -fsanitize=address -g
-CFLAGS = -Wall -Wextra -fsanitize=address -g
+DEBUG = -fsanitize=address -g
+CFLAGS = -Wall -Wextra
 PKGS = `pkg-config --cflags --libs gtk+-3.0`
 LIBS = -lSDL2 -lSDL2_image -lm
 
