@@ -127,7 +127,7 @@ void Update(Layer *l, double *errors, int lr) {
 }
 
 void Backward(Network *net, TrainingData data, int i) {
-  //	printf("entering Backward()\n");
+  //printf("entering Backward()\n");
   Layer *l = net->layers;
   for (; l->next != NULL; l = l->next) {
   }
@@ -142,7 +142,7 @@ void Backward(Network *net, TrainingData data, int i) {
     errors[n] += Cost(net->outputs[i][n], r);
   }
   for (; l->prev != NULL; l = l->prev) {
-    //		printf("Updating layer with %d neurons\n", l->numNeurons);
+    //printf("Updating layer with %d neurons\n", l->numNeurons);
     Update(l, errors, net->lr);
     double *err = GetError(l->prev);
     if (err == NULL) {
@@ -220,9 +220,8 @@ void Train(int nbrun, Network *net, TrainingData *data) {
   }
   double accuracy = 0;
   for (int run = 0; run < nbrun; run++) {
-    TrainingData *cur = data;
     int i = 0;
-    for (; cur != NULL; cur = cur->next) {
+    for (TrainingData *cur = data; cur != NULL; cur = cur->next) {
       int len = dimension * dimension;
       CopyDataToLayer(*cur, net->layers);
       Forward(len, net, i);
@@ -238,6 +237,37 @@ void Train(int nbrun, Network *net, TrainingData *data) {
   printf("Total accuracy : %f\n", (nbrun != 0) ? (accuracy / nbrun) : 0);
 }
 
+void Find(Network *net)
+{
+	net->outputs = malloc(sizeof(double *));
+	if (net->outputs == NULL)
+	{
+		printf("Find() -> Malloc()\n");
+		return;
+	}
+	net->outputs[0] = calloc(26, sizeof(double));
+	if (net->outputs[0] == NULL)
+	{
+		printf("Train() -> Calloc()\n");
+		free(net->outputs);
+		return;
+	}
+	Forward(nInputs, net, 0);
+	double r = net->outputs[0][0];
+	char res = 0;
+	for (char c = 1; c < 26; c++)
+	{
+		double rr = GetMax(r, net->outputs[0][(int)c]);
+		if (r != rr)
+			res = c;
+		r = rr;
+	}
+	char *got = "Predicted Output =";
+	res += 'A';
+	printf("%s %c\n", got, res);
+	return;
+}
+
 int main(int argc, char **argv) {
   if (argc < 3) {
     printf("Expected more arguments\n");
@@ -250,7 +280,7 @@ int main(int argc, char **argv) {
     TrainingData *data = ParseDirectory();
 
     // Init of Network
-    Network *network = CreateNet(nLayers, 0.5);
+    Network *network = CreateNet(nLayers, 2);
 
     int nbrun = atoi(argv[2]);
     Train(nbrun, network, data);
@@ -268,9 +298,11 @@ int main(int argc, char **argv) {
     const char *fb2 = "network/fbias_2.csv";
     const char *fw2 = "network/fweight_2.csv";
     Network *network = RecoverNet(fw1, fb1, fw2, fb2);
-    // argv[2] is a path to the image to read
-    // convert to sdl, resize and tranfsorm to list
-    // call network and solve
+    SDL_Surface *surface = toSDL(argv[2]);
+    if (surface != NULL) {
+	SDL_to_list(surface, nInputs, &(network->layers->inputs));
+	Find(network);
+    }
     DestroyNet(network);
     return 0;
   }

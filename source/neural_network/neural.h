@@ -16,4 +16,6 @@ double Result(TrainingData *data, Network net, int run);
 
 void Train(int nbrun, Network *net, TrainingData *data);
 
+void Find(Network *net);
+
 #endif
