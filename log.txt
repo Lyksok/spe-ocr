@@ -1,0 +1,179 @@
+In file included from source/gtk/pretreatment_utils.h:20,
+                 from source/gtk/main.h:9,
+                 from source/gtk/conversion_utils.h:5,
+                 from source/gtk/conversion_utils.c:1:
+source/gtk/../image_processing/main.c:24:26: warning: ‘param’ defined but not used [-Wunused-variable]
+   24 | static struct parameters param =
+      |                          ^~~~~
+In file included from source/gtk/pretreatment_utils.h:20,
+                 from source/gtk/main.h:9,
+                 from source/gtk/image_utils.h:4,
+                 from source/gtk/image_utils.c:1:
+source/gtk/../image_processing/main.c:24:26: warning: ‘param’ defined but not used [-Wunused-variable]
+   24 | static struct parameters param =
+      |                          ^~~~~
+In file included from source/gtk/pretreatment_utils.h:20,
+                 from source/gtk/main.h:9,
+                 from source/gtk/my_print.h:7,
+                 from source/gtk/integration_documentation.h:7,
+                 from source/gtk/integration_documentation.c:1:
+source/gtk/../image_processing/main.c:24:26: warning: ‘param’ defined but not used [-Wunused-variable]
+   24 | static struct parameters param =
+      |                          ^~~~~
+source/gtk/integration_solver.c: In function ‘create_solver_window’:
+source/gtk/integration_solver.c:52:16: warning: variable ‘widgets’ set but not used [-Wunused-but-set-variable]
+   52 |     GtkWidget *widgets[3];
+      |                ^~~~~~~
+source/gtk/integration_solver.c:49:16: warning: variable ‘list_of_words_entry’ set but not used [-Wunused-but-set-variable]
+   49 |     GtkWidget *list_of_words_entry;
+      |                ^~~~~~~~~~~~~~~~~~~
+source/gtk/integration_solver.c:43:38: warning: unused parameter ‘widget’ [-Wunused-parameter]
+   43 | void create_solver_window(GtkWidget *widget, gpointer data)
+      |                           ~~~~~~~~~~~^~~~~~
+source/gtk/integration_solver.c:43:55: warning: unused parameter ‘data’ [-Wunused-parameter]
+   43 | void create_solver_window(GtkWidget *widget, gpointer data)
+      |                                              ~~~~~~~~~^~~~
+source/gtk/main.c: In function ‘on_window_main_destroy’:
+source/gtk/main.c:6:40: warning: unused parameter ‘widget’ [-Wunused-parameter]
+    6 | void on_window_main_destroy(GtkWidget *widget, gpointer data)
+      |                             ~~~~~~~~~~~^~~~~~
+source/gtk/main.c:6:57: warning: unused parameter ‘data’ [-Wunused-parameter]
+    6 | void on_window_main_destroy(GtkWidget *widget, gpointer data)
+      |                                                ~~~~~~~~~^~~~
+source/gtk/main.c: In function ‘on_window_configure_event’:
+source/gtk/main.c:38:3: warning: ‘gdk_screen_get_width’ is deprecated [-Wdeprecated-declarations]
+   38 |   gint screen_width = gdk_screen_get_width(screen);
+      |   ^~~~
+In file included from /usr/include/gtk-3.0/gdk/gdkapplaunchcontext.h:31,
+                 from /usr/include/gtk-3.0/gdk/gdk.h:32,
+                 from /usr/include/gtk-3.0/gtk/gtk.h:30,
+                 from source/gtk/main.h:4,
+                 from source/gtk/main.c:1:
+/usr/include/gtk-3.0/gdk/gdkscreen.h:58:14: note: declared here
+   58 | gint         gdk_screen_get_width             (GdkScreen   *screen);
+      |              ^~~~~~~~~~~~~~~~~~~~
+source/gtk/main.c:39:3: warning: ‘gdk_screen_get_height’ is deprecated [-Wdeprecated-declarations]
+   39 |   gint screen_height = gdk_screen_get_height(screen);
+      |   ^~~~
+/usr/include/gtk-3.0/gdk/gdkscreen.h:60:14: note: declared here
+   60 | gint         gdk_screen_get_height            (GdkScreen   *screen);
+      |              ^~~~~~~~~~~~~~~~~~~~~
+source/gtk/main.c:35:65: warning: unused parameter ‘event’ [-Wunused-parameter]
+   35 | gboolean on_window_configure_event(GtkWidget *widget, GdkEvent *event, gpointer data)
+      |                                                       ~~~~~~~~~~^~~~~
+source/gtk/main.c:35:81: warning: unused parameter ‘data’ [-Wunused-parameter]
+   35 | gboolean on_window_configure_event(GtkWidget *widget, GdkEvent *event, gpointer data)
+      |                                                                        ~~~~~~~~~^~~~
+source/gtk/main.c: In function ‘main’:
+source/gtk/main.c:143:3: warning: ‘gdk_screen_get_width’ is deprecated [-Wdeprecated-declarations]
+  143 |   gint screen_width = gdk_screen_get_width(screen);
+      |   ^~~~
+/usr/include/gtk-3.0/gdk/gdkscreen.h:58:14: note: declared here
+   58 | gint         gdk_screen_get_width             (GdkScreen   *screen);
+      |              ^~~~~~~~~~~~~~~~~~~~
+source/gtk/main.c:144:3: warning: ‘gdk_screen_get_height’ is deprecated [-Wdeprecated-declarations]
+  144 |   gint screen_height = gdk_screen_get_height(screen);
+      |   ^~~~
+/usr/include/gtk-3.0/gdk/gdkscreen.h:60:14: note: declared here
+   60 | gint         gdk_screen_get_height            (GdkScreen   *screen);
+      |              ^~~~~~~~~~~~~~~~~~~~~
+In file included from source/gtk/pretreatment_utils.h:20,
+                 from source/gtk/main.h:9:
+source/gtk/../image_processing/main.c: At top level:
+source/gtk/../image_processing/main.c:24:26: warning: ‘param’ defined but not used [-Wunused-variable]
+   24 | static struct parameters param =
+      |                          ^~~~~
+In file included from source/gtk/pretreatment_utils.h:20,
+                 from source/gtk/main.h:9,
+                 from source/gtk/my_print.h:7,
+                 from source/gtk/my_print.c:1:
+source/gtk/../image_processing/main.c:24:26: warning: ‘param’ defined but not used [-Wunused-variable]
+   24 | static struct parameters param =
+      |                          ^~~~~
+In file included from /usr/include/gtk-3.0/gtk/gtkentry.h:42,
+                 from /usr/include/gtk-3.0/gtk/gtktreeview.h:29,
+                 from /usr/include/gtk-3.0/gtk/gtkcombobox.h:27,
+                 from /usr/include/gtk-3.0/gtk/gtkappchooserbutton.h:29,
+                 from /usr/include/gtk-3.0/gtk/gtk.h:42,
+                 from source/gtk/rotation_utils.h:6,
+                 from source/gtk/rotation_utils.c:1:
+source/gtk/rotation_utils.c: In function ‘on_rotate_right_clicked’:
+/usr/include/gtk-3.0/gtk/gtkimage.h:40:41: warning: initialization of ‘GdkPixbuf *’ {aka ‘struct _GdkPixbuf *’} from incompatible pointer type ‘GtkImage *’ {aka ‘struct _GtkImage *’} [-Wincompatible-pointer-types]
+   40 | #define GTK_IMAGE(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_IMAGE, GtkImage))
+      |                                         ^
+source/gtk/rotation_utils.c:108:23: note: in expansion of macro ‘GTK_IMAGE’
+  108 |   GdkPixbuf *pixbuf = GTK_IMAGE(data);
+      |                       ^~~~~~~~~
+source/gtk/rotation_utils.c: In function ‘on_auto_rotate_clicked’:
+source/gtk/rotation_utils.c:246:18: warning: implicit declaration of function ‘auto_detect_rotation_angle’ [-Wimplicit-function-declaration]
+  246 |   double angle = auto_detect_rotation_angle(surface, &param);
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from source/gtk/pretreatment_utils.h:20,
+                 from source/gtk/main.h:9,
+                 from source/gtk/splash_screen.h:5,
+                 from source/gtk/splash_screen.c:1:
+source/gtk/../image_processing/main.c:24:26: warning: ‘param’ defined but not used [-Wunused-variable]
+   24 | static struct parameters param =
+      |                          ^~~~~
+source/image_processing/denoising/contrasting.c: In function ‘contrast_surface’:
+source/image_processing/denoising/contrasting.c:33:9: warning: unused variable ‘pixel_nb’ [-Wunused-variable]
+   33 |     int pixel_nb = surface->w*surface->h;
+      |         ^~~~~~~~
+source/image_processing/denoising/morphology.c:3:13: warning: ‘convolve_int’ defined but not used [-Wunused-function]
+    3 | static void convolve_int(SDL_Surface* surface, int* mask, int w)
+      |             ^~~~~~~~~~~~
+source/image_processing/denoising/pixel_filter.c: In function ‘flood_fill_count’:
+source/image_processing/denoising/pixel_filter.c:31:13: warning: unused variable ‘surface_pixels’ [-Wunused-variable]
+   31 |     Uint32* surface_pixels = (Uint32*)surface->pixels;
+      |             ^~~~~~~~~~~~~~
+source/image_processing/detection/detection.c: In function ‘detect_grid’:
+source/image_processing/detection/detection.c:144:53: warning: unused parameter ‘param’ [-Wunused-parameter]
+  144 |         int* width, int* height, struct parameters* param)
+      |                                  ~~~~~~~~~~~~~~~~~~~^~~~~
+source/image_processing/detection/filtering.c: In function ‘filter_wrong_size_boxes’:
+source/image_processing/detection/filtering.c:6:43: warning: unused parameter ‘surface’ [-Wunused-parameter]
+    6 | void filter_wrong_size_boxes(SDL_Surface* surface, struct list* box_list)
+      |                              ~~~~~~~~~~~~~^~~~~~~
+source/image_processing/detection/filtering.c:6:65: warning: unused parameter ‘box_list’ [-Wunused-parameter]
+    6 | void filter_wrong_size_boxes(SDL_Surface* surface, struct list* box_list)
+      |                                                    ~~~~~~~~~~~~~^~~~~~~~
+source/image_processing/detection/filtering.c: In function ‘filter_wrong_size_boxes_threshold’:
+source/image_processing/detection/filtering.c:18:9: warning: unused variable ‘i’ [-Wunused-variable]
+   18 |     int i=0;
+      |         ^
+source/image_processing/detection/filtering.c: In function ‘filter_probable_grid_boxes’:
+source/image_processing/detection/filtering.c:40:54: warning: unused parameter ‘box_list’ [-Wunused-parameter]
+   40 | struct list* filter_probable_grid_boxes(struct list* box_list, int wanted_nb)
+      |                                         ~~~~~~~~~~~~~^~~~~~~~
+source/image_processing/detection/filtering.c:40:68: warning: unused parameter ‘wanted_nb’ [-Wunused-parameter]
+   40 | struct list* filter_probable_grid_boxes(struct list* box_list, int wanted_nb)
+      |                                                                ~~~~^~~~~~~~~
+source/image_processing/detection/filtering.c:47:1: warning: control reaches end of non-void function [-Wreturn-type]
+   47 | }
+      | ^
+source/image_processing/detection/list.c: In function ‘list_insert’:
+source/image_processing/detection/list.c:82:31: warning: unused parameter ‘list’ [-Wunused-parameter]
+   82 | void list_insert(struct list* list, BoundingBox* box)
+      |                  ~~~~~~~~~~~~~^~~~
+source/image_processing/detection/list.c:82:50: warning: unused parameter ‘box’ [-Wunused-parameter]
+   82 | void list_insert(struct list* list, BoundingBox* box)
+      |                                     ~~~~~~~~~~~~~^~~
+source/image_processing/detection/list.c: In function ‘list_free_with_boxes’:
+source/image_processing/detection/list.c:152:40: warning: unused parameter ‘list’ [-Wunused-parameter]
+  152 | void list_free_with_boxes(struct list* list)
+      |                           ~~~~~~~~~~~~~^~~~
+source/image_processing/edge_detection/canny.c: In function ‘apply_mask’:
+source/image_processing/edge_detection/canny.c:179:19: warning: unused variable ‘pixel’ [-Wunused-variable]
+  179 |             Uint8 pixel = get_gpixel_from_coord(surface, i, j);
+      |                   ^~~~~
+source/image_processing/utils/helper.c: In function ‘sort_array’:
+source/image_processing/utils/helper.c:23:43: warning: unused parameter ‘compar’ [-Wunused-parameter]
+   23 | void sort_array(int** arr, int len, int (*compar)(const void *, const void*))
+      |                                     ~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+source/image_processing/utils/histograms.c: In function ‘get_bounding_box_freq_histograms’:
+source/image_processing/utils/histograms.c:49:14: warning: unused variable ‘bounding_boxes’ [-Wunused-variable]
+   49 |         int* bounding_boxes = calloc(pixel_nb, sizeof(int));
+      |              ^~~~~~~~~~~~~~
+source/image_processing/utils/histograms.c:46:42: warning: unused parameter ‘size’ [-Wunused-parameter]
+   46 |                 BoundingBox** boxes, int size, int** column_histo, int** row_histo)
+      |                                      ~~~~^~~~
