@@ -202,8 +202,8 @@ void compute_bounding_boxes(SDL_Surface *surface, struct list *box_list) {
   // Construct struct list* box_list
   for (int i = 1; i < cluster_id; i++) {
     if (eq_table[i] == 0) {
-      boxes[i]->pixel_nb = count_pixels[i];
       list_push_front(box_list, boxes[i]);
+      box_list->next->box->pixel_nb = count_pixels[i];
     }
   }
   free(boxes);
