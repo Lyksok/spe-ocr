@@ -4,8 +4,6 @@
 double left_angle = DEFAULT_LEFT_ANGLE;
 double right_angle = DEFAULT_RIGHT_ANGLE;
 
-struct parameters param;
-
 void on_left_angle_entry_activate(GtkEntry *entry, gpointer data)
 {
   if (!entry || !data)
