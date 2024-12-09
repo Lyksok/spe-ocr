@@ -93,34 +93,33 @@ GdkPixbuf *image_to_pixbuf(GtkImage *image)
     int rowstride = gdk_pixbuf_get_rowstride(original_pixbuf);
     guchar *pixels = gdk_pixbuf_get_pixels(original_pixbuf);
 
-    // printf("📏 Width: %d, Height: %d, Channels: %d, Rowstride: %d\n", width,
-           height, n_channels, rowstride);
+    // printf("📏 Width: %d, Height: %d, Channels: %d, Rowstride: %d\n", width, height, n_channels, rowstride);
 
-           pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
-           if (pixbuf == NULL)
-           {
-             printf("❌ New pixbuf creation failed");
-             return NULL;
-           }
-           guchar *new_pixels =
-               gdk_pixbuf_get_pixels(pixbuf); // guchar ~= unsigned char
-           for (int y = 0; y < height; y++)
-           {
-             for (int x = 0; x < width; x++)
-             {
-               // Copy all of the pixel data from the original pixbuf to the new pixbuf
-               guchar *src_pixel = pixels + y * rowstride + x * n_channels;
-               guchar *dest_pixel =
-                   new_pixels + y * gdk_pixbuf_get_rowstride(pixbuf) + x * 4;
+    pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
+    if (pixbuf == NULL)
+    {
+      printf("❌ New pixbuf creation failed");
+      return NULL;
+    }
+    guchar *new_pixels =
+        gdk_pixbuf_get_pixels(pixbuf); // guchar ~= unsigned char
+    for (int y = 0; y < height; y++)
+    {
+      for (int x = 0; x < width; x++)
+      {
+        // Copy all of the pixel data from the original pixbuf to the new pixbuf
+        guchar *src_pixel = pixels + y * rowstride + x * n_channels;
+        guchar *dest_pixel =
+            new_pixels + y * gdk_pixbuf_get_rowstride(pixbuf) + x * 4;
 
-               dest_pixel[0] = src_pixel[0]; // Red
-               dest_pixel[1] = src_pixel[1]; // Green
-               dest_pixel[2] = src_pixel[2]; // Blue
-               dest_pixel[3] =
-                   (n_channels == 4) ? src_pixel[3] : 255; // Alpha is opaque if 255
-             }
-           }
-           // printf("✅ Conversion to new GdkPixbuf done\n");
+        dest_pixel[0] = src_pixel[0]; // Red
+        dest_pixel[1] = src_pixel[1]; // Green
+        dest_pixel[2] = src_pixel[2]; // Blue
+        dest_pixel[3] =
+            (n_channels == 4) ? src_pixel[3] : 255; // Alpha is opaque if 255
+      }
+    }
+    // printf("✅ Conversion to new GdkPixbuf done\n");
   }
   else // If the original pixbuf is NULL, use sample image
   {
