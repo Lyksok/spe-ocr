@@ -258,25 +258,25 @@ void on_auto_rotate_clicked(GtkWidget *widget, gpointer data)
   my_print("🔄 Auto-rotating image\n");
   (void)widget; // Remove unused parameter warning
 
-  // Convert the image to SDL_Surface
-  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
-  SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
+  // // Convert the image to SDL_Surface
+  // GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+  // SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
 
-  // Detect the rotation angle
-  double angle = auto_detect_rotation_angle(surface, &param);
+  // // // Detect the rotation angle
+  // // double angle = auto_detect_rotation_angle(surface, &param);
 
-  // Log the detected angle
-  my_print("📐 Detected rotation angle: %.2f degrees\n", angle);
+  // // Log the detected angle
+  // my_print("📐 Detected rotation angle: %.2f degrees\n", angle);
 
-  // Rotate the image by the detected angle
-  int width = gdk_pixbuf_get_width(pixbuf);
-  int height = gdk_pixbuf_get_height(pixbuf);
-  GdkPixbuf *new_pixbuf =
-      gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
-  rotate_pixbuf(pixbuf, new_pixbuf, angle);
-  display_pixbuf(data, new_pixbuf);
+  // // Rotate the image by the detected angle
+  // int width = gdk_pixbuf_get_width(pixbuf);
+  // int height = gdk_pixbuf_get_height(pixbuf);
+  // GdkPixbuf *new_pixbuf =
+  //     gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
+  // rotate_pixbuf(pixbuf, new_pixbuf, angle);
+  // display_pixbuf(data, new_pixbuf);
 
-  // Clean up
-  SDL_FreeSurface(surface);
+  // // Clean up
+  // SDL_FreeSurface(surface);
   my_print("✅ Auto-rotation done\n");
 }

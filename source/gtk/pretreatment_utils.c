@@ -164,7 +164,7 @@ void on_contrast_amplification_clicked(GtkWidget *widget, gpointer data)
   (void)widget; // Remove unused parameter warning
   GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  contrast_surface(surface);
+  // contrast_surface(surface);
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
   display_pixbuf(data, new_pixbuf);
   my_print("✅ Contrast amplification done\n");

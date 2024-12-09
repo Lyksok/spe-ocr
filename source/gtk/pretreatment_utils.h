@@ -7,6 +7,7 @@
 #include "../image_processing/edge_detection/canny.h"
 #include "../image_processing/thresholding/sauvola.h"
 #include "../image_processing/utils/histograms.h"
+
 #include "conversion_utils.h"
 #include "image_utils.h"
 #include "main.h"
@@ -15,7 +16,6 @@
 // #include "../image_processing/denoising/erosion.h" // Excluded due to errors
 #include "../image_processing/denoising/pixel_filter.h"
 
-#include "../image_processing/main.c" // for the parameters
 #include "../image_processing/parameters.h"
 #include "../image_processing/utils/converting.h"
 #include "../image_processing/utils/histograms.h"
