@@ -17,7 +17,7 @@ void filter_wrong_size_boxes_threshold(SDL_Surface *surface,
     // printf("h=%i w=%i (%i/%zu)\n", height, width, i++, box_list->len);
     if ((height < t1 && width < t1) || (height > t2 && width > t2) ||
         box->pixel_nb <= param->filtering_n) {
-      remove_box_pixels(surface, p->next->box);
+      remove_box_pixels(surface, box);
       list_remove(box_list, p->next);
     } else {
       p = p->next;
