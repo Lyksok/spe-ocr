@@ -253,6 +253,7 @@ void rotate_pixbuf(GdkPixbuf *src_pixbuf, GdkPixbuf *dst_pixbuf, double angle)
 
 void on_auto_rotate_clicked(GtkWidget *widget, gpointer data)
 {
+  (void)data;
   my_print("🔄 Auto-rotating image\n");
   (void)widget; // Remove unused parameter warning
 
