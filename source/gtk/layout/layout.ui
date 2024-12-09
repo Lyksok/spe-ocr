@@ -56,7 +56,17 @@
     <property name="can-focus">False</property>
     <property name="stock">gtk-execute</property>
   </object>
+  <object class="GtkImage" id="image19">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-execute</property>
+  </object>
   <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-execute</property>
+  </object>
+  <object class="GtkImage" id="image20">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="stock">gtk-execute</property>
@@ -192,6 +202,28 @@
                         <property name="image">image4</property>
                         <property name="use-stock">False</property>
                         <signal name="activate" handler="on_gaussian_filter_clicked" object="image_widget" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="invert_colors">
+                        <property name="label">_Invert colors</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="image">image19</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_invert_colors_clicked" object="image_widget" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="binarize">
+                        <property name="label">_Binarize</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="image">image20</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_binarize_clicked" object="image_widget" swapped="no"/>
                       </object>
                     </child>
                   </object>
