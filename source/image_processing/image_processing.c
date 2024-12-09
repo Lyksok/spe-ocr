@@ -28,9 +28,9 @@ struct parameters param = {
     .dilation_m = 0, // (int) 0=cross, 1=full
 
     // filtering.c
-    .filtering_t1 = 10,  //         (int)	      Threshold min
+    .filtering_t1 = 5,  //         (int)	      Threshold min
     .filtering_t2 = 100, //         (int)	      Threshold max
-    .filtering_n = 20,   // (int)    Threshold for pixel number
+    .filtering_n = 5,   // (int)    Threshold for pixel number
 
     // gaussian_blur.c
     .gaussian_w = 3,

@@ -43,8 +43,8 @@ void draw_lines(SDL_Renderer *renderer, Point *src, Point *dest, int len) {
 }
 
 int main(int argc, char **argv) {
-  if (argc != 3 && argc != 4)
-    errx(EXIT_FAILURE, "Usage: <image-file> <detection/segmentation>");
+  if (argc != 3)
+    errx(EXIT_FAILURE, "Usage: <image-file> <chars/grid/words/list");
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
     errx(EXIT_FAILURE, "%s", SDL_GetError());
@@ -72,43 +72,38 @@ int main(int argc, char **argv) {
   convert_to_grayscale(surface, get_parameters());
   convert_to_binarized_average(surface, get_parameters());
   invert_colors(surface);
-
-  int is_detection = 1;
-  if (strcmp(argv[2], "detection") == 0) {
-    is_detection = 1;
-  } else if (strcmp(argv[2], "segmentation") == 0) {
-    BoundingBox *grid_box = get_grid_box(surface, get_parameters());
-    save_bounding_box(surface, grid_box);
-    free(grid_box);
-  } else
-    errx(EXIT_FAILURE, "Usage: <image-file> <detection/segmentation>");
-
-  if (!is_detection) {
-    SDL_QuitSubSystem(SDL_INIT_VIDEO);
-    SDL_FreeSurface(surface);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-    return EXIT_SUCCESS;
-  }
-  int chars = 0;
-  int words = 0;
-  int list = 0;
-  int grid = 0;
-  (void)chars;
-  (void)words;
-  (void)list;
-  (void)grid;
-
   int number_of_characters;
-  BoundingBox **characters =
-      get_char_boxes(surface, &number_of_characters, get_parameters());
+  BoundingBox **characters =get_char_boxes(surface, &number_of_characters, get_parameters()); 
   (void)characters;
   BoundingBox *grid_box = get_grid_box(surface, get_parameters());
   BoundingBox *word_list = get_word_list_box(surface, get_parameters());
   int word_count;
   BoundingBox **words_b =
       get_word_boxes(surface, &word_count, get_parameters());
+  
+  int chars = 0;
+  int words = 0;
+  int list = 0;
+  int grid = 0;
+
+  if (strcmp("chars", argv[2]) == 0) {
+      chars = 1;
+      save_bounding_boxes(surface, characters, number_of_characters);
+  } else if (strcmp("words", argv[2]) == 0) {
+      words = 1;
+      save_bounding_boxes(surface, words_b, word_count);
+  } else if (strcmp("list", argv[2]) == 0) {
+      list = 1;
+      save_bounding_box(surface, word_list);
+  } else if (strcmp("grid", argv[2]) == 0) {
+      grid = 1;
+      save_bounding_box(surface, grid_box);
+  } else {
+      errx(EXIT_FAILURE, "Usage: <image-file> <chars/words/list/grid>");
+  }
+
+
+  
 
   SDL_SetWindowSize(window, surface->w, surface->h);
   SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -122,6 +117,8 @@ int main(int argc, char **argv) {
     int height;
     SDL_GetWindowSize(window, &width, &height);
 
+    if(words)
+    {
     for (int i = 0; i < word_count; i++) {
       int x1 =
           (int)((double)words_b[i]->p1.x / (double)surface->w * (double)width);
@@ -134,7 +131,24 @@ int main(int argc, char **argv) {
       int rect[] = {x1, y1, x2 - x1, y2 - y1};
       draw_rect(renderer, rect);
     }
+    }
+    
+    if(chars)
+    {for (int i = 0; i < number_of_characters; i++) {
+      int x1 =
+          (int)((double)characters[i]->p1.x / (double)surface->w * (double)width);
+      int y1 =
+          (int)((double)characters[i]->p1.y / (double)surface->h * (double)height);
+      int x2 =
+          (int)((double)characters[i]->p2.x / (double)surface->w * (double)width);
+      int y2 =
+          (int)((double)characters[i]->p2.y / (double)surface->h * (double)height);
+      int rect[] = {x1, y1, x2 - x1, y2 - y1};
+      draw_rect(renderer, rect);
+    }
+    }
 
+    if(list){
     int x1 =
         (int)((double)word_list->p1.x / (double)surface->w * (double)width);
     int y1 =
@@ -144,14 +158,15 @@ int main(int argc, char **argv) {
     int y2 =
         (int)((double)word_list->p2.y / (double)surface->h * (double)height);
     int rect[] = {x1, y1, x2 - x1, y2 - y1};
-    draw_rect(renderer, rect);
+    draw_rect(renderer, rect);}
 
-    x1 = (int)((double)grid_box->p1.x / (double)surface->w * (double)width);
-    y1 = (int)((double)grid_box->p1.y / (double)surface->h * (double)height);
-    x2 = (int)((double)grid_box->p2.x / (double)surface->w * (double)width);
-    y2 = (int)((double)grid_box->p2.y / (double)surface->h * (double)height);
+    if(grid){
+    int x1 = (int)((double)grid_box->p1.x / (double)surface->w * (double)width);
+    int y1 = (int)((double)grid_box->p1.y / (double)surface->h * (double)height);
+    int x2 = (int)((double)grid_box->p2.x / (double)surface->w * (double)width);
+    int y2 = (int)((double)grid_box->p2.y / (double)surface->h * (double)height);
     int rect2[] = {x1, y1, x2 - x1, y2 - y1};
-    draw_rect(renderer, rect2);
+    draw_rect(renderer, rect2);}
 
     SDL_RenderPresent(renderer);
 
@@ -166,7 +181,14 @@ int main(int argc, char **argv) {
       SDL_Quit();
       free(grid_box);
       free(word_list);
-      return EXIT_SUCCESS;
+      for(int i=0; i<number_of_characters; i++)
+        free(characters[i]);
+      free(characters);
+      for(int i=0; i<word_count; i++)
+        free(words_b[i]);
+      free(words_b);
+  
+      errx(EXIT_SUCCESS, "End of program");
 
     case SDL_WINDOWEVENT:
       if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
@@ -184,5 +206,12 @@ int main(int argc, char **argv) {
   SDL_Quit();
   free(grid_box);
   free(word_list);
-  return EXIT_SUCCESS;
+  for(int i=0; i<number_of_characters; i++)
+        free(characters[i]);
+      free(characters);
+      for(int i=0; i<word_count; i++)
+        free(words_b[i]);
+      free(words_b);
+  errx(EXIT_SUCCESS, "End of program");
 }
+
