@@ -112,7 +112,7 @@ void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
   (void)widget;
 
   // Convert GtkImage to SDL_Surface
-  GdkPixbuf *pixbuf = GTK_IMAGE(data);
+  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
 
   // Create an SDL texture from the surface
