@@ -52,24 +52,23 @@ SDL_Surface *gdk_pixbuf_to_sdl_surface(GdkPixbuf *pixbuf)
   int n_channels = gdk_pixbuf_get_n_channels(pixbuf);
   guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
 
-  // printf("📏 Width: %d, Height: %d, Rowstride: %d, Channels: %d\n", width,
-         height, rowstride, n_channels);
+  // printf("📏 Width: %d, Height: %d, Rowstride: %d, Channels: %d\n", width, height, rowstride, n_channels);
 
-         // Call SDL_CreateRGBSurfaceFrom to create a new SDL_Surface from the data
-         // retrieved
-         SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(
-             pixels, width, height,
-             8 * n_channels, // 8 bits per pixel * number of channels
-             rowstride,      // nb bytes of a row's size
-             0x000000FF,     // Red mask as hexa
-             0x0000FF00,     // Green mask as hexa
-             0x00FF0000,     // Blue mask as hexa
-             n_channels == 4
-                 ? 0xFF000000
-                 : 0); // Alpha mask if 4  (as hexa) channels (= RGBA) else 0 (= RGB)
+  // Call SDL_CreateRGBSurfaceFrom to create a new SDL_Surface from the data
+  // retrieved
+  SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(
+      pixels, width, height,
+      8 * n_channels, // 8 bits per pixel * number of channels
+      rowstride,      // nb bytes of a row's size
+      0x000000FF,     // Red mask as hexa
+      0x0000FF00,     // Green mask as hexa
+      0x00FF0000,     // Blue mask as hexa
+      n_channels == 4
+          ? 0xFF000000
+          : 0); // Alpha mask if 4  (as hexa) channels (= RGBA) else 0 (= RGB)
 
-         // printf("✅ Conversion to SDL_Surface done\n");
-         return surface;
+  // printf("✅ Conversion to SDL_Surface done\n");
+  return surface;
 }
 
 /**
