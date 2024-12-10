@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
   }
 
   convert_to_grayscale(surface, get_parameters());
-  convert_to_binarized_sauvola(surface, get_parameters());
+  convert_to_binarized_average(surface, get_parameters());
   invert_colors(surface);
   int number_of_characters;
   BoundingBox **characters =get_char_boxes(surface, &number_of_characters, get_parameters()); 
