@@ -70,7 +70,7 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
   GtkWidget *menu_bar, *file_menu, *file_menu_item, *load_menu_item, *save_menu_item;
   GtkWidget *processing_menu, *processing_menu_item, *grayscale_item, *contrast_item, *median_item;
   GtkWidget *thresholding_menu, *thresholding_menu_item, *adaptive_item, *otsu_item, *sauvola_item;
-  GtkWidget *rotation_menu, *rotation_menu_item, *rotate_left_item, *rotate_right_item, *auto_rotate_item;
+  GtkWidget *rotation_menu, *rotation_menu_item, *canny_edge_detection_item, *auto_rotate_item;
   GtkWidget *documentation_menu_item;
 
   // Creates a menu bar
@@ -140,15 +140,10 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
   gtk_menu_item_set_submenu(GTK_MENU_ITEM(rotation_menu_item), rotation_menu);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), rotation_menu_item);
 
-  // Creates rotate left menu item => rotation_menu
-  rotate_left_item = gtk_menu_item_new_with_label("Rotate left");
-  g_signal_connect(rotate_left_item, "activate", G_CALLBACK(on_rotate_left_clicked), image_widget);
-  gtk_menu_shell_append(GTK_MENU_SHELL(rotation_menu), rotate_left_item);
-
-  // Creates rotate right menu item => rotation_menu
-  rotate_right_item = gtk_menu_item_new_with_label("Rotate right");
-  g_signal_connect(rotate_right_item, "activate", G_CALLBACK(on_rotate_right_clicked), image_widget);
-  gtk_menu_shell_append(GTK_MENU_SHELL(rotation_menu), rotate_right_item);
+  // Creates canny edge detection menu item => rotation_menu
+  canny_edge_detection_item = gtk_menu_item_new_with_label("Canny edge detection");
+  g_signal_connect(canny_edge_detection_item, "activate", G_CALLBACK(on_canny_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(rotation_menu), canny_edge_detection_item);
 
   // Creates auto rotate menu item => rotation_menu
   auto_rotate_item = gtk_menu_item_new_with_label("Auto rotate");

@@ -69,7 +69,7 @@ void on_rotate_left_clicked(GtkWidget *widget, gpointer data)
   int height = gdk_pixbuf_get_height(pixbuf);
   GdkPixbuf *new_pixbuf =
       gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
-  rotate_pixbuf(pixbuf, new_pixbuf, left_angle);
+  rotate_pixbuf(pixbuf, new_pixbuf, -left_angle);
   display_pixbuf(data, new_pixbuf);
   printf("✅ Left rotation done\n");
 }
@@ -88,7 +88,7 @@ void on_rotate_right_clicked(GtkWidget *widget, gpointer data)
   int height = gdk_pixbuf_get_height(pixbuf);
   GdkPixbuf *new_pixbuf =
       gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
-  rotate_pixbuf(pixbuf, new_pixbuf, -right_angle);
+  rotate_pixbuf(pixbuf, new_pixbuf, right_angle);
   display_pixbuf(data, new_pixbuf);
   printf("✅ Right rotation done\n");
 }

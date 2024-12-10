@@ -11,6 +11,8 @@
 #include "splash_screen.h"
 #include <gtk/gtk.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
 // #include <gtk/gtk.h>
 // #include <stdio.h>
 // #include "conversion_utils.h"
