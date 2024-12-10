@@ -68,7 +68,7 @@ GtkWidget *init_button(const char *label, GCallback callback, gpointer data)
 GtkWidget *init_menu_bar(GtkWidget *image_widget)
 {
   GtkWidget *menu_bar, *file_menu, *file_menu_item, *load_menu_item, *save_menu_item;
-  GtkWidget *processing_menu, *processing_menu_item, *grayscale_item, *contrast_item, *median_item;
+  GtkWidget *processing_menu, *processing_menu_item, *grayscale_item, *contrast_item, *median_item, *gaussian_item, *binarize_item, *invert_colors_item;
   GtkWidget *thresholding_menu, *thresholding_menu_item, *adaptive_item, *otsu_item, *sauvola_item;
   GtkWidget *rotation_menu, *rotation_menu_item, *canny_edge_detection_item, *auto_rotate_item;
   GtkWidget *documentation_menu_item;
@@ -102,7 +102,14 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
   grayscale_item = gtk_menu_item_new_with_label("Grayscale");
   g_signal_connect(grayscale_item, "activate", G_CALLBACK(on_grayscale_clicked), image_widget);
   gtk_menu_shell_append(GTK_MENU_SHELL(processing_menu), grayscale_item);
-
+  // Creates binarize menu item => processing_menu
+  binarize_item = gtk_menu_item_new_with_label("Binarize");
+  g_signal_connect(binarize_item, "activate", G_CALLBACK(on_binarize_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(processing_menu), binarize_item);
+  // Creates invert colors menu item => processing_menu
+  invert_colors_item = gtk_menu_item_new_with_label("Invert colors");
+  g_signal_connect(invert_colors_item, "activate", G_CALLBACK(on_invert_colors_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(processing_menu), invert_colors_item);
   // Creates contrast amplification menu item => processing_menu
   contrast_item = gtk_menu_item_new_with_label("Contrast amplification");
   g_signal_connect(contrast_item, "activate", G_CALLBACK(on_contrast_amplification_clicked), image_widget);
@@ -112,6 +119,10 @@ GtkWidget *init_menu_bar(GtkWidget *image_widget)
   median_item = gtk_menu_item_new_with_label("Median filter");
   g_signal_connect(median_item, "activate", G_CALLBACK(on_median_filter_clicked), image_widget);
   gtk_menu_shell_append(GTK_MENU_SHELL(processing_menu), median_item);
+  // Creates gaussian filter menu item => processing_menu
+  gaussian_item = gtk_menu_item_new_with_label("Gaussian filter");
+  g_signal_connect(gaussian_item, "activate", G_CALLBACK(on_gaussian_filter_clicked), image_widget);
+  gtk_menu_shell_append(GTK_MENU_SHELL(processing_menu), gaussian_item);
 
   // Creates thresholding menu => menu bar
   thresholding_menu = gtk_menu_new();

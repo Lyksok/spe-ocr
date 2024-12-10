@@ -9,31 +9,23 @@
  */
 GdkPixbuf *sdl_surface_to_gdk_pixbuf(SDL_Surface *surface)
 {
-  // printf("🖼️ Converting SDL_Surface to GdkPixbuf\n");
-  // Retrieve the surface data about its pixels
   int width = surface->w;
   int height = surface->h;
   int rowstride = surface->pitch;
+  //  int n_channels = surface->format->BytesPerPixel;
   guchar *pixels = (guchar *)surface->pixels;
 
-  // printf("📏 Width: %d, Height: %d, Rowstride: %d\n", width, height, rowstride);
-
-  // Call gdk_pixbuf_new_from_data to create a new GdkPixbuf from the data
-  // retrieved
   GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data(
-      pixels,                                // data = pixels
-      GDK_COLORSPACE_RGB,                    // colorspace = RGB
-      surface->format->Amask ? TRUE : FALSE, // has_alpha ? Yes if Amask != 0
-      8,                                     // Currently only RGB images with 8 bits per sample are supported
-      width, height,
-      rowstride, // nb bytes of a row's size
-      NULL,      // no supported destroy
-      NULL);     // no supported destroy
+      pixels, GDK_COLORSPACE_RGB, TRUE, 8, width, height, rowstride, NULL, NULL);
 
-  // printf("✅ Conversion to GdkPixbuf done\n");
+  if (!pixbuf)
+  {
+    my_print("Failed to create GdkPixbuf\n");
+    return NULL;
+  }
+
   return pixbuf;
 }
-
 /**
  * @brief EXPLICIT CONVERSION METHOD! => Converts an SDL_Surface to a GdkPixbuf.
  * GdkPixbuf is used in GTK for image handling whereas SDL_Surface is used in
@@ -92,12 +84,12 @@ GdkPixbuf *image_to_pixbuf(GtkImage *image)
     int rowstride = gdk_pixbuf_get_rowstride(original_pixbuf);
     guchar *pixels = gdk_pixbuf_get_pixels(original_pixbuf);
 
-    // printf("📏 Width: %d, Height: %d, Channels: %d, Rowstride: %d\n", width, height, n_channels, rowstride);
+    // printf("📏 Width: %d, Height: %d, Channels: %d, Rowstride: %d\n", width,height, n_channels, rowstride);
 
     pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
     if (pixbuf == NULL)
     {
-      printf("❌ New pixbuf creation failed");
+      g_warning("❌ New pixbuf creation failed");
       return NULL;
     }
     guchar *new_pixels =
@@ -128,10 +120,11 @@ GdkPixbuf *image_to_pixbuf(GtkImage *image)
     GtkImage *sample_image = GTK_IMAGE(gtk_image_new_from_pixbuf(pixbuf));
     if (sample_image == NULL)
     {
-      // printf("❌ Failed to load sample image from path: %s", SAMPLE_IMAGE_PATH);
+      g_warning("❌ Failed to load sample image from path: %s",
+                SAMPLE_IMAGE_PATH);
       return NULL;
     }
-    //  printf("✅ Sample image loaded\n");
+    // printf("✅ Sample image loaded\n");
   }
   return pixbuf;
 }

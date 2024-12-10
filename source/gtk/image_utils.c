@@ -102,7 +102,17 @@ void *on_save_image(GtkWidget *widget, gpointer data)
  */
 void display_pixbuf(GtkWidget *image_widget, GdkPixbuf *pixbuf)
 {
+  // Get the current pixbuf from the image widget
+  GdkPixbuf *old_pixbuf = gtk_image_get_pixbuf(GTK_IMAGE(image_widget));
+
+  // Set the new pixbuf
   gtk_image_set_from_pixbuf(GTK_IMAGE(image_widget), pixbuf);
+
+  // Unreference the old pixbuf if it exists
+  if (G_IS_OBJECT(old_pixbuf))
+  {
+    g_object_unref(old_pixbuf);
+  }
 }
 
 /**

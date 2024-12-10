@@ -5,6 +5,7 @@
  ***************************************************************/
 
 struct parameters param;
+
 void on_run_clicked(GtkWidget *button, gpointer data)
 {
   GtkWidget *image_widget = GTK_WIDGET(data);
@@ -72,7 +73,43 @@ void on_grayscale_clicked(GtkWidget *widget, gpointer data)
   my_print("✅ Grayscale conversion done\n");
   SDL_FreeSurface(surface); // Free the surface
 }
+void aux_binarization(SDL_Surface *surface, struct parameters *param)
+{
+  // Convert the image to its binarized representation using the average threshold
+  size_t threshold = param->average_t;
+  my_print("Using threshold: %zu\n", threshold);
 
+  // Lock the surface for direct pixel access
+  SDL_LockSurface(surface);
+  Uint32 *pixels = (Uint32 *)surface->pixels;
+
+  // Iterate over each pixel and apply the binarization
+  for (int i = 0; i < surface->w * surface->h; i++)
+  {
+    Uint32 pixel = pixels[i];
+    Uint8 r, g, b, a;
+    SDL_GetRGBA(pixel, surface->format, &r, &g, &b, &a);
+    Uint8 grayscale = (r + g + b) / 3;
+    Uint32 new_pixel;
+    if (grayscale < threshold)
+    {
+      new_pixel = SDL_MapRGBA(surface->format, 0, 0, 0, a);
+    }
+    else
+    {
+      new_pixel = SDL_MapRGBA(surface->format, 255, 255, 255, a);
+    }
+    if (pixel != new_pixel)
+    {
+      my_print("Pixel %d changed from %u color to %u color\n", i, pixel, new_pixel);
+    }
+    pixels[i] = new_pixel;
+  }
+
+  // Unlock the surface after direct pixel access
+  SDL_UnlockSurface(surface);
+  my_print("Binarization completed.\n");
+}
 /**
  * @brief Callback function to convert the image to binarized.
  *  @param widget The widget that triggered the function
@@ -83,16 +120,51 @@ void on_binarize_clicked(GtkWidget *widget, gpointer data)
 {
   my_print("⚫ Binarizing the image\n");
   (void)widget; // Remove unused parameter warning
-  GdkPixbuf *pixbuf = image_to_pixbuf(GTK_IMAGE(data));
+
+  // Get the current pixbuf from the image widget
+  GdkPixbuf *pixbuf = gtk_image_get_pixbuf(GTK_IMAGE(data));
+  if (!pixbuf)
+  {
+    my_print("Failed to get pixbuf from image widget\n");
+    return;
+  }
+
+  // Increase reference count to manage the pixbuf correctly
+  g_object_ref(pixbuf);
+
+  // Convert the GdkPixbuf to SDL_Surface
   SDL_Surface *surface = gdk_pixbuf_to_sdl_surface(pixbuf);
-  convert_to_binarized_average(surface, &param);
+  if (!surface)
+  {
+    my_print("Failed to convert pixbuf to SDL_Surface\n");
+    g_object_unref(pixbuf); // Unreference the pixbuf
+    return;
+  }
+
+  // Perform binarization using aux_binarization
+  aux_binarization(surface, &param);
+
+  // Convert the processed SDL_Surface back to GdkPixbuf
   GdkPixbuf *new_pixbuf = sdl_surface_to_gdk_pixbuf(surface);
+  if (!new_pixbuf)
+  {
+    my_print("Failed to convert SDL_Surface to GdkPixbuf\n");
+    SDL_FreeSurface(surface);
+    g_object_unref(pixbuf); // Unreference the pixbuf
+    return;
+  }
+
+  // Update the image widget with the new pixbuf
   display_pixbuf(data, new_pixbuf);
+
+  // Free resources
+  SDL_FreeSurface(surface);
+  g_object_unref(pixbuf);     // Unreference the original pixbuf
+  g_object_unref(new_pixbuf); // Unreference the new pixbuf
+
   is_binarized = 1; // 1 == TRUE
   my_print("✅ Binarization done\n");
-  SDL_FreeSurface(surface); // Free the surface
 }
-
 /** TODO Dupe of the original function for debug purposes */
 void invert_binarized_colors_dupe(SDL_Surface *surface)
 {
@@ -139,7 +211,6 @@ void on_invert_colors_clicked(GtkWidget *widget, gpointer data)
   {
     my_print("⚠️ Invert colors can only be applied after binarizing the "
              "image.\n");
-    return;
   }
   else
   {
