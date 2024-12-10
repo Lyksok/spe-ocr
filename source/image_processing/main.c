@@ -50,8 +50,9 @@ void draw_lines(SDL_Renderer *renderer, Point *src, Point *dest, int len)
 
 int main(int argc, char **argv)
 {
-  if (argc != 3)
-    errx(EXIT_FAILURE, "Usage: <image-file> <chars/grid/words/list");
+
+  if (argc < 3)
+    errx(EXIT_FAILURE, "Usage: <image-file> <chars/grid/words/list <average/global/adaptative/sauvola>");
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
     errx(EXIT_FAILURE, "%s", SDL_GetError());
@@ -77,9 +78,74 @@ int main(int argc, char **argv)
     errx(EXIT_FAILURE, "%s", SDL_GetError());
   }
 
+  if (argc == 4)
+  {
+    convert_to_grayscale(surface, get_parameters());
+
+    if (strcmp("average", argv[3]) == 0)
+      convert_to_binarized_average(surface, get_parameters());
+    else if (strcmp("global", argv[3]) == 0)
+      convert_to_binarized_global(surface, get_parameters());
+    else if (strcmp("adaptative", argv[3]) == 0)
+      convert_to_binarized_adaptative(surface, get_parameters());
+    else if (strcmp("sauvola", argv[3]) == 0)
+      convert_to_binarized_sauvola(surface, get_parameters());
+    else
+    {
+      errx(EXIT_FAILURE, "Usage: <image-file> <chars/words/list/grid> <average/global/adaptative/sauvola>");
+    }
+
+    invert_colors(surface);
+    BoundingBox *box = calloc(1, sizeof(BoundingBox));
+    box->p1 = (Point){0, 0};
+    box->p2 = (Point){surface->w - 1, surface->h - 1};
+
+    save_bounding_box(surface, box);
+    free(box);
+
+    SDL_SetWindowSize(window, surface->w, surface->h);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
+
+    SDL_Event event;
+    while (1)
+    {
+      SDL_WaitEvent(&event);
+      switch (event.type)
+      {
+      case SDL_QUIT:
+        SDL_QuitSubSystem(SDL_INIT_VIDEO);
+        SDL_FreeSurface(surface);
+        SDL_DestroyTexture(texture);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 0;
+
+      case SDL_WINDOWEVENT:
+        if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+        {
+          SDL_RenderCopy(renderer, texture, NULL, NULL);
+          SDL_RenderPresent(renderer);
+        }
+        break;
+      }
+    }
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+    return 0;
+  }
+
   convert_to_grayscale(surface, get_parameters());
   convert_to_binarized_average(surface, get_parameters());
   invert_colors(surface);
+
   int number_of_characters;
   BoundingBox **characters = get_char_boxes(surface, &number_of_characters, get_parameters());
   (void)characters;
@@ -115,7 +181,7 @@ int main(int argc, char **argv)
   }
   else
   {
-    errx(EXIT_FAILURE, "Usage: <image-file> <chars/words/list/grid>");
+    errx(EXIT_FAILURE, "Usage: <image-file> <chars/words/list/grid> <average/global/adaptative/sauvola>");
   }
 
   SDL_SetWindowSize(window, surface->w, surface->h);
