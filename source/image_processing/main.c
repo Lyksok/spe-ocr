@@ -87,6 +87,12 @@ int main(int argc, char **argv) {
   }
   
   invert_colors(surface);
+  BoundingBox* box = calloc(1, sizeof(BoundingBox));
+  box->p1=(Point){0,0};
+  box->p2=(Point){surface->w-1,surface->h-1};
+
+  save_bounding_box(surface, box);
+  free(box);
 
   SDL_SetWindowSize(window, surface->w, surface->h);
   SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
